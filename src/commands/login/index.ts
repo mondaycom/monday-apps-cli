@@ -21,7 +21,7 @@ const extractMethod = async (flags: { method: LOGIN_TYPES | undefined }): Promis
 export default class Login extends Command {
   static description = 'Login to monday.com to make full use of `mcode`';
 
-  static examples = ['<%= config.bin %> <%= command.id %>'];
+  static examples = ['<%= config.bin %> <%= command.id %> -m credentials -e exa@ple.com'];
 
   static flags = {
     method: Flags.enum<LOGIN_TYPES>({
@@ -32,12 +32,7 @@ export default class Login extends Command {
     email: Flags.string({
       char: 'e',
       description: MESSAGES.email,
-      dependsOn: ['m'],
-    }),
-    password: Flags.string({
-      char: 'p',
-      description: MESSAGES.password,
-      dependsOn: ['m'],
+      dependsOn: ['method'],
     }),
   };
 
@@ -51,7 +46,7 @@ export default class Login extends Command {
 
     if (args.method === LOGIN_TYPES.credentials) {
       args.email = flags.email || (await PromptService.promptForEmail());
-      args.password = flags.password || (await PromptService.promptForPassword());
+      args.password = await PromptService.promptForPassword();
     }
 
     await MondayApiService.login(args);
