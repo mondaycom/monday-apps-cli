@@ -58,19 +58,23 @@ export const PromptService = {
     return res.email;
   },
 
-  async promptForPassword() {
-    const res = await inquirer.prompt<{ password: string }>([
+  async promptForHiddenInput(name: string, message: string, validationMessage: string) {
+    const res = await inquirer.prompt<{ [name: string]: string }>([
       {
-        name: 'password',
-        message: 'Please enter your password',
+        name,
+        message,
         type: 'password',
         validate(input: string) {
-          return validateIfRequired(input, 'You must enter a password', true);
+          return validateIfRequired(input, validationMessage, true);
         },
       },
     ]);
 
-    return res.password;
+    return res[name];
+  },
+
+  async promptForPassword() {
+    return this.promptForHiddenInput('password', 'Please enter your password', 'You must enter a password');
   },
 
   async promptInput(message: string, required = false) {
