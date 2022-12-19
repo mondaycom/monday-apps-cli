@@ -4,9 +4,26 @@ monday-code-cli
 monday.com cli tool for `<monday-code />` apps management.
 
 <!-- toc -->
+* [Development](#development)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+<!-- development -->
+# Development
+## Local install
+```ssh-session
+$ cd <monday-code-cli repo>
+$ nvm use
+$ npm i -g ./
+$ npm run build
+$ mcode YOUR_COMMAND
+```
+## Add new command
+```ssh-session
+$ cd <monday-code-cli repo>
+$ oclif generate command <COMMAND_NAME>
+```
+<!-- developmentstop -->
 # Usage
 <!-- usage -->
 ```sh-session
@@ -14,7 +31,7 @@ $ npm install -g monday-code-cli
 $ mcode COMMAND
 running command...
 $ mcode (--version)
-monday-code-cli/0.0.1 darwin-arm64 node-v18.12.1
+monday-code-cli/0.0.2 darwin-arm64 node-v18.12.1
 $ mcode --help [COMMAND]
 USAGE
   $ mcode COMMAND
@@ -65,7 +82,7 @@ EXAMPLES
   $ mcode init -t SECRET_TOKEN
 ```
 
-_See code: [dist/commands/init/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.0.1/dist/commands/init/index.ts)_
+_See code: [dist/commands/init/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.0.2/dist/commands/init/index.ts)_
 
 ## `mcode login`
 
@@ -86,5 +103,5 @@ EXAMPLES
   $ mcode login -m credentials -e exa@ple.com
 ```
 
-_See code: [dist/commands/login/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.0.1/dist/commands/login/index.ts)_
+_See code: [dist/commands/login/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.0.2/dist/commands/login/index.ts)_
 <!-- commandsstop -->
