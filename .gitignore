@@ -69,3 +69,5 @@ dist
 .idea/*
 
 .DS_Store
+
+.mcoderc
