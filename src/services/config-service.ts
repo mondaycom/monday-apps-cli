@@ -2,6 +2,7 @@ import { existsSync, writeFileSync, readFileSync, unlinkSync, mkdirSync } from '
 import { ConfigData, InitConfigOptions } from '../types/services/config-service.js';
 import { join } from 'node:path';
 import { BadConfigError } from '../errors/bad-config-error.js';
+import Logger from '../utils/logger.js';
 
 export const CONFIG_NAME = '.mcoderc';
 const ENCODING = 'utf8';
@@ -100,7 +101,7 @@ export const ConfigService = {
 
       return data;
     } catch (error) {
-      console.debug('An error has occurred while creating mcode config file', (error as Error).message);
+      Logger.debug('An error has occurred while creating mcode config file', (error as Error).message);
     }
   },
 };

@@ -1,7 +1,15 @@
 import { Command, Flags } from '@oclif/core';
+import Logger from '../../utils/logger.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { ConfigService, CONFIG_NAME } from '../../services/config-service.js';
 import { InitCommandArguments } from '../../types/commands/init.js';
+
+const accessTokenPrompt = async () =>
+  PromptService.promptForHiddenInput(
+    'token',
+    'Please enter your monday.com api access token',
+    'You must provide an access token',
+  );
 
 export default class Init extends Command {
   static description = `Initialize monday-code config file - '${CONFIG_NAME}'`;
@@ -21,21 +29,15 @@ export default class Init extends Command {
     const { flags } = await this.parse(Init);
 
     const args: InitCommandArguments = {
-      accessToken:
-        flags.token ||
-        (await PromptService.promptForHiddenInput(
-          'token',
-          'Please enter your monday.com api access token',
-          'You must provide an access token',
-        )),
+      accessToken: flags.token || (await accessTokenPrompt()),
     };
 
     try {
       ConfigService.init(args, this.config.configDir, { override: true, setInProcessEnv: true });
-      console.info(`'${CONFIG_NAME}' created`);
+      Logger.info(`'${CONFIG_NAME}' created`);
     } catch (error) {
-      console.debug((error as Error).message);
-      console.error(`'${CONFIG_NAME}' failed to initialize`);
+      Logger.debug((error as Error).message);
+      Logger.error(`'${CONFIG_NAME}' failed to initialize`);
     }
   }
 }
