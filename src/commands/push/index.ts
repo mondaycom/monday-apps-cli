@@ -3,7 +3,7 @@ import { ConfigService } from '../../services/config-service.js';
 import Logger from '../../utils/logger.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { PushCommandArguments } from '../../types/commands/push';
-// import { pushZipToCloud } from '../../services/push-service';
+import { pushZipToCloud } from '../../services/push-service.js';
 
 const filePathPrompt = async () => PromptService.promptInput('Please the zip file path on your local machine', true);
 
@@ -43,10 +43,10 @@ export default class Push extends Command {
     Logger.info(`'${JSON.stringify(args)}' args`);
     try {
       const accessToken = ConfigService.getConfigDataByKey('accessToken');
-      // pushZipToCloud();
-      Logger.info(`'${accessToken}' output`);
+      pushZipToCloud();
+      console.info(`'${accessToken}' output`);
     } catch (error) {
-      Logger.debug((error as Error).message);
+      console.error((error as Error).message);
     }
   }
 }

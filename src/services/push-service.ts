@@ -1,6 +1,6 @@
-import { signUrl } from '../consts/urls';
-import urlBuilder from '../utils/urls-builder';
+import { signUrl } from '../consts/urls.js';
+import urlBuilder from '../utils/urls-builder.js';
 import Logger from '../utils/logger.js';
 export const pushZipToCloud = (): void => {
-  Logger.log(urlBuilder(signUrl), 'About to push to url');
+  console.log(urlBuilder(signUrl), 'About to push to url');
 };
