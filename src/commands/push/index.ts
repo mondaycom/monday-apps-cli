@@ -34,19 +34,25 @@ export default class Push extends Command {
 
   public async run(): Promise<void> {
     ConfigService.loadConfigToProcessEnv(this.config.configDir);
+    const accessToken = ConfigService.getConfigDataByKey('accessToken');
+    if (!accessToken) {
+      console.log('Access token is missing, please run: "mcode init"');
+      return;
+    }
+
     const { flags } = await this.parse(Push);
 
     const args: PushCommandArguments = {
       file: flags.file || (await filePathPrompt()),
       version: flags.version || (await versionPrompt()),
+      accessToken,
     };
     Logger.info(`'${JSON.stringify(args)}' args`);
     try {
-      const accessToken = ConfigService.getConfigDataByKey('accessToken');
-      pushZipToCloud();
-      console.info(`'${accessToken}' output`);
+      pushZipToCloud(args);
+      Logger.info(`'${accessToken}' output`);
     } catch (error) {
-      console.error((error as Error).message);
+      Logger.error((error as Error).message);
     }
   }
 }

@@ -21,6 +21,7 @@
     "@oclif/core": "^1.19.1",
     "@oclif/plugin-help": "^5",
     "chalk": "4.1.2",
+    "dotenv": "^16.0.3",
     "eslint-import-resolver-typescript": "^3.5.2",
     "figlet": "^1.5.2",
     "fuzzy": "^0.1.3",
