@@ -58,6 +58,9 @@
     "bin": "mcode",
     "dirname": "mcode",
     "commands": "./dist/commands",
+    "hooks": {
+      "init": "./dist/hooks/init.js"
+    },
     "plugins": [
       "@oclif/plugin-help"
     ]
