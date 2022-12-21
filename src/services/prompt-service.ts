@@ -92,6 +92,23 @@ export const PromptService = {
     return res.input;
   },
 
+  async promptFile(message: string, extensions: string[]) {
+    const res = await inquirer.prompt<{ filePath: string }>([
+      {
+        name: 'filePath',
+        message: message || 'Please type full file path',
+        type: 'input',
+        extensions,
+        validate(input: string) {
+          if (!input) return 'You must enter valid file path';
+          return true;
+        },
+      },
+    ]);
+
+    return res.filePath;
+  },
+
   async promptSelectionWithAutoComplete<T>(message: string, choices: string[]): Promise<T> {
     const search = (_answers: string[], input = '') => {
       return new Promise(resolve => {

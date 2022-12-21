@@ -3,9 +3,9 @@ import { ConfigService } from '../../services/config-service.js';
 import Logger from '../../utils/logger.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { PushCommandArguments } from '../../types/commands/push';
-import { pushZipToCloud } from '../../services/push-service.js';
+import { getSignedUrl } from '../../services/push-service.js';
 
-const filePathPrompt = async () => PromptService.promptInput('Please the zip file path on your local machine', true);
+const filePathPrompt = async () => PromptService.promptFile('Please the zip file path on your local machine', ['zip']);
 
 const versionPrompt = async () => PromptService.promptInput('Please enter the version number', true);
 
@@ -49,8 +49,8 @@ export default class Push extends Command {
     };
     Logger.info(`'${JSON.stringify(args)}' args`);
     try {
-      pushZipToCloud(args);
-      Logger.info(`'${accessToken}' output`);
+      const urlToUploadZipFile = await getSignedUrl(args);
+      Logger.info(`'${urlToUploadZipFile}' urlToUploadZipFile`);
     } catch (error) {
       Logger.error((error as Error).message);
     }
