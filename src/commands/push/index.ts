@@ -3,7 +3,7 @@ import { ConfigService } from '../../services/config-service.js';
 import Logger from '../../utils/logger.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { PushCommandArguments } from '../../types/commands/push';
-import { getSignedUrl } from '../../services/push-service.js';
+import { getFileData, getSignedCloudStorageUrl, uploadFileToCloudStorage } from '../../services/push-service.js';
 
 const filePathPrompt = async () => PromptService.promptFile('Please the zip file path on your local machine', ['zip']);
 
@@ -49,8 +49,10 @@ export default class Push extends Command {
     };
     Logger.info(`'${JSON.stringify(args)}' args`);
     try {
-      const urlToUploadZipFile = await getSignedUrl(args);
-      Logger.info(`'${urlToUploadZipFile}' urlToUploadZipFile`);
+      const signedCloudStorageUrl = await getSignedCloudStorageUrl(args);
+      const zipFileContent = await getFileData(args);
+      const data = await uploadFileToCloudStorage(signedCloudStorageUrl, zipFileContent, 'application/zip');
+      Logger.info(`'${JSON.stringify(data)}' urlToUploadZipFile`);
     } catch (error) {
       Logger.error((error as Error).message);
     }
