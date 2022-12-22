@@ -4,19 +4,17 @@ import Logger from '../utils/logger.js';
 import { PushCommandArguments } from '../types/commands/push';
 import { SignedUrl } from '../types/services/push-service';
 import axios from 'axios';
-import fs from 'node:fs';
-import { promisify } from 'node:util';
-export const getFileData = async (config: PushCommandArguments): Promise<Buffer> => {
-  const fsPromise = promisify(fs.readFile);
-  const fileData = await fsPromise(config.file);
+import { readFileSync } from 'node:fs';
+export const getFileData = (config: PushCommandArguments): Buffer => {
+  const fileData = readFileSync(config.file);
   return fileData;
 };
 
-export const getSignedCloudStorageUrl = async (config: PushCommandArguments): Promise<string> => {
+export const getSignedCloudStorageUrl = async (accessToken: string, config: PushCommandArguments): Promise<string> => {
   const signUrlWithVersion = signUrl.replace('{{appVersionId}}', config.version!);
   const url = urlBuilder(signUrlWithVersion);
   const response = await axios.post(url, null, {
-    headers: { Accept: 'application/json', Authorization: config.accessToken },
+    headers: { Accept: 'application/json', Authorization: accessToken },
   });
   const signedUrlResponse = response.data as SignedUrl;
   return signedUrlResponse.signed;
