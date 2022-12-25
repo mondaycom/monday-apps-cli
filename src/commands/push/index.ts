@@ -13,9 +13,10 @@ import {
 } from '../../consts/zip-file-messages.js';
 import {appVersionIdToEnter} from '../../consts/app-version-id-messages.js';
 import {pushCommandDescription} from '../../consts/push-command-messages.js';
-import {readFileData} from '../../services/files-service.js';
+import {getFileExtension, readFileData} from '../../services/files-service.js';
 
-const filePathPrompt = async () => PromptService.promptFile(zipFileLocation, ['zip']);
+const fileExtensions = ['zip']
+const filePathPrompt = async () => PromptService.promptFile(zipFileLocation, fileExtensions);
 
 const versionPrompt = async () => PromptService.promptInputNumber(appVersionIdToEnter, true);
 
@@ -57,6 +58,11 @@ export default class Push extends Command {
     };
     const pushSpinner = createSpinner().start();
     try {
+      if (fileExtensions &&
+          fileExtensions.length > 0 && !fileExtensions.includes(getFileExtension(args.filePath).toLowerCase())) {
+        throw new Error(`The process supports those file extensions: ${fileExtensions.join(',')}`);
+      }
+
       const signedCloudStorageUrl = await getSignedStorageUrl(accessToken, args.appVersionId);
       const zipFileContent = readFileData(args.filePath);
       await uploadFileToStorage(signedCloudStorageUrl, zipFileContent, 'application/zip');
