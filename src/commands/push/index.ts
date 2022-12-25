@@ -16,7 +16,7 @@ const MESSAGES = {
 };
 
 export default class Push extends Command {
-  static description = 'Push a zip file with code to Monday-Code';
+  static description = 'Push your code to get hosted on monday-code';
 
   static examples = ['<%= config.bin %> <%= command.id %> -f ZIP FILE PATH -v VERSION TO PUSH '];
 
