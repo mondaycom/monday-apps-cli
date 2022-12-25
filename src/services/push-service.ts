@@ -21,7 +21,7 @@ export const getSignedStorageUrl = async (accessToken: string, appVersionId: num
   return signedUrlResponse.signed;
 };
 
-export const uploadFileToCloudStorage = async (
+export const uploadFileToStorage = async (
   cloudStorageUrl: string,
   fileData: Buffer,
   fileType: string,
