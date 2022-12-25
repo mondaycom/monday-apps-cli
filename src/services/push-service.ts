@@ -5,18 +5,17 @@ import { PushCommandArguments } from '../types/commands/push';
 import { SignedUrl } from '../types/services/push-service';
 import axios from 'axios';
 import fs from 'node:fs';
-import { promisify } from 'node:util';
-export const getFileData = async (config: PushCommandArguments): Promise<Buffer> => {
-  const fsPromise = promisify(fs.readFile);
-  const fileData = await fsPromise(config.file);
+
+export const getFileData = (config: PushCommandArguments): Buffer => {
+  const fileData = fs.readFileSync(config.file);
   return fileData;
 };
 
-export const getSignedCloudStorageUrl = async (config: PushCommandArguments): Promise<string> => {
-  const signUrlWithVersion = signUrl.replace('{{appVersionId}}', config.version!);
+export const getSignedCloudStorageUrl = async (accessToken: string, appVersionId: number): Promise<string> => {
+  const signUrlWithVersion = signUrl(appVersionId);
   const url = urlBuilder(signUrlWithVersion);
   const response = await axios.post(url, null, {
-    headers: { Accept: 'application/json', Authorization: config.accessToken },
+    headers: { Accept: 'application/json', Authorization: accessToken },
   });
   const signedUrlResponse = response.data as SignedUrl;
   return signedUrlResponse.signed;
@@ -34,6 +33,6 @@ export const uploadFileToCloudStorage = async (
 };
 
 export const pushZipToCloud = (config: PushCommandArguments): void => {
-  const urlToGetSignUrl = signUrl.replace('{{appVersionId}}', config.version!);
+  const urlToGetSignUrl = signUrl(config.appVersionId);
   Logger.log(urlBuilder(urlToGetSignUrl), 'About to push to url');
 };

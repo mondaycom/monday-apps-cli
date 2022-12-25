@@ -2,16 +2,17 @@ import { Command, Flags } from '@oclif/core';
 import { ConfigService } from '../../services/config-service.js';
 import Logger from '../../utils/logger.js';
 import { PromptService } from '../../services/prompt-service.js';
-import { PushCommandArguments } from '../../types/commands/push';
+import { PushCommandArguments } from '../../types/commands/push.js';
 import { getFileData, getSignedCloudStorageUrl, uploadFileToCloudStorage } from '../../services/push-service.js';
+import { createSpinner } from 'nanospinner';
 
-const filePathPrompt = async () => PromptService.promptFile('Please the zip file path on your local machine', ['zip']);
+const filePathPrompt = async () => PromptService.promptFile('Please add the zip file path on your machine', ['zip']);
 
-const versionPrompt = async () => PromptService.promptInput('Please enter the version number', true);
+const versionPrompt = async () => PromptService.promptInputNumber('Please enter the app version id', true);
 
 const MESSAGES = {
   file: 'Zipped file path/location',
-  version: 'The version that you want to push',
+  appVersionId: 'The id of the app version you want to push to',
 };
 
 export default class Push extends Command {
@@ -24,19 +25,18 @@ export default class Push extends Command {
       char: 'f',
       description: MESSAGES.file,
     }),
-    version: Flags.string({
+    appVersionId: Flags.integer({
       char: 'v',
-      description: MESSAGES.version,
+      description: MESSAGES.appVersionId,
     }),
   };
 
   static args = [];
 
   public async run(): Promise<void> {
-    ConfigService.loadConfigToProcessEnv(this.config.configDir);
     const accessToken = ConfigService.getConfigDataByKey('accessToken');
     if (!accessToken) {
-      console.log('Access token is missing, please run: "mcode init"');
+      Logger.error('Access token is missing, please run: "mcode init"');
       return;
     }
 
@@ -44,17 +44,18 @@ export default class Push extends Command {
 
     const args: PushCommandArguments = {
       file: flags.file || (await filePathPrompt()),
-      version: flags.version || (await versionPrompt()),
-      accessToken,
+      appVersionId: flags.appVersionId || Number(await versionPrompt()),
     };
-    Logger.info(`'${JSON.stringify(args)}' args`);
+    const pushSpinner = createSpinner().start();
     try {
-      const signedCloudStorageUrl = await getSignedCloudStorageUrl(args);
-      const zipFileContent = await getFileData(args);
-      const data = await uploadFileToCloudStorage(signedCloudStorageUrl, zipFileContent, 'application/zip');
-      Logger.info(`'${JSON.stringify(data)}' urlToUploadZipFile`);
+      const signedCloudStorageUrl = await getSignedCloudStorageUrl(accessToken, args.appVersionId);
+      const zipFileContent = getFileData(args);
+      await uploadFileToCloudStorage(signedCloudStorageUrl, zipFileContent, 'application/zip');
+      pushSpinner.success({ text: 'Zip file uploaded' });
     } catch (error) {
-      Logger.error((error as Error).message);
+      Logger.debug((error as Error).message);
+    } finally {
+      pushSpinner.clear();
     }
   }
 }

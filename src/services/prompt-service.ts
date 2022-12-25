@@ -13,6 +13,18 @@ function validateIfRequired(input: string, message: string, isRequired = false):
   return true;
 }
 
+function validateIfValueIsANumber(input: number, message: string, isRequired = false): boolean | string {
+  if (isRequired && !input) {
+    return message;
+  }
+
+  if (typeof input !== 'number') {
+    return message;
+  }
+
+  return true
+}
+
 export const PromptService = {
   async promptList(message: string, choices: string[], defaultValue: string) {
     const res = await inquirer.prompt<{ selection: string }>([
@@ -85,6 +97,21 @@ export const PromptService = {
         type: 'input',
         validate(input: string) {
           return validateIfRequired(input, 'You must enter a value', required);
+        },
+      },
+    ]);
+
+    return res.input;
+  },
+
+  async promptInputNumber(message: string, required = false) {
+    const res = await inquirer.prompt<{ input: number }>([
+      {
+        name: 'input',
+        message: message || 'Please enter value',
+        type: 'input',
+        validate(input: number) {
+          return validateIfValueIsANumber(input, 'You must enter a number', required);
         },
       },
     ]);

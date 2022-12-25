@@ -1,7 +1,6 @@
-// import { Conf } from '@oclif/core';
 import { ConfigService } from '../services/config-service.js';
+import { Command } from '@oclif/core';
 
-export default function init(opts: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+export default function init(opts: Command) {
     ConfigService.loadConfigToProcessEnv(opts.config.configDir)
 }
