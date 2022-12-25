@@ -2,6 +2,7 @@ import inquirer from 'inquirer';
 import autocomplete from 'inquirer-autocomplete-prompt';
 import isEmail from 'isemail';
 import fuzzy from 'fuzzy';
+import {checkIfFileExists, getFileExtension} from './files-service.js';
 
 inquirer.registerPrompt('autocomplete', autocomplete);
 
@@ -11,6 +12,18 @@ function validateIfRequired(input: string, message: string, isRequired = false):
   }
 
   return true;
+}
+
+function validateIfValueIsANumber(input: number, message: string, isRequired = false): boolean | string {
+  if (isRequired && !input) {
+    return message;
+  }
+
+  if (typeof input !== 'number') {
+    return message;
+  }
+
+  return true
 }
 
 export const PromptService = {
@@ -90,6 +103,44 @@ export const PromptService = {
     ]);
 
     return res.input;
+  },
+
+  async promptInputNumber(message: string, required = false) {
+    const res = await inquirer.prompt<{ input: number }>([
+      {
+        name: 'input',
+        message: message || 'Please enter value',
+        type: 'input',
+        validate(input: number) {
+          return validateIfValueIsANumber(input, 'You must enter a number', required);
+        },
+      },
+    ]);
+
+    return res.input;
+  },
+
+  async promptFile(message: string, extensions: string[]) {
+    const res = await inquirer.prompt<{ filePath: string }>([
+      {
+        name: 'filePath',
+        message: message || 'Please type full file path',
+        type: 'input',
+        extensions,
+        validate(input: string) {
+          if (!input) return 'You must enter valid file path';
+          if (!checkIfFileExists(input)) return 'You must enter valid file path';
+          if (extensions &&
+          extensions.length > 0 && !extensions.includes(getFileExtension(input).toLowerCase())) {
+              return `The process supports those file extensions: ${extensions.join(',')}`;
+            }
+
+          return true;
+        },
+      },
+    ]);
+
+    return res.filePath;
   },
 
   async promptSelectionWithAutoComplete<T>(message: string, choices: string[]): Promise<T> {

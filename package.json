@@ -20,6 +20,7 @@
   "dependencies": {
     "@oclif/core": "^1.19.1",
     "@oclif/plugin-help": "^5",
+    "axios": "^1.2.1",
     "chalk": "4.1.2",
     "eslint-import-resolver-typescript": "^3.5.2",
     "figlet": "^1.5.2",
@@ -38,6 +39,7 @@
     "@types/node": "^18.11.9",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
+    "dotenv": "^16.0.3",
     "eslint": "^8.28.0",
     "eslint-config-oclif": "^4",
     "eslint-config-oclif-typescript": "^1.0.3",
@@ -58,6 +60,9 @@
     "bin": "mcode",
     "dirname": "mcode",
     "commands": "./dist/commands",
+    "hooks": {
+      "init": "./dist/hooks/init.js"
+    },
     "plugins": [
       "@oclif/plugin-help"
     ]

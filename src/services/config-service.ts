@@ -23,7 +23,6 @@ const camelToUpperSnakeCase = (str: string) => str.replace(/[A-Z]/g, letter => `
 const generateConfigKeyInProcessEnv = (configKey: keyof ConfigData) => {
   const keyInSnakeCase = camelToUpperSnakeCase(configKey);
   const configKeyInProcessEnv = `${CONFIG_PROCESS_ENV_DOMAIN}_${keyInSnakeCase}`;
-
   return configKeyInProcessEnv;
 };
 
@@ -57,10 +56,9 @@ const writeConfig = (data: ConfigData, directoryPath: string, fileName = CONFIG_
 export const ConfigService = {
   checkConfigExists,
 
-  getConfigDataByKey(key: keyof ConfigData) {
+  getConfigDataByKey(key: keyof ConfigData): string {
     const configKeyInProcessEnv = generateConfigKeyInProcessEnv(key);
-
-    return process.env[configKeyInProcessEnv];
+    return process.env[configKeyInProcessEnv] as string;
   },
 
   loadConfigToProcessEnv(directoryPath: string, fileName = CONFIG_NAME) {
