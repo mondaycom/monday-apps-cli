@@ -3,7 +3,7 @@ import { ConfigService } from '../../services/config-service.js';
 import Logger from '../../utils/logger.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { PushCommandArguments } from '../../types/commands/push.js';
-import { getFileData, getSignedCloudStorageUrl, uploadFileToCloudStorage } from '../../services/push-service.js';
+import { getFileData, getSignedStorageUrl, uploadFileToCloudStorage } from '../../services/push-service.js';
 import { createSpinner } from 'nanospinner';
 
 const filePathPrompt = async () => PromptService.promptFile('Please add the zip file path on your machine', ['zip']);
@@ -48,7 +48,7 @@ export default class Push extends Command {
     };
     const pushSpinner = createSpinner().start();
     try {
-      const signedCloudStorageUrl = await getSignedCloudStorageUrl(accessToken, args.appVersionId);
+      const signedCloudStorageUrl = await getSignedStorageUrl(accessToken, args.appVersionId);
       const zipFileContent = getFileData(args);
       await uploadFileToCloudStorage(signedCloudStorageUrl, zipFileContent, 'application/zip');
       pushSpinner.success({ text: 'Zip file uploaded' });

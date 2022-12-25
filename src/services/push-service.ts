@@ -11,7 +11,7 @@ export const getFileData = (config: PushCommandArguments): Buffer => {
   return fileData;
 };
 
-export const getSignedCloudStorageUrl = async (accessToken: string, appVersionId: number): Promise<string> => {
+export const getSignedStorageUrl = async (accessToken: string, appVersionId: number): Promise<string> => {
   const signUrlWithVersion = signUrl(appVersionId);
   const url = urlBuilder(signUrlWithVersion);
   const response = await axios.post(url, null, {
