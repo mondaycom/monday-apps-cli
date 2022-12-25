@@ -2,6 +2,7 @@ import inquirer from 'inquirer';
 import autocomplete from 'inquirer-autocomplete-prompt';
 import isEmail from 'isemail';
 import fuzzy from 'fuzzy';
+import {checkIfFileExists} from './files-service.js';
 
 inquirer.registerPrompt('autocomplete', autocomplete);
 
@@ -128,6 +129,7 @@ export const PromptService = {
         extensions,
         validate(input: string) {
           if (!input) return 'You must enter valid file path';
+          if (!checkIfFileExists(input)) return 'You must enter valid file path';
           return true;
         },
       },

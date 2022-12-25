@@ -1,4 +1,4 @@
 export type PushCommandArguments = {
-  file: string;
+  filePath: string;
   appVersionId: number;
 };

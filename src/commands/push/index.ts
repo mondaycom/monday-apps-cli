@@ -3,25 +3,34 @@ import { ConfigService } from '../../services/config-service.js';
 import Logger from '../../utils/logger.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { PushCommandArguments } from '../../types/commands/push.js';
-import { getFileData, getSignedStorageUrl, uploadFileToStorage } from '../../services/push-service.js';
+import { getSignedStorageUrl, uploadFileToStorage } from '../../services/push-service.js';
 import { createSpinner } from 'nanospinner';
+import {accessTokenNotFound} from '../../consts/access-token-messages.js';
+import {
+  errorOnUploadingZipFile,
+  successfullyUploadingZipFile,
+  zipFileLocation,
+} from '../../consts/zip-file-messages.js';
+import {appVersionIdToEnter} from '../../consts/app-version-id-messages.js';
+import {pushCommandDescription} from '../../consts/push-command-messages.js';
+import {readFileData} from '../../services/files-service.js';
 
-const filePathPrompt = async () => PromptService.promptFile('Please add the zip file path on your machine', ['zip']);
+const filePathPrompt = async () => PromptService.promptFile(zipFileLocation, ['zip']);
 
-const versionPrompt = async () => PromptService.promptInputNumber('Please enter the app version id', true);
+const versionPrompt = async () => PromptService.promptInputNumber(appVersionIdToEnter, true);
 
 const MESSAGES = {
-  file: 'Zipped file path/location',
-  appVersionId: 'The id of the app version you want to push to',
+  file: zipFileLocation,
+  appVersionId: appVersionIdToEnter,
 };
 
 export default class Push extends Command {
-  static description = 'Push your code to get hosted on monday-code';
+  static description = pushCommandDescription;
 
   static examples = ['<%= config.bin %> <%= command.id %> -f ZIP FILE PATH -v VERSION TO PUSH '];
 
   static flags = {
-    file: Flags.string({
+    filePath: Flags.string({
       char: 'f',
       description: MESSAGES.file,
     }),
@@ -36,24 +45,25 @@ export default class Push extends Command {
   public async run(): Promise<void> {
     const accessToken = ConfigService.getConfigDataByKey('accessToken');
     if (!accessToken) {
-      Logger.error('Access token is missing, please run: "mcode init"');
+      Logger.error(accessTokenNotFound);
       return;
     }
 
     const { flags } = await this.parse(Push);
 
     const args: PushCommandArguments = {
-      file: flags.file || (await filePathPrompt()),
+      filePath: flags.filePath || (await filePathPrompt()),
       appVersionId: flags.appVersionId || Number(await versionPrompt()),
     };
     const pushSpinner = createSpinner().start();
     try {
       const signedCloudStorageUrl = await getSignedStorageUrl(accessToken, args.appVersionId);
-      const zipFileContent = getFileData(args);
+      const zipFileContent = readFileData(args.filePath);
       await uploadFileToStorage(signedCloudStorageUrl, zipFileContent, 'application/zip');
-      pushSpinner.success({ text: 'Zip file uploaded' });
+      pushSpinner.success({ text: successfullyUploadingZipFile });
     } catch (error) {
       Logger.debug((error as Error).message);
+      pushSpinner.error({ text: errorOnUploadingZipFile });
     } finally {
       pushSpinner.clear();
     }
