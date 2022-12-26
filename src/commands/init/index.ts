@@ -1,25 +1,29 @@
-import { Command, Flags } from '@oclif/core';
+import { Flags } from '@oclif/core';
 import Logger from '../../utils/logger.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { ConfigService, CONFIG_NAME } from '../../services/config-service.js';
 import { InitCommandArguments } from '../../types/commands/init.js';
+import { BaseCommand } from '../base-command.js';
+import {
+  ACCESS_TOKEN_PROMPT_MESSAGE,
+  ACCESS_TOKEN_PROMPT_VALIDATION_MESSAGE,
+  INIT_COMMAND_DESCRIPTION,
+  INIT_DESCRIPTION,
+} from '../../consts/messages.js';
 
 const accessTokenPrompt = async () =>
-  PromptService.promptForHiddenInput(
-    'token',
-    'Please enter your monday.com api access token',
-    'You must provide an access token',
-  );
+  PromptService.promptForHiddenInput('token', ACCESS_TOKEN_PROMPT_MESSAGE, ACCESS_TOKEN_PROMPT_VALIDATION_MESSAGE);
 
-export default class Init extends Command {
-  static description = `Initialize monday-code config file - '${CONFIG_NAME}'`;
+export default class Init extends BaseCommand {
+  static description = `${INIT_COMMAND_DESCRIPTION}'${CONFIG_NAME}'`;
 
   static examples = ['<%= config.bin %> <%= command.id %> -t SECRET_TOKEN'];
 
   static flags = {
+    ...BaseCommand.globalFlags,
     token: Flags.string({
       char: 't',
-      description: 'monday.com api access token (https://developer.monday.com/api-reference/docs/authentication)',
+      description: INIT_DESCRIPTION,
     }),
   };
 
