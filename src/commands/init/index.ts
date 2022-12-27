@@ -4,18 +4,16 @@ import { PromptService } from '../../services/prompt-service.js';
 import { ConfigService, CONFIG_NAME } from '../../services/config-service.js';
 import { InitCommandArguments } from '../../types/commands/init.js';
 import { BaseCommand } from '../base-command.js';
-import {
-  ACCESS_TOKEN_PROMPT_MESSAGE,
-  ACCESS_TOKEN_PROMPT_VALIDATION_MESSAGE,
-  INIT_COMMAND_DESCRIPTION,
-  INIT_DESCRIPTION,
-} from '../../consts/messages.js';
 
 const accessTokenPrompt = async () =>
-  PromptService.promptForHiddenInput('token', ACCESS_TOKEN_PROMPT_MESSAGE, ACCESS_TOKEN_PROMPT_VALIDATION_MESSAGE);
+  PromptService.promptForHiddenInput(
+    'token',
+    'Please enter your monday.com api access token',
+    'You must provide an access token',
+  );
 
 export default class Init extends BaseCommand {
-  static description = `${INIT_COMMAND_DESCRIPTION}'${CONFIG_NAME}'`;
+  static description = `Initialize monday-code config file - ${CONFIG_NAME}'`;
 
   static examples = ['<%= config.bin %> <%= command.id %> -t SECRET_TOKEN'];
 
@@ -23,7 +21,7 @@ export default class Init extends BaseCommand {
     ...BaseCommand.globalFlags,
     token: Flags.string({
       char: 't',
-      description: INIT_DESCRIPTION,
+      description: 'monday.com api access token (https://developer.monday.com/api-reference/docs/authentication)',
     }),
   };
 

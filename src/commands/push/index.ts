@@ -10,23 +10,15 @@ import {
   uploadFileToStorage,
 } from '../../services/push-service.js';
 import { createSpinner } from 'nanospinner';
-import {
-  ACCESS_TOKEN_NOT_FOUND,
-  APP_VERSION_ID_TO_ENTER,
-  PUSH_COMMAND_DESCRIPTION,
-  SUCCESSFULLY_UPLOADING_ZIP_FILE,
-  ZIP_FILE_LOCATION,
-  PUSH_FILE_TO_UPLOAD_EXTENSIONS_ERROR,
-  SUCCESSFULLY_DEPLOYED,
-  ERROR_ON_DEPLOYMENT_URL_IS_MISSING,
-  ERROR_ON_DEPLOYMENT,
-  UPLOADING_ZIP_FILE,
-  SIGNING_ZIP_FILE_LOCATION,
-} from '../../consts/messages.js';
+import { ACCESS_TOKEN_NOT_FOUND } from '../../consts/messages.js';
 import { getFileExtension, readFileData } from '../../services/files-service.js';
 import logger from '../../utils/logger.js';
 import { BaseCommand } from '../base-command.js';
 import { DEPLOYMENT_STATUS_TYPES } from '../../types/services/push-service.js';
+
+export const ERROR_ON_DEPLOYMENT = 'Deployment process failed.';
+export const ZIP_FILE_LOCATION = 'Please type the zip file path on your machine.';
+export const APP_VERSION_ID_TO_ENTER = 'Please enter the app version id';
 
 const fileExtensions = ['zip'];
 const filePathPrompt = async () => PromptService.promptFile(ZIP_FILE_LOCATION, fileExtensions);
@@ -39,7 +31,7 @@ const MESSAGES = {
 };
 
 export default class Push extends BaseCommand {
-  static description = PUSH_COMMAND_DESCRIPTION;
+  static description = 'Push your code to get hosted on monday-code.';
 
   static examples = ['<%= config.bin %> <%= command.id %> -f ZIP FILE PATH -v VERSION TO PUSH '];
 
@@ -81,15 +73,15 @@ export default class Push extends BaseCommand {
         fileExtensions.length > 0 &&
         !fileExtensions.includes(getFileExtension(args.filePath).toLowerCase())
       ) {
-        throw new Error(`${PUSH_FILE_TO_UPLOAD_EXTENSIONS_ERROR} ${fileExtensions.join(',')}`);
+        throw new Error(`The process supports those file extensions: ${fileExtensions.join(',')}`);
       }
 
-      pushSpinnerLogDeploymentStatus(SIGNING_ZIP_FILE_LOCATION);
+      pushSpinnerLogDeploymentStatus('Building zip file remote location.');
       const signedCloudStorageUrl = await getSignedStorageUrl(accessToken, args.appVersionId);
       const zipFileContent = readFileData(args.filePath);
-      pushSpinnerLogDeploymentStatus(UPLOADING_ZIP_FILE);
+      pushSpinnerLogDeploymentStatus('Uploading zip file.');
       await uploadFileToStorage(signedCloudStorageUrl, zipFileContent, 'application/zip');
-      pushSpinnerLogDeploymentStatus(SUCCESSFULLY_UPLOADING_ZIP_FILE);
+      pushSpinnerLogDeploymentStatus('Zip file uploaded successful, starting the deployment.');
       const appVersionDeploymentJob = await createAppVersionDeploymentJob(accessToken, args.appVersionId);
       const appVersionStatus = await getAppVersionStatus(
         accessToken,
@@ -100,10 +92,10 @@ export default class Push extends BaseCommand {
       if (appVersionStatus.status === DEPLOYMENT_STATUS_TYPES.failed) {
         pushSpinner.error({ text: appVersionStatus.error?.message || ERROR_ON_DEPLOYMENT });
       } else if (appVersionStatus.deployment) {
-        const deploymentUrl = `${SUCCESSFULLY_DEPLOYED}${appVersionStatus.deployment.url}`;
+        const deploymentUrl = `Deployment successfully finished, deployment url: ${appVersionStatus.deployment.url}`;
         pushSpinner.success({ text: deploymentUrl });
       } else {
-        pushSpinner.error({ text: ERROR_ON_DEPLOYMENT_URL_IS_MISSING });
+        pushSpinner.error({ text: 'Something went wrong, the deployment url is missing.' });
       }
     } catch (error: any) {
       logger.debug(error);

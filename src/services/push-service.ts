@@ -16,12 +16,6 @@ import {
   HTTP_METHOD_TYPES,
 } from '../types/services/monday-code-service.js';
 import logger from '../utils/logger.js';
-import {
-  ERROR_ON_UPLOADING_ZIP_FILE,
-  FAILED_SIGNED_URL,
-  FAILED_START_VERSION_DEPLOYMENT,
-  FAILED_TO_CHECK_APP_VERSION_DEPLOYMENT_STATUS,
-} from '../consts/messages.js';
 import { pollPromise } from './polling-service.js';
 import { ErrorMondayCode } from '../types/errors/index.js';
 
@@ -39,7 +33,7 @@ export const getSignedStorageUrl = async (accessToken: string, appVersionId: num
     );
     return response.signed;
   } catch (error_: any | ErrorMondayCode) {
-    const error = error_ instanceof ErrorMondayCode ? error_ : new Error(FAILED_SIGNED_URL);
+    const error = error_ instanceof ErrorMondayCode ? error_ : new Error('Failed to build remote location for upload.');
     throw error;
   }
 };
@@ -65,7 +59,8 @@ export const createAppVersionDeploymentJob = async (
     };
     return appVersionDeploymentMetaData;
   } catch (error_: any | ErrorMondayCode) {
-    const error = error_ instanceof ErrorMondayCode ? error_ : new Error(FAILED_START_VERSION_DEPLOYMENT);
+    const error =
+      error_ instanceof ErrorMondayCode ? error_ : new Error('Failed to start app version deployment process.');
     throw error;
   }
 };
@@ -91,7 +86,7 @@ export const getAppVersionStatus = async (
       return response;
     } catch (error_: any | ErrorMondayCode) {
       const error =
-        error_ instanceof ErrorMondayCode ? error_ : new Error(FAILED_TO_CHECK_APP_VERSION_DEPLOYMENT_STATUS);
+        error_ instanceof ErrorMondayCode ? error_ : new Error('Failed to check app version deployment status.');
       throw error;
     }
   };
@@ -129,6 +124,6 @@ export const uploadFileToStorage = async (
     return response;
   } catch (error: any) {
     logger.debug(error);
-    throw new Error(ERROR_ON_UPLOADING_ZIP_FILE);
+    throw new Error("We couldn't upload the Zip file.");
   }
 };

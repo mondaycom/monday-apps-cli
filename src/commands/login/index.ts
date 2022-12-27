@@ -4,7 +4,12 @@ import { LoginCommandArguments } from '../../types/commands/login.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { MondayApiService } from '../../services/monday-api-service.js';
 import { BaseCommand } from '../base-command.js';
-import { LOGIN_COMMAND_DESCRIPTION, LOGIN_MESSAGES } from '../../consts/messages.js';
+
+export const LOGIN_MESSAGES = {
+  method: 'Login method to monday.com',
+  email: 'Your monday.com email',
+  password: 'Your monday.com password',
+};
 
 const extractMethod = async (flags: { method: LOGIN_TYPES | undefined }): Promise<LOGIN_TYPES> => {
   const method =
@@ -18,7 +23,7 @@ const extractMethod = async (flags: { method: LOGIN_TYPES | undefined }): Promis
 };
 
 export default class Login extends BaseCommand {
-  static description = LOGIN_COMMAND_DESCRIPTION;
+  static description = 'Login to monday.com to make full use of `mcode`';
 
   static examples = ['<%= config.bin %> <%= command.id %> -m credentials -e exa@ple.com'];
 
