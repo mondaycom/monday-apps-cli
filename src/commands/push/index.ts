@@ -3,7 +3,12 @@ import { ConfigService } from '../../services/config-service.js';
 import Logger from '../../utils/logger.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { PushCommandArguments } from '../../types/commands/push.js';
-import { getSignedStorageUrl, uploadFileToStorage } from '../../services/push-service.js';
+import {
+  createAppVersionDeploymentJob,
+  getAppVersionStatus,
+  getSignedStorageUrl,
+  uploadFileToStorage,
+} from '../../services/push-service.js';
 import { createSpinner } from 'nanospinner';
 import {
   ACCESS_TOKEN_NOT_FOUND,
@@ -61,6 +66,10 @@ export default class Push extends BaseCommand {
       appVersionId: flags.appVersionId || Number(await versionPrompt()),
     };
     const pushSpinner = createSpinner().start();
+    const pushSpinnerLogDeploymentStatus = (message: string) => {
+      pushSpinner.update({ text: message });
+    };
+
     try {
       if (
         fileExtensions &&
@@ -70,9 +79,19 @@ export default class Push extends BaseCommand {
         throw new Error(`${PUSH_FILE_TO_UPLOAD_EXTENSIONS_ERROR} ${fileExtensions.join(',')}`);
       }
 
+      pushSpinnerLogDeploymentStatus('Creating token to upload Zip file.');
       const signedCloudStorageUrl = await getSignedStorageUrl(accessToken, args.appVersionId);
       const zipFileContent = readFileData(args.filePath);
+      pushSpinnerLogDeploymentStatus('Uploading Zip file.');
       await uploadFileToStorage(signedCloudStorageUrl, zipFileContent, 'application/zip');
+      pushSpinnerLogDeploymentStatus('Starting deployment process.');
+      const appVersionDeploymentJob = await createAppVersionDeploymentJob(accessToken, args.appVersionId);
+      await getAppVersionStatus(
+        accessToken,
+        args.appVersionId,
+        appVersionDeploymentJob.retryAfter!,
+        pushSpinnerLogDeploymentStatus,
+      );
       pushSpinner.success({ text: SUCCESSFULLY_UPLOADING_ZIP_FILE });
     } catch (error: any) {
       logger.debug(error);

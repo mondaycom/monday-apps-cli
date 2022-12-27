@@ -1,11 +1,11 @@
-export const versionStatus = (appVersionId: number): string => {
-    return `/deployments/${appVersionId}`;
-}
+export const versionIdUrl = (appVersionId: number): string => {
+  return `/deployments/${appVersionId}`;
+};
 
-export const startDeployment = (): string => {
-    return '/deployments';
-}
+export const getVersionStatusUrl = (appVersionId: number): string => {
+  return `${versionIdUrl(appVersionId)}/status`;
+};
 
 export const signUrl = (appVersionId: number): string => {
-    return `/deployments/${appVersionId}/signed-url`;
-}
+  return `${versionIdUrl(appVersionId)}/signed-url`;
+};
