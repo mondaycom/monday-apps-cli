@@ -10,9 +10,13 @@ import { geMondayCodeDomain } from './env-service.js';
 import { ACCESS_TOKEN_NOT_FOUND } from '../consts/messages.js';
 import { ErrorMondayCode } from '../types/errors/index.js';
 import logger from '../utils/logger.js';
+import { ZodObject } from 'zod/lib/types';
 const DEFAULT_TIMEOUT = 10 * 1000;
 
-export async function execute<T extends BASE_RESPONSE_HTTP_META_DATA>(params: EXECUTE_PARAMS): Promise<T> {
+export async function execute<T extends BASE_RESPONSE_HTTP_META_DATA>(
+  params: EXECUTE_PARAMS,
+  schemaValidator?: ZodObject<any>,
+): Promise<T> {
   const accessToken = ConfigService.getConfigDataByKey('accessToken');
   if (!accessToken) {
     Logger.error(ACCESS_TOKEN_NOT_FOUND);
@@ -32,7 +36,8 @@ export async function execute<T extends BASE_RESPONSE_HTTP_META_DATA>(params: EX
       params: query,
       timeout: timeout || DEFAULT_TIMEOUT,
     });
-    return { ...response.data, statusCode: 200, headers: response.headers };
+    const result = { ...response.data, statusCode: 200, headers: response.headers };
+    return (schemaValidator && (schemaValidator.parse(result) as T)) || result;
   } catch (error: any | Error | AxiosError) {
     logger.debug(error);
     const defaultErrorMessage = `Couldn't connect to the remote server "${baseURL}"`;

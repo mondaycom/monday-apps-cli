@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export type EXECUTE_PARAMS = {
   body?: object;
   query?: object;
@@ -14,11 +16,14 @@ export enum HTTP_METHOD_TYPES {
   PUT = 'put',
 }
 
-export type BASE_RESPONSE_HTTP_META_DATA = {
-  statusCode: number;
-  headers: Record<string, string>;
-};
-export type BASE_ERROR_RESPONSE = {
-  title?: string;
-  message?: string;
-};
+export const BASE_RESPONSE_HTTP_META_DATA_SCHEMA = z.object({
+  statusCode: z.number(),
+  headers: z.record(z.string(), z.string()),
+});
+export type BASE_RESPONSE_HTTP_META_DATA = z.infer<typeof BASE_RESPONSE_HTTP_META_DATA_SCHEMA>;
+
+export const BASE_ERROR_RESPONSE_SCHEMA = z.object({
+  title: z.string().optional(),
+  message: z.string().optional(),
+});
+export type BASE_ERROR_RESPONSE = z.infer<typeof BASE_ERROR_RESPONSE_SCHEMA>;

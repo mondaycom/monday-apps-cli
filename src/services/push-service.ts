@@ -3,12 +3,18 @@ import urlBuilder from '../utils/urls-builder.js';
 import {
   APP_VERSION_DEPLOYMENT_META_DATA,
   APP_VERSION_DEPLOYMENT_STATUS,
+  APP_VERSION_DEPLOYMENT_STATUS_SCHEMA,
   DEPLOYMENT_STATUS_TYPES,
   SIGNED_URL,
+  SIGNED_URL_SCHEMA,
 } from '../types/services/push-service.js';
 import axios from 'axios';
 import { execute } from './monday-code-service.js';
-import { BASE_RESPONSE_HTTP_META_DATA, HTTP_METHOD_TYPES } from '../types/services/monday-code-service.js';
+import {
+  BASE_RESPONSE_HTTP_META_DATA,
+  BASE_RESPONSE_HTTP_META_DATA_SCHEMA,
+  HTTP_METHOD_TYPES,
+} from '../types/services/monday-code-service.js';
 import logger from '../utils/logger.js';
 import {
   ERROR_ON_UPLOADING_ZIP_FILE,
@@ -23,12 +29,15 @@ export const getSignedStorageUrl = async (accessToken: string, appVersionId: num
   try {
     const baseSignUrl = signUrl(appVersionId);
     const url = urlBuilder(baseSignUrl);
-    const response = await execute<SIGNED_URL>({
-      url,
-      headers: { Accept: 'application/json' },
-      method: HTTP_METHOD_TYPES.POST,
-    });
-    return response.signed!;
+    const response = await execute<SIGNED_URL>(
+      {
+        url,
+        headers: { Accept: 'application/json' },
+        method: HTTP_METHOD_TYPES.POST,
+      },
+      SIGNED_URL_SCHEMA,
+    );
+    return response.signed;
   } catch (error_: any | ErrorMondayCode) {
     const error = error_ instanceof ErrorMondayCode ? error_ : new Error(FAILED_SIGNED_URL);
     throw error;
@@ -42,11 +51,14 @@ export const createAppVersionDeploymentJob = async (
   try {
     const baseVersionIdUrl = versionIdUrl(appVersionId);
     const url = urlBuilder(baseVersionIdUrl);
-    const response = await execute<BASE_RESPONSE_HTTP_META_DATA>({
-      url,
-      headers: { Accept: 'application/json' },
-      method: HTTP_METHOD_TYPES.PUT,
-    });
+    const response = await execute<BASE_RESPONSE_HTTP_META_DATA>(
+      {
+        url,
+        headers: { Accept: 'application/json' },
+        method: HTTP_METHOD_TYPES.PUT,
+      },
+      BASE_RESPONSE_HTTP_META_DATA_SCHEMA,
+    );
     const appVersionDeploymentMetaData: APP_VERSION_DEPLOYMENT_META_DATA = {
       location: response.headers?.location,
       retryAfter: response.headers?.['retry-after'] ? Number(response.headers?.['retry-after']) : undefined,
@@ -68,11 +80,14 @@ export const getAppVersionStatus = async (
     try {
       const baseVersionIdStatusUrl = getVersionStatusUrl(appVersionId);
       const url = urlBuilder(baseVersionIdStatusUrl);
-      const response = await execute<APP_VERSION_DEPLOYMENT_STATUS>({
-        url,
-        headers: { Accept: 'application/json' },
-        method: HTTP_METHOD_TYPES.GET,
-      });
+      const response = await execute<APP_VERSION_DEPLOYMENT_STATUS>(
+        {
+          url,
+          headers: { Accept: 'application/json' },
+          method: HTTP_METHOD_TYPES.GET,
+        },
+        APP_VERSION_DEPLOYMENT_STATUS_SCHEMA,
+      );
       return response;
     } catch (error_: any | ErrorMondayCode) {
       const error =
