@@ -5,11 +5,9 @@ export const APP_VERSION_ID_TO_ENTER = 'Please enter the app version id';
 export const PUSH_COMMAND_DESCRIPTION = 'Push your code to get hosted on monday-code.';
 export const PUSH_FILE_TO_UPLOAD_EXTENSIONS_ERROR = 'The process supports those file extensions:';
 
-export const ERROR_ON_UPLOADING_ZIP_FILE = "We couldn't upload the Zip file.";
-export const SUCCESSFULLY_UPLOADING_ZIP_FILE = 'Zip file uploaded.';
+export const SUCCESSFULLY_UPLOADING_ZIP_FILE = 'Zip file uploaded successful, starting the deployment.';
 export const ZIP_FILE_LOCATION = 'Please type the zip file path on your machine.';
-
-export const errorOnUploadingFile = 'An error occurred while uploading a file to the remote server.';
+export const ERROR_ON_UPLOADING_ZIP_FILE = "We couldn't upload the Zip file.";
 
 export const ERROR_ON_UPLOADING_FILE = 'Print advanced logs (optional).';
 
@@ -27,3 +25,11 @@ export const LOGIN_MESSAGES = {
   email: 'Your monday.com email',
   password: 'Your monday.com password',
 };
+
+export const SUCCESSFULLY_DEPLOYED = 'Deployment successfully finished, deployment url:';
+
+export const ERROR_ON_DEPLOYMENT_URL_IS_MISSING = 'Something went wrong, the deployment url is missing.';
+export const ERROR_ON_DEPLOYMENT = 'Deployment process failed.';
+
+export const UPLOADING_ZIP_FILE = 'Uploading zip file.';
+export const SIGNING_ZIP_FILE_LOCATION = 'Building zip file remote location.';

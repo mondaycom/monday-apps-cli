@@ -19,4 +19,7 @@ export type APP_VERSION_DEPLOYMENT_STATUS = {
   deployment?: {
     url: string;
   };
+  error?: {
+    message: string;
+  };
 } & BASE_RESPONSE_HTTP_META_DATA;

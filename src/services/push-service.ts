@@ -10,7 +10,7 @@ import axios from 'axios';
 import { execute } from './monday-code-service.js';
 import { BASE_RESPONSE_HTTP_META_DATA, HTTP_METHOD_TYPES } from '../types/services/monday-code-service.js';
 import logger from '../utils/logger.js';
-import { errorOnUploadingFile } from '../consts/messages.js';
+import { ERROR_ON_UPLOADING_ZIP_FILE } from '../consts/messages.js';
 import { pollPromise } from './polling-service.js';
 
 export const getSignedStorageUrl = async (accessToken: string, appVersionId: number): Promise<string> => {
@@ -92,6 +92,6 @@ export const uploadFileToStorage = async (
     return response;
   } catch (error: any) {
     logger.debug(error);
-    throw new Error(errorOnUploadingFile as string);
+    throw new Error(ERROR_ON_UPLOADING_ZIP_FILE as string);
   }
 };
