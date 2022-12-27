@@ -17,7 +17,7 @@ import {
   FAILED_TO_CHECK_APP_VERSION_DEPLOYMENT_STATUS,
 } from '../consts/messages.js';
 import { pollPromise } from './polling-service.js';
-import { ErrorMondayCode } from '../types/errors';
+import { ErrorMondayCode } from '../types/errors/index.js';
 
 export const getSignedStorageUrl = async (accessToken: string, appVersionId: number): Promise<string> => {
   try {
