@@ -33,3 +33,6 @@ export const ERROR_ON_DEPLOYMENT = 'Deployment process failed.';
 
 export const UPLOADING_ZIP_FILE = 'Uploading zip file.';
 export const SIGNING_ZIP_FILE_LOCATION = 'Building zip file remote location.';
+export const FAILED_START_VERSION_DEPLOYMENT = 'Failed to start app version deployment process.';
+export const FAILED_SIGNED_URL = 'Failed to build remote location for upload.';
+export const FAILED_TO_CHECK_APP_VERSION_DEPLOYMENT_STATUS = 'Failed to check app version deployment status.';

@@ -10,36 +10,52 @@ import axios from 'axios';
 import { execute } from './monday-code-service.js';
 import { BASE_RESPONSE_HTTP_META_DATA, HTTP_METHOD_TYPES } from '../types/services/monday-code-service.js';
 import logger from '../utils/logger.js';
-import { ERROR_ON_UPLOADING_ZIP_FILE } from '../consts/messages.js';
+import {
+  ERROR_ON_UPLOADING_ZIP_FILE,
+  FAILED_SIGNED_URL,
+  FAILED_START_VERSION_DEPLOYMENT,
+  FAILED_TO_CHECK_APP_VERSION_DEPLOYMENT_STATUS,
+} from '../consts/messages.js';
 import { pollPromise } from './polling-service.js';
+import { ErrorMondayCode } from '../types/errors';
 
 export const getSignedStorageUrl = async (accessToken: string, appVersionId: number): Promise<string> => {
-  const baseSignUrl = signUrl(appVersionId);
-  const url = urlBuilder(baseSignUrl);
-  const response = await execute<SIGNED_URL>({
-    url,
-    headers: { Accept: 'application/json' },
-    method: HTTP_METHOD_TYPES.POST,
-  });
-  return response.signed!;
+  try {
+    const baseSignUrl = signUrl(appVersionId);
+    const url = urlBuilder(baseSignUrl);
+    const response = await execute<SIGNED_URL>({
+      url,
+      headers: { Accept: 'application/json' },
+      method: HTTP_METHOD_TYPES.POST,
+    });
+    return response.signed!;
+  } catch (error_: any | ErrorMondayCode) {
+    const error = error_ instanceof ErrorMondayCode ? error_ : new Error(FAILED_SIGNED_URL);
+    throw error;
+  }
 };
 
 export const createAppVersionDeploymentJob = async (
   accessToken: string,
   appVersionId: number,
 ): Promise<APP_VERSION_DEPLOYMENT_META_DATA> => {
-  const baseVersionIdUrl = versionIdUrl(appVersionId);
-  const url = urlBuilder(baseVersionIdUrl);
-  const response = await execute<BASE_RESPONSE_HTTP_META_DATA>({
-    url,
-    headers: { Accept: 'application/json' },
-    method: HTTP_METHOD_TYPES.PUT,
-  });
-  const appVersionDeploymentMetaData: APP_VERSION_DEPLOYMENT_META_DATA = {
-    location: response.headers?.location,
-    retryAfter: response.headers?.['retry-after'] ? Number(response.headers?.['retry-after']) : undefined,
-  };
-  return appVersionDeploymentMetaData;
+  try {
+    const baseVersionIdUrl = versionIdUrl(appVersionId);
+    const url = urlBuilder(baseVersionIdUrl);
+    const response = await execute<BASE_RESPONSE_HTTP_META_DATA>({
+      url,
+      headers: { Accept: 'application/json' },
+      method: HTTP_METHOD_TYPES.PUT,
+    });
+    const appVersionDeploymentMetaData: APP_VERSION_DEPLOYMENT_META_DATA = {
+      location: response.headers?.location,
+      retryAfter: response.headers?.['retry-after'] ? Number(response.headers?.['retry-after']) : undefined,
+    };
+    return appVersionDeploymentMetaData;
+  } catch (error_: any | ErrorMondayCode) {
+    const error = error_ instanceof ErrorMondayCode ? error_ : new Error(FAILED_START_VERSION_DEPLOYMENT);
+    throw error;
+  }
 };
 
 export const getAppVersionStatus = async (
@@ -49,14 +65,20 @@ export const getAppVersionStatus = async (
   progressLogger?: (message: string) => void,
 ): Promise<APP_VERSION_DEPLOYMENT_STATUS> => {
   const getAppVersionStatusInternal = async () => {
-    const baseVersionIdStatusUrl = getVersionStatusUrl(appVersionId);
-    const url = urlBuilder(baseVersionIdStatusUrl);
-    const response = await execute<APP_VERSION_DEPLOYMENT_STATUS>({
-      url,
-      headers: { Accept: 'application/json' },
-      method: HTTP_METHOD_TYPES.GET,
-    });
-    return response;
+    try {
+      const baseVersionIdStatusUrl = getVersionStatusUrl(appVersionId);
+      const url = urlBuilder(baseVersionIdStatusUrl);
+      const response = await execute<APP_VERSION_DEPLOYMENT_STATUS>({
+        url,
+        headers: { Accept: 'application/json' },
+        method: HTTP_METHOD_TYPES.GET,
+      });
+      return response;
+    } catch (error_: any | ErrorMondayCode) {
+      const error =
+        error_ instanceof ErrorMondayCode ? error_ : new Error(FAILED_TO_CHECK_APP_VERSION_DEPLOYMENT_STATUS);
+      throw error;
+    }
   };
 
   await pollPromise(
@@ -92,6 +114,6 @@ export const uploadFileToStorage = async (
     return response;
   } catch (error: any) {
     logger.debug(error);
-    throw new Error(ERROR_ON_UPLOADING_ZIP_FILE as string);
+    throw new Error(ERROR_ON_UPLOADING_ZIP_FILE);
   }
 };
