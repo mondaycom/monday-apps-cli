@@ -3,12 +3,12 @@ import urlBuilder from '../utils/urls-builder.js';
 import {
   AppVersionDeploymentMetaData,
   AppVersionDeploymentStatus,
-  DEPLOYMENT_STATUS_TYPE_SCHEMA,
+  DeploymentStatusTypesSchema,
   SignedUrl,
 } from '../types/services/push-service.js';
 import axios from 'axios';
 import { execute } from './monday-code-service.js';
-import { BaseResponseHttpMetaData, HTTP_METHOD_TYPES } from '../types/services/monday-code-service.js';
+import { BaseResponseHttpMetaData, HttpMethodTypes } from '../types/services/monday-code-service.js';
 import logger from '../utils/logger.js';
 import { pollPromise } from './polling-service.js';
 import { ErrorMondayCode } from '../types/errors/index.js';
@@ -23,7 +23,7 @@ export const getSignedStorageUrl = async (accessToken: string, appVersionId: num
       {
         url,
         headers: { Accept: 'application/json' },
-        method: HTTP_METHOD_TYPES.POST,
+        method: HttpMethodTypes.POST,
       },
       signedUrlSchema,
     );
@@ -48,7 +48,7 @@ export const createAppVersionDeploymentJob = async (
       {
         url,
         headers: { Accept: 'application/json' },
-        method: HTTP_METHOD_TYPES.PUT,
+        method: HttpMethodTypes.PUT,
       },
       baseResponseHttpMetaDataSchema,
     );
@@ -78,7 +78,7 @@ export const getAppVersionStatus = async (
         {
           url,
           headers: { Accept: 'application/json' },
-          method: HTTP_METHOD_TYPES.GET,
+          method: HttpMethodTypes.GET,
         },
         appVersionDeploymentStatusSchema,
       );
@@ -93,8 +93,8 @@ export const getAppVersionStatus = async (
   await pollPromise(
     async (): Promise<boolean> => {
       const statusesToKeepPolling: string[] = [
-        DEPLOYMENT_STATUS_TYPE_SCHEMA.started,
-        DEPLOYMENT_STATUS_TYPE_SCHEMA.pending,
+        DeploymentStatusTypesSchema.started,
+        DeploymentStatusTypesSchema.pending,
       ];
       const response = await getAppVersionStatusInternal();
       if (statusesToKeepPolling.includes(response.status)) {

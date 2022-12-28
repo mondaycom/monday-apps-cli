@@ -8,12 +8,12 @@ export type ExecuteParams = {
   body?: object;
   query?: object;
   url: string;
-  method: HTTP_METHOD_TYPES;
+  method: HttpMethodTypes;
   headers?: Record<string, string>;
   timeout?: number;
 };
 
-export enum HTTP_METHOD_TYPES {
+export enum HttpMethodTypes {
   POST = 'post',
   GET = 'get',
   DELETE = 'delete',

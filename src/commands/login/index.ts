@@ -1,5 +1,5 @@
 import { Flags } from '@oclif/core';
-import { LOGIN_TYPES } from '../../types/shared/login.js';
+import { LoginTypes } from '../../types/shared/login.js';
 import { LoginCommandArguments } from '../../types/commands/login.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { MondayApiService } from '../../services/monday-api-service.js';
@@ -11,13 +11,10 @@ const LOGIN_MESSAGES = {
   password: 'Your monday.com password',
 };
 
-const extractMethod = async (flags: { method: LOGIN_TYPES | undefined }): Promise<LOGIN_TYPES> => {
+const extractMethod = async (flags: { method: LoginTypes | undefined }): Promise<LoginTypes> => {
   const method =
     flags.method ||
-    (await PromptService.promptSelectionWithAutoComplete<LOGIN_TYPES>(
-      LOGIN_MESSAGES.method,
-      Object.values(LOGIN_TYPES),
-    ));
+    (await PromptService.promptSelectionWithAutoComplete<LoginTypes>(LOGIN_MESSAGES.method, Object.values(LoginTypes)));
 
   return method;
 };
@@ -29,10 +26,10 @@ export default class Login extends BaseCommand {
 
   static flags = {
     ...BaseCommand.globalFlags,
-    method: Flags.enum<LOGIN_TYPES>({
+    method: Flags.enum<LoginTypes>({
       char: 'm',
       description: LOGIN_MESSAGES.method,
-      options: Object.values(LOGIN_TYPES),
+      options: Object.values(LoginTypes),
     }),
     email: Flags.string({
       char: 'e',
@@ -49,7 +46,7 @@ export default class Login extends BaseCommand {
       method: await extractMethod(flags),
     };
 
-    if (args.method === LOGIN_TYPES.credentials) {
+    if (args.method === LoginTypes.credentials) {
       args.email = flags.email || (await PromptService.promptForEmail());
       args.password = await PromptService.promptForPassword();
     }
