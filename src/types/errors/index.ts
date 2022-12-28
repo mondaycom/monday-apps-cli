@@ -1,3 +1,5 @@
+import { StatusCodes } from 'http-status-codes';
+
 export type ErrorParamsValues = string | number | Date | null | undefined;
 export type ErrorParams = Record<string, ErrorParamsValues>;
 export class ErrorMondayCode extends Error {
@@ -10,19 +12,19 @@ export class ErrorMondayCode extends Error {
     this.code = code;
     this.name = 'ErrorSignedUrl';
     switch (code) {
-      case 400: {
+      case StatusCodes.BAD_REQUEST: {
         this.description =
           'The request could not be understood by the server due to malformed syntax or missing request header.';
         break;
       }
 
-      case 401: {
+      case StatusCodes.UNAUTHORIZED: {
         this.description =
           'The request has not been applied because it lacks valid authentication credentials for the target resource.';
         break;
       }
 
-      case 500: {
+      case StatusCodes.INTERNAL_SERVER_ERROR: {
         this.description = 'An unexpected error occurred on the server.';
         break;
       }
