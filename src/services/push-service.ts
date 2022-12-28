@@ -123,6 +123,6 @@ export const uploadFileToStorage = async (
     return response;
   } catch (error: any) {
     logger.debug(error);
-    throw new Error("We couldn't upload the Zip file.");
+    throw new Error('Failed in uploading the zip file.');
   }
 };
