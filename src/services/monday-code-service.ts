@@ -19,8 +19,8 @@ export async function execute<T extends baseResponseHttpMetaData>(
     throw new Error(ACCESS_TOKEN_NOT_FOUND);
   }
 
-  const { body: data, query, url, method, timeout } = params;
-  const headers = { Accept: 'application/json', Authorization: accessToken };
+  const { body: data, query, url, method, timeout, headers } = params;
+  const headersWithToken = { ...headers, Authorization: accessToken };
   const baseURL = geMondayCodeDomain();
   try {
     const response = await axios.request<T>({
@@ -28,7 +28,7 @@ export async function execute<T extends baseResponseHttpMetaData>(
       baseURL,
       url,
       data,
-      headers,
+      headers: headersWithToken,
       params: query,
       timeout: timeout || DEFAULT_TIMEOUT,
     });

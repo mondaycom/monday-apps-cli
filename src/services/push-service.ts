@@ -1,4 +1,4 @@
-import { getVersionStatusUrl, signUrl, versionIdUrl } from '../consts/urls.js';
+import { getVersionStatusDeploymentUrl, deploymentSignUrl, versionIdDeploymentUrl } from '../consts/urls.js';
 import urlBuilder from '../utils/urls-builder.js';
 import {
   appVersionDeploymentMetaData,
@@ -17,7 +17,7 @@ import { baseResponseHttpMetaDataSchema } from './schemas/monday-code-service-sc
 
 export const getSignedStorageUrl = async (accessToken: string, appVersionId: number): Promise<string> => {
   try {
-    const baseSignUrl = signUrl(appVersionId);
+    const baseSignUrl = deploymentSignUrl(appVersionId);
     const url = urlBuilder(baseSignUrl);
     const response = await execute<signedUrl>(
       {
@@ -42,7 +42,7 @@ export const createAppVersionDeploymentJob = async (
   appVersionId: number,
 ): Promise<appVersionDeploymentMetaData> => {
   try {
-    const baseVersionIdUrl = versionIdUrl(appVersionId);
+    const baseVersionIdUrl = versionIdDeploymentUrl(appVersionId);
     const url = urlBuilder(baseVersionIdUrl);
     const response = await execute<baseResponseHttpMetaData>(
       {
@@ -72,7 +72,7 @@ export const getAppVersionStatus = async (
 ): Promise<appVersionDeploymentStatus> => {
   const getAppVersionStatusInternal = async () => {
     try {
-      const baseVersionIdStatusUrl = getVersionStatusUrl(appVersionId);
+      const baseVersionIdStatusUrl = getVersionStatusDeploymentUrl(appVersionId);
       const url = urlBuilder(baseVersionIdStatusUrl);
       const response = await execute<appVersionDeploymentStatus>(
         {

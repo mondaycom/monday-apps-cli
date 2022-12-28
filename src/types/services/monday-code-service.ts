@@ -9,7 +9,7 @@ export type EXECUTE_PARAMS = {
   query?: object;
   url: string;
   method: HTTP_METHOD_TYPES;
-  headers?: object;
+  headers?: Record<string, string>;
   timeout?: number;
 };
 
