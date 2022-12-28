@@ -12,4 +12,4 @@ export type AppVersionDeploymentMetaData = z.infer<typeof appVersionDeploymentMe
 
 export type AppVersionDeploymentStatus = z.infer<typeof appVersionDeploymentStatusSchema>;
 
-export const deploymentStatusTypes = deploymentStatusTypesSchema.enum;
+export const DEPLOYMENT_STATUS_TYPE_SCHEMA = deploymentStatusTypesSchema.enum;

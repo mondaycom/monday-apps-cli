@@ -3,7 +3,7 @@ import urlBuilder from '../utils/urls-builder.js';
 import {
   AppVersionDeploymentMetaData,
   AppVersionDeploymentStatus,
-  deploymentStatusTypes,
+  DEPLOYMENT_STATUS_TYPE_SCHEMA,
   SignedUrl,
 } from '../types/services/push-service.js';
 import axios from 'axios';
@@ -92,7 +92,10 @@ export const getAppVersionStatus = async (
 
   await pollPromise(
     async (): Promise<boolean> => {
-      const statusesToKeepPolling: string[] = [deploymentStatusTypes.started, deploymentStatusTypes.pending];
+      const statusesToKeepPolling: string[] = [
+        DEPLOYMENT_STATUS_TYPE_SCHEMA.started,
+        DEPLOYMENT_STATUS_TYPE_SCHEMA.pending,
+      ];
       const response = await getAppVersionStatusInternal();
       if (statusesToKeepPolling.includes(response.status)) {
         if (progressLogger) {
