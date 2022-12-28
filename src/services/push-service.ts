@@ -1,14 +1,14 @@
 import { getVersionStatusDeploymentUrl, deploymentSignUrl, versionIdDeploymentUrl } from '../consts/urls.js';
 import urlBuilder from '../utils/urls-builder.js';
 import {
-  appVersionDeploymentMetaData,
-  appVersionDeploymentStatus,
+  AppVersionDeploymentMetaData,
+  AppVersionDeploymentStatus,
   deploymentStatusTypes,
-  signedUrl,
+  SignedUrl,
 } from '../types/services/push-service.js';
 import axios from 'axios';
 import { execute } from './monday-code-service.js';
-import { baseResponseHttpMetaData, HTTP_METHOD_TYPES } from '../types/services/monday-code-service.js';
+import { BaseResponseHttpMetaData, HTTP_METHOD_TYPES } from '../types/services/monday-code-service.js';
 import logger from '../utils/logger.js';
 import { pollPromise } from './polling-service.js';
 import { ErrorMondayCode } from '../types/errors/index.js';
@@ -19,7 +19,7 @@ export const getSignedStorageUrl = async (accessToken: string, appVersionId: num
   try {
     const baseSignUrl = deploymentSignUrl(appVersionId);
     const url = urlBuilder(baseSignUrl);
-    const response = await execute<signedUrl>(
+    const response = await execute<SignedUrl>(
       {
         url,
         headers: { Accept: 'application/json' },
@@ -40,11 +40,11 @@ export const getSignedStorageUrl = async (accessToken: string, appVersionId: num
 export const createAppVersionDeploymentJob = async (
   accessToken: string,
   appVersionId: number,
-): Promise<appVersionDeploymentMetaData> => {
+): Promise<AppVersionDeploymentMetaData> => {
   try {
     const baseVersionIdUrl = versionIdDeploymentUrl(appVersionId);
     const url = urlBuilder(baseVersionIdUrl);
-    const response = await execute<baseResponseHttpMetaData>(
+    const response = await execute<BaseResponseHttpMetaData>(
       {
         url,
         headers: { Accept: 'application/json' },
@@ -52,7 +52,7 @@ export const createAppVersionDeploymentJob = async (
       },
       baseResponseHttpMetaDataSchema,
     );
-    const appVersionDeploymentMetaData: appVersionDeploymentMetaData = {
+    const appVersionDeploymentMetaData: AppVersionDeploymentMetaData = {
       location: response.headers?.location,
       retryAfter: response.headers?.['retry-after'] ? Number(response.headers?.['retry-after']) : undefined,
     };
@@ -69,12 +69,12 @@ export const getAppVersionStatus = async (
   appVersionId: number,
   retryAfter: number,
   progressLogger?: (message: string) => void,
-): Promise<appVersionDeploymentStatus> => {
+): Promise<AppVersionDeploymentStatus> => {
   const getAppVersionStatusInternal = async () => {
     try {
       const baseVersionIdStatusUrl = getVersionStatusDeploymentUrl(appVersionId);
       const url = urlBuilder(baseVersionIdStatusUrl);
-      const response = await execute<appVersionDeploymentStatus>(
+      const response = await execute<AppVersionDeploymentStatus>(
         {
           url,
           headers: { Accept: 'application/json' },

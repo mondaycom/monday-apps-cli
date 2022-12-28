@@ -20,5 +20,5 @@ export enum HTTP_METHOD_TYPES {
   PUT = 'put',
 }
 
-export type baseResponseHttpMetaData = z.infer<typeof baseResponseHttpMetaDataSchema>;
-export type baseErrorResponse = z.infer<typeof baseErrorResponseSchema>;
+export type BaseResponseHttpMetaData = z.infer<typeof baseResponseHttpMetaDataSchema>;
+export type BaseErrorResponse = z.infer<typeof baseErrorResponseSchema>;
