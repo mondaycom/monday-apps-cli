@@ -1,8 +1,7 @@
-import timersPromise from 'node:timers/promises';
-import timers from 'node:timers';
+import { setTimeout as asyncSetTimeout } from 'node:timers/promises';
 
 const sleep = async (ms: number) => {
-  await timersPromise.setTimeout(ms);
+  await asyncSetTimeout(ms);
 };
 
 export async function pollPromise(
@@ -13,7 +12,7 @@ export async function pollPromise(
   let isTimeOut = false;
   let isDone = false;
 
-  const setTimeoutId = timers.setTimeout(() => {
+  const setTimeoutId = setTimeout(() => {
     isTimeOut = true;
     isDone = true;
   }, timeOutInMs);
@@ -22,7 +21,7 @@ export async function pollPromise(
     // eslint-disable-next-line no-await-in-loop
     isDone = await fn();
     if (isDone) {
-      timers.clearTimeout(setTimeoutId);
+      clearTimeout(setTimeoutId);
       break;
     }
 

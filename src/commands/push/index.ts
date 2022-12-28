@@ -62,7 +62,7 @@ export default class Push extends BaseCommand {
       filePath: flags.filePath || (await filePathPrompt()),
       appVersionId: flags.appVersionId || Number(await versionPrompt()),
     };
-    // const pushSpinner = createSpinner().start();
+
     spinner.start();
     try {
       if (
