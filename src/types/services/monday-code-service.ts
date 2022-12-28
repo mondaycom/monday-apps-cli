@@ -4,7 +4,7 @@ import {
   baseResponseHttpMetaDataSchema,
 } from '../../services/schemas/monday-code-service-schemas.js';
 
-export type EXECUTE_PARAMS = {
+export type ExecuteParams = {
   body?: object;
   query?: object;
   url: string;

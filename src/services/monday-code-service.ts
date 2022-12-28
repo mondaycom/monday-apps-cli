@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { EXECUTE_PARAMS, BaseErrorResponse, BaseResponseHttpMetaData } from '../types/services/monday-code-service.js';
+import { ExecuteParams, BaseErrorResponse, BaseResponseHttpMetaData } from '../types/services/monday-code-service.js';
 import { ConfigService } from './config-service.js';
 import Logger from '../utils/logger.js';
 import { geMondayCodeDomain } from './env-service.js';
@@ -10,7 +10,7 @@ import { ZodObject } from 'zod/lib/types';
 const DEFAULT_TIMEOUT = 10 * 1000;
 
 export async function execute<T extends BaseResponseHttpMetaData>(
-  params: EXECUTE_PARAMS,
+  params: ExecuteParams,
   schemaValidator?: ZodObject<any>,
 ): Promise<T> {
   const accessToken = ConfigService.getConfigDataByKey('accessToken');
