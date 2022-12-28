@@ -1,7 +1,7 @@
-import { LOGIN_TYPES } from '../shared/login';
+import { LoginTypes } from '../shared/login';
 
 export type LoginCommandArguments = {
   password?: string;
   email?: string;
-  method: LOGIN_TYPES;
+  method: LoginTypes;
 };

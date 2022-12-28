@@ -1,10 +1,15 @@
+let isDebugMode = false;
 function emptyFunction() {
   return;
 }
 
+export function enableDebugMode() {
+  isDebugMode = true;
+}
+
 const consoleHandler = {
   get: function (target: Console, property: keyof Console) {
-    if (property === 'debug' && process.env.NODE_ENV !== 'development') {
+    if (!isDebugMode) {
       return emptyFunction;
     }
 

@@ -1,37 +1,39 @@
-import { Command, Flags } from '@oclif/core';
-import { LOGIN_TYPES } from '../../types/shared/login.js';
+import { Flags } from '@oclif/core';
+import { LoginTypes } from '../../types/shared/login.js';
 import { LoginCommandArguments } from '../../types/commands/login.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { MondayApiService } from '../../services/monday-api-service.js';
+import { BaseCommand } from '../base-command.js';
 
-const MESSAGES = {
+const LOGIN_MESSAGES = {
   method: 'Login method to monday.com',
   email: 'Your monday.com email',
   password: 'Your monday.com password',
 };
 
-const extractMethod = async (flags: { method: LOGIN_TYPES | undefined }): Promise<LOGIN_TYPES> => {
+const extractMethod = async (flags: { method: LoginTypes | undefined }): Promise<LoginTypes> => {
   const method =
     flags.method ||
-    (await PromptService.promptSelectionWithAutoComplete<LOGIN_TYPES>(MESSAGES.method, Object.values(LOGIN_TYPES)));
+    (await PromptService.promptSelectionWithAutoComplete<LoginTypes>(LOGIN_MESSAGES.method, Object.values(LoginTypes)));
 
   return method;
 };
 
-export default class Login extends Command {
+export default class Login extends BaseCommand {
   static description = 'Login to monday.com to make full use of `mcode`';
 
   static examples = ['<%= config.bin %> <%= command.id %> -m credentials -e exa@ple.com'];
 
   static flags = {
-    method: Flags.enum<LOGIN_TYPES>({
+    ...BaseCommand.globalFlags,
+    method: Flags.enum<LoginTypes>({
       char: 'm',
-      description: MESSAGES.method,
-      options: Object.values(LOGIN_TYPES),
+      description: LOGIN_MESSAGES.method,
+      options: Object.values(LoginTypes),
     }),
     email: Flags.string({
       char: 'e',
-      description: MESSAGES.email,
+      description: LOGIN_MESSAGES.email,
       dependsOn: ['method'],
     }),
   };
@@ -44,7 +46,7 @@ export default class Login extends Command {
       method: await extractMethod(flags),
     };
 
-    if (args.method === LOGIN_TYPES.credentials) {
+    if (args.method === LoginTypes.credentials) {
       args.email = flags.email || (await PromptService.promptForEmail());
       args.password = await PromptService.promptForPassword();
     }
