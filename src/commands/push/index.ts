@@ -9,12 +9,12 @@ import {
   getSignedStorageUrl,
   uploadFileToStorage,
 } from '../../services/push-service.js';
-import { createSpinner } from 'nanospinner';
 import { ACCESS_TOKEN_NOT_FOUND } from '../../consts/messages.js';
 import { getFileExtension, readFileData } from '../../services/files-service.js';
 import logger from '../../utils/logger.js';
 import { BaseCommand } from '../base-command.js';
 import { deploymentStatusTypesSchema } from '../../services/schemas/push-service-schemas.js';
+import { spinner } from '../../services/push-spinner-service.js';
 
 export const ERROR_ON_DEPLOYMENT = 'Deployment process failed.';
 export const ZIP_FILE_LOCATION = 'Please type the zip file path on your machine.';
@@ -62,11 +62,8 @@ export default class Push extends BaseCommand {
       filePath: flags.filePath || (await filePathPrompt()),
       appVersionId: flags.appVersionId || Number(await versionPrompt()),
     };
-    const pushSpinner = createSpinner().start();
-    const pushSpinnerLogDeploymentStatus = (message: string) => {
-      pushSpinner.update({ text: message });
-    };
-
+    // const pushSpinner = createSpinner().start();
+    spinner.start();
     try {
       if (
         fileExtensions &&
@@ -76,32 +73,34 @@ export default class Push extends BaseCommand {
         throw new Error(`The process supports those file extensions: ${fileExtensions.join(',')}`);
       }
 
-      pushSpinnerLogDeploymentStatus('Building zip file remote location.');
+      spinner.setText('Building zip file remote location.');
       const signedCloudStorageUrl = await getSignedStorageUrl(accessToken, args.appVersionId);
       const zipFileContent = readFileData(args.filePath);
-      pushSpinnerLogDeploymentStatus('Uploading zip file.');
+      spinner.setText('Uploading zip file.');
       await uploadFileToStorage(signedCloudStorageUrl, zipFileContent, 'application/zip');
-      pushSpinnerLogDeploymentStatus('Zip file uploaded successful, starting the deployment.');
+      spinner.setText('Zip file uploaded successful, starting the deployment.');
       const appVersionDeploymentJob = await createAppVersionDeploymentJob(accessToken, args.appVersionId);
       const appVersionStatus = await getAppVersionStatus(
         accessToken,
         args.appVersionId,
         appVersionDeploymentJob.retryAfter!,
-        pushSpinnerLogDeploymentStatus,
+        (message: string) => {
+          spinner.setText(message);
+        },
       );
       if (appVersionStatus.status === deploymentStatusTypesSchema.enum.failed) {
-        pushSpinner.error({ text: appVersionStatus.error?.message || ERROR_ON_DEPLOYMENT });
+        spinner.setError(appVersionStatus.error?.message || ERROR_ON_DEPLOYMENT);
       } else if (appVersionStatus.deployment) {
         const deploymentUrl = `Deployment successfully finished, deployment url: ${appVersionStatus.deployment.url}`;
-        pushSpinner.success({ text: deploymentUrl });
+        spinner.setSuccess(deploymentUrl);
       } else {
-        pushSpinner.error({ text: 'Something went wrong, the deployment url is missing.' });
+        spinner.setError('Something went wrong, the deployment url is missing.');
       }
     } catch (error: any) {
       logger.debug(error);
-      pushSpinner.error({ text: `${ERROR_ON_DEPLOYMENT} "${(error as Error).message}"` });
+      spinner.setError(`${ERROR_ON_DEPLOYMENT} "${(error as Error).message}"`);
     } finally {
-      pushSpinner.clear();
+      spinner.clear();
     }
   }
 }
