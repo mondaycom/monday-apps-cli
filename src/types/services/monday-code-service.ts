@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import {
+  baseErrorResponseSchema,
+  baseResponseHttpMetaDataSchema,
+} from '../../services/schemas/monday-code-service-schemas.js';
 
 export type EXECUTE_PARAMS = {
   body?: object;
@@ -16,14 +20,5 @@ export enum HTTP_METHOD_TYPES {
   PUT = 'put',
 }
 
-export const BASE_RESPONSE_HTTP_META_DATA_SCHEMA = z.object({
-  statusCode: z.number(),
-  headers: z.record(z.string(), z.string()),
-});
-export type BASE_RESPONSE_HTTP_META_DATA = z.infer<typeof BASE_RESPONSE_HTTP_META_DATA_SCHEMA>;
-
-export const BASE_ERROR_RESPONSE_SCHEMA = z.object({
-  title: z.string().optional(),
-  message: z.string().optional(),
-});
-export type BASE_ERROR_RESPONSE = z.infer<typeof BASE_ERROR_RESPONSE_SCHEMA>;
+export type baseResponseHttpMetaData = z.infer<typeof baseResponseHttpMetaDataSchema>;
+export type baseErrorResponse = z.infer<typeof baseErrorResponseSchema>;

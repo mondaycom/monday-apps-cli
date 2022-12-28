@@ -14,7 +14,7 @@ import { ACCESS_TOKEN_NOT_FOUND } from '../../consts/messages.js';
 import { getFileExtension, readFileData } from '../../services/files-service.js';
 import logger from '../../utils/logger.js';
 import { BaseCommand } from '../base-command.js';
-import { DEPLOYMENT_STATUS_TYPES } from '../../types/services/push-service.js';
+import { deploymentStatusTypesSchema } from '../../services/schemas/push-service-schemas.js';
 
 export const ERROR_ON_DEPLOYMENT = 'Deployment process failed.';
 export const ZIP_FILE_LOCATION = 'Please type the zip file path on your machine.';
@@ -89,7 +89,7 @@ export default class Push extends BaseCommand {
         appVersionDeploymentJob.retryAfter!,
         pushSpinnerLogDeploymentStatus,
       );
-      if (appVersionStatus.status === DEPLOYMENT_STATUS_TYPES.failed) {
+      if (appVersionStatus.status === deploymentStatusTypesSchema.enum.failed) {
         pushSpinner.error({ text: appVersionStatus.error?.message || ERROR_ON_DEPLOYMENT });
       } else if (appVersionStatus.deployment) {
         const deploymentUrl = `Deployment successfully finished, deployment url: ${appVersionStatus.deployment.url}`;

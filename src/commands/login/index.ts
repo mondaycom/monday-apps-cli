@@ -5,7 +5,7 @@ import { PromptService } from '../../services/prompt-service.js';
 import { MondayApiService } from '../../services/monday-api-service.js';
 import { BaseCommand } from '../base-command.js';
 
-export const LOGIN_MESSAGES = {
+const LOGIN_MESSAGES = {
   method: 'Login method to monday.com',
   email: 'Your monday.com email',
   password: 'Your monday.com password',

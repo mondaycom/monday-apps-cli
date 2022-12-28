@@ -1,9 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import {
-  EXECUTE_PARAMS,
-  BASE_ERROR_RESPONSE,
-  BASE_RESPONSE_HTTP_META_DATA,
-} from '../types/services/monday-code-service.js';
+import { EXECUTE_PARAMS, baseErrorResponse, baseResponseHttpMetaData } from '../types/services/monday-code-service.js';
 import { ConfigService } from './config-service.js';
 import Logger from '../utils/logger.js';
 import { geMondayCodeDomain } from './env-service.js';
@@ -13,7 +9,7 @@ import logger from '../utils/logger.js';
 import { ZodObject } from 'zod/lib/types';
 const DEFAULT_TIMEOUT = 10 * 1000;
 
-export async function execute<T extends BASE_RESPONSE_HTTP_META_DATA>(
+export async function execute<T extends baseResponseHttpMetaData>(
   params: EXECUTE_PARAMS,
   schemaValidator?: ZodObject<any>,
 ): Promise<T> {
@@ -42,7 +38,7 @@ export async function execute<T extends BASE_RESPONSE_HTTP_META_DATA>(
     logger.debug(error);
     const defaultErrorMessage = `Couldn't connect to the remote server "${baseURL}"`;
     if (error instanceof AxiosError) {
-      const errorAxiosResponse = error.response?.data as BASE_ERROR_RESPONSE;
+      const errorAxiosResponse = error.response?.data as baseErrorResponse;
       const statusCode = error.response?.status;
       const title = errorAxiosResponse?.title;
       const message = errorAxiosResponse?.message || defaultErrorMessage;

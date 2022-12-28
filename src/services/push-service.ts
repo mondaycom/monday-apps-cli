@@ -1,59 +1,58 @@
 import { getVersionStatusUrl, signUrl, versionIdUrl } from '../consts/urls.js';
 import urlBuilder from '../utils/urls-builder.js';
 import {
-  APP_VERSION_DEPLOYMENT_META_DATA,
-  APP_VERSION_DEPLOYMENT_STATUS,
-  APP_VERSION_DEPLOYMENT_STATUS_SCHEMA,
-  DEPLOYMENT_STATUS_TYPES,
-  SIGNED_URL,
-  SIGNED_URL_SCHEMA,
+  appVersionDeploymentMetaData,
+  appVersionDeploymentStatus,
+  deploymentStatusTypes,
+  signedUrl,
 } from '../types/services/push-service.js';
 import axios from 'axios';
 import { execute } from './monday-code-service.js';
-import {
-  BASE_RESPONSE_HTTP_META_DATA,
-  BASE_RESPONSE_HTTP_META_DATA_SCHEMA,
-  HTTP_METHOD_TYPES,
-} from '../types/services/monday-code-service.js';
+import { baseResponseHttpMetaData, HTTP_METHOD_TYPES } from '../types/services/monday-code-service.js';
 import logger from '../utils/logger.js';
 import { pollPromise } from './polling-service.js';
 import { ErrorMondayCode } from '../types/errors/index.js';
+import { appVersionDeploymentStatusSchema, signedUrlSchema } from './schemas/push-service-schemas.js';
+import { baseResponseHttpMetaDataSchema } from './schemas/monday-code-service-schemas.js';
 
 export const getSignedStorageUrl = async (accessToken: string, appVersionId: number): Promise<string> => {
   try {
     const baseSignUrl = signUrl(appVersionId);
     const url = urlBuilder(baseSignUrl);
-    const response = await execute<SIGNED_URL>(
+    const response = await execute<signedUrl>(
       {
         url,
         headers: { Accept: 'application/json' },
         method: HTTP_METHOD_TYPES.POST,
       },
-      SIGNED_URL_SCHEMA,
+      signedUrlSchema,
     );
     return response.signed;
-  } catch (error_: any | ErrorMondayCode) {
-    const error = error_ instanceof ErrorMondayCode ? error_ : new Error('Failed to build remote location for upload.');
-    throw error;
+  } catch (error: any | ErrorMondayCode) {
+    if (error instanceof ErrorMondayCode) {
+      throw error;
+    }
+
+    throw new Error('Failed to build remote location for upload.');
   }
 };
 
 export const createAppVersionDeploymentJob = async (
   accessToken: string,
   appVersionId: number,
-): Promise<APP_VERSION_DEPLOYMENT_META_DATA> => {
+): Promise<appVersionDeploymentMetaData> => {
   try {
     const baseVersionIdUrl = versionIdUrl(appVersionId);
     const url = urlBuilder(baseVersionIdUrl);
-    const response = await execute<BASE_RESPONSE_HTTP_META_DATA>(
+    const response = await execute<baseResponseHttpMetaData>(
       {
         url,
         headers: { Accept: 'application/json' },
         method: HTTP_METHOD_TYPES.PUT,
       },
-      BASE_RESPONSE_HTTP_META_DATA_SCHEMA,
+      baseResponseHttpMetaDataSchema,
     );
-    const appVersionDeploymentMetaData: APP_VERSION_DEPLOYMENT_META_DATA = {
+    const appVersionDeploymentMetaData: appVersionDeploymentMetaData = {
       location: response.headers?.location,
       retryAfter: response.headers?.['retry-after'] ? Number(response.headers?.['retry-after']) : undefined,
     };
@@ -70,18 +69,18 @@ export const getAppVersionStatus = async (
   appVersionId: number,
   retryAfter: number,
   progressLogger?: (message: string) => void,
-): Promise<APP_VERSION_DEPLOYMENT_STATUS> => {
+): Promise<appVersionDeploymentStatus> => {
   const getAppVersionStatusInternal = async () => {
     try {
       const baseVersionIdStatusUrl = getVersionStatusUrl(appVersionId);
       const url = urlBuilder(baseVersionIdStatusUrl);
-      const response = await execute<APP_VERSION_DEPLOYMENT_STATUS>(
+      const response = await execute<appVersionDeploymentStatus>(
         {
           url,
           headers: { Accept: 'application/json' },
           method: HTTP_METHOD_TYPES.GET,
         },
-        APP_VERSION_DEPLOYMENT_STATUS_SCHEMA,
+        appVersionDeploymentStatusSchema,
       );
       return response;
     } catch (error_: any | ErrorMondayCode) {
@@ -93,7 +92,7 @@ export const getAppVersionStatus = async (
 
   await pollPromise(
     async (): Promise<boolean> => {
-      const statusesToKeepPolling = [DEPLOYMENT_STATUS_TYPES.started, DEPLOYMENT_STATUS_TYPES.pending];
+      const statusesToKeepPolling: string[] = [deploymentStatusTypes.started, deploymentStatusTypes.pending];
       const response = await getAppVersionStatusInternal();
       if (statusesToKeepPolling.includes(response.status)) {
         if (progressLogger) {

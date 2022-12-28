@@ -4,7 +4,7 @@ import { enableDebugMode } from '../utils/logger.js';
 
 export default function init(opts: Command) {
   ConfigService.loadConfigToProcessEnv(opts.config.configDir);
-  if (opts.argv.includes('--verbose') || opts.argv.includes('-d')) {
+  if (opts.argv.includes('--verbose')) {
     enableDebugMode();
   }
 }
