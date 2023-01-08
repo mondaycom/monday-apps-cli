@@ -1,11 +1,11 @@
-export const versionIdDeploymentUrl = (appVersionId: number): string => {
-  return `/deployments/appfeature/${appVersionId}`;
+export const appFeatureIdDeploymentUrl = (appVersionId: number): string => {
+  return `/deployments/appFeature/${appVersionId}`;
 };
 
-export const getVersionStatusDeploymentUrl = (appVersionId: number): string => {
-  return `${versionIdDeploymentUrl(appVersionId)}`;
+export const getAppFeatureDeploymentUrl = (appVersionId: number): string => {
+  return `${appFeatureIdDeploymentUrl(appVersionId)}`;
 };
 
 export const deploymentSignUrl = (appVersionId: number): string => {
-  return `${versionIdDeploymentUrl(appVersionId)}/signed-url`;
+  return `${appFeatureIdDeploymentUrl(appVersionId)}/signed-url`;
 };

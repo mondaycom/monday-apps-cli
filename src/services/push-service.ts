@@ -1,4 +1,4 @@
-import { getVersionStatusDeploymentUrl, deploymentSignUrl, versionIdDeploymentUrl } from '../consts/urls.js';
+import { getAppFeatureDeploymentUrl, deploymentSignUrl, appFeatureIdDeploymentUrl } from '../consts/urls.js';
 import urlBuilder from '../utils/urls-builder.js';
 import {
   AppVersionDeploymentMetaData,
@@ -42,7 +42,7 @@ export const createAppVersionDeploymentJob = async (
   appVersionId: number,
 ): Promise<AppVersionDeploymentMetaData> => {
   try {
-    const baseVersionIdUrl = versionIdDeploymentUrl(appVersionId);
+    const baseVersionIdUrl = appFeatureIdDeploymentUrl(appVersionId);
     const url = urlBuilder(baseVersionIdUrl);
     const response = await execute<BaseResponseHttpMetaData>(
       {
@@ -72,7 +72,7 @@ export const getAppVersionStatus = async (
 ): Promise<AppVersionDeploymentStatus> => {
   const getAppVersionStatusInternal = async () => {
     try {
-      const baseVersionIdStatusUrl = getVersionStatusDeploymentUrl(appVersionId);
+      const baseVersionIdStatusUrl = getAppFeatureDeploymentUrl(appVersionId);
       const url = urlBuilder(baseVersionIdStatusUrl);
       const response = await execute<AppVersionDeploymentStatus>(
         {
