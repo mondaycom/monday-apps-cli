@@ -7,11 +7,6 @@ export const signedUrlSchema = z
   })
   .merge(baseResponseHttpMetaDataSchema);
 
-export const appVersionDeploymentMetaDataSchema = z.object({
-  location: z.string().optional(),
-  retryAfter: z.number().optional(),
-});
-
 export const deploymentStatusTypesArray = ['started', 'pending', 'successful', 'failed'] as const;
 export const deploymentStatusTypesSchema = z.enum(deploymentStatusTypesArray);
 export const appVersionDeploymentStatusSchema = z
