@@ -22,7 +22,7 @@ export async function pollPromise(
     isDone = await fn();
     if (isDone) {
       clearTimeout(setTimeoutId);
-      break;
+      return;
     }
 
     // eslint-disable-next-line no-await-in-loop

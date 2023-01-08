@@ -1,10 +1,12 @@
+import https from 'node:https';
+import crypto from 'node:crypto';
 import axios, { AxiosError } from 'axios';
 import { ExecuteParams, BaseErrorResponse, BaseResponseHttpMetaData } from '../types/services/monday-code-service.js';
 import { ConfigService } from './config-service.js';
 import Logger from '../utils/logger.js';
 import { geMondayCodeDomain } from './env-service.js';
 import { ACCESS_TOKEN_NOT_FOUND } from '../consts/messages.js';
-import { ErrorMondayCode } from '../types/errors/index.js';
+import { ErrorMondayCode } from '../types/errors';
 import logger from '../utils/logger.js';
 import { ZodObject } from 'zod/lib/types';
 const DEFAULT_TIMEOUT = 10 * 1000;
@@ -23,7 +25,12 @@ export async function execute<T extends BaseResponseHttpMetaData>(
   const headersWithToken = { ...headers, Authorization: accessToken };
   const baseURL = geMondayCodeDomain();
   try {
+    const httpsAgent = new https.Agent({
+      secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
+      rejectUnauthorized: false,
+    });
     const response = await axios.request<T>({
+      httpsAgent,
       method,
       baseURL,
       url,
