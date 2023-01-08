@@ -4,8 +4,8 @@ import Logger from '../../utils/logger.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { PushCommandArguments } from '../../types/commands/push.js';
 import {
-  createAppVersionDeploymentJob,
-  getAppVersionStatus,
+  createAppFeatureDeploymentJob,
+  getAppFeatureIdStatus,
   getSignedStorageUrl,
   uploadFileToStorage,
 } from '../../services/push-service.js';
@@ -79,8 +79,8 @@ export default class Push extends BaseCommand {
       spinner.setText('Uploading zip file.');
       await uploadFileToStorage(signedCloudStorageUrl, zipFileContent, 'application/zip');
       spinner.setText('Zip file uploaded successful, starting the deployment.');
-      const appVersionDeploymentJob = await createAppVersionDeploymentJob(accessToken, args.appVersionId);
-      const appVersionStatus = await getAppVersionStatus(
+      const appVersionDeploymentJob = await createAppFeatureDeploymentJob(accessToken, args.appVersionId);
+      const appVersionStatus = await getAppFeatureIdStatus(
         accessToken,
         args.appVersionId,
         appVersionDeploymentJob.retryAfter!,

@@ -37,12 +37,12 @@ export const getSignedStorageUrl = async (accessToken: string, appVersionId: num
   }
 };
 
-export const createAppVersionDeploymentJob = async (
+export const createAppFeatureDeploymentJob = async (
   accessToken: string,
-  appVersionId: number,
+  appFeatureId: number,
 ): Promise<AppVersionDeploymentMetaData> => {
   try {
-    const baseVersionIdUrl = appFeatureIdDeploymentUrl(appVersionId);
+    const baseVersionIdUrl = appFeatureIdDeploymentUrl(appFeatureId);
     const url = urlBuilder(baseVersionIdUrl);
     const response = await execute<BaseResponseHttpMetaData>(
       {
@@ -64,15 +64,15 @@ export const createAppVersionDeploymentJob = async (
   }
 };
 
-export const getAppVersionStatus = async (
+export const getAppFeatureIdStatus = async (
   accessToken: string,
-  appVersionId: number,
+  appFeatureId: number,
   retryAfter: number,
   progressLogger?: (message: string) => void,
 ): Promise<AppVersionDeploymentStatus> => {
   const getAppVersionStatusInternal = async () => {
     try {
-      const baseVersionIdStatusUrl = getAppFeatureDeploymentUrl(appVersionId);
+      const baseVersionIdStatusUrl = getAppFeatureDeploymentUrl(appFeatureId);
       const url = urlBuilder(baseVersionIdStatusUrl);
       const response = await execute<AppVersionDeploymentStatus>(
         {
