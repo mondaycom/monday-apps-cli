@@ -6,7 +6,7 @@ import { ConfigService } from './config-service.js';
 import Logger from '../utils/logger.js';
 import { geMondayCodeDomain } from './env-service.js';
 import { ACCESS_TOKEN_NOT_FOUND } from '../consts/messages.js';
-import { ErrorMondayCode } from '../types/errors';
+import { ErrorMondayCode } from '../types/errors/index.js';
 import logger from '../utils/logger.js';
 import { ZodObject } from 'zod/lib/types';
 const DEFAULT_TIMEOUT = 10 * 1000;
