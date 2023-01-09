@@ -74,9 +74,15 @@ export default class Push extends BaseCommand {
       spinner.setText('Uploading zip file.');
       await uploadFileToStorage(signedCloudStorageUrl, zipFileContent, 'application/zip');
       spinner.setText('Zip file uploaded successful, starting the deployment.');
-      const appVersionStatus = await getAppFeatureIdStatus(accessToken, args.appVersionId, 1000, (message: string) => {
-        spinner.setText(message);
-      });
+      const retryAfterSeconds = 1000;
+      const appVersionStatus = await getAppFeatureIdStatus(
+        accessToken,
+        args.appVersionId,
+        retryAfterSeconds,
+        (message: string) => {
+          spinner.setText(message);
+        },
+      );
       if (appVersionStatus.status === deploymentStatusTypesSchema.enum.failed) {
         spinner.setError(appVersionStatus.error?.message || ERROR_ON_DEPLOYMENT);
       } else if (appVersionStatus.deployment) {

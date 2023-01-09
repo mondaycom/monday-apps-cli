@@ -75,7 +75,7 @@ export const getAppFeatureIdStatus = async (
       return true;
     },
     retryAfter,
-    retryAfter * 20,
+    retryAfter * 60,
   );
   const response = await getAppVersionStatusInternal();
   return response;
