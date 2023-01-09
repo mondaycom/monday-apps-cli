@@ -3,12 +3,7 @@ import { ConfigService } from '../../services/config-service.js';
 import Logger from '../../utils/logger.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { PushCommandArguments } from '../../types/commands/push.js';
-import {
-  createAppFeatureDeploymentJob,
-  getAppFeatureIdStatus,
-  getSignedStorageUrl,
-  uploadFileToStorage,
-} from '../../services/push-service.js';
+import { getAppFeatureIdStatus, getSignedStorageUrl, uploadFileToStorage } from '../../services/push-service.js';
 import { ACCESS_TOKEN_NOT_FOUND } from '../../consts/messages.js';
 import { getFileExtension, readFileData } from '../../services/files-service.js';
 import logger from '../../utils/logger.js';
@@ -79,11 +74,11 @@ export default class Push extends BaseCommand {
       spinner.setText('Uploading zip file.');
       await uploadFileToStorage(signedCloudStorageUrl, zipFileContent, 'application/zip');
       spinner.setText('Zip file uploaded successful, starting the deployment.');
-      const appVersionDeploymentJob = await createAppFeatureDeploymentJob(accessToken, args.appVersionId);
+      const retryAfterSeconds = 1000;
       const appVersionStatus = await getAppFeatureIdStatus(
         accessToken,
         args.appVersionId,
-        appVersionDeploymentJob.retryAfter!,
+        retryAfterSeconds,
         (message: string) => {
           spinner.setText(message);
         },

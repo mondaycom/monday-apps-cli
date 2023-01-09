@@ -1,19 +1,13 @@
-import { getAppFeatureDeploymentUrl, deploymentSignUrl, appFeatureIdDeploymentUrl } from '../consts/urls.js';
+import { getAppFeatureDeploymentUrl, deploymentSignUrl } from '../consts/urls.js';
 import urlBuilder from '../utils/urls-builder.js';
-import {
-  AppVersionDeploymentMetaData,
-  AppVersionDeploymentStatus,
-  DeploymentStatusTypesSchema,
-  SignedUrl,
-} from '../types/services/push-service.js';
+import { AppVersionDeploymentStatus, DeploymentStatusTypesSchema, SignedUrl } from '../types/services/push-service.js';
 import axios from 'axios';
 import { execute } from './monday-code-service.js';
-import { BaseResponseHttpMetaData, HttpMethodTypes } from '../types/services/monday-code-service.js';
+import { HttpMethodTypes } from '../types/services/monday-code-service.js';
 import logger from '../utils/logger.js';
 import { pollPromise } from './polling-service.js';
 import { ErrorMondayCode } from '../types/errors/index.js';
 import { appVersionDeploymentStatusSchema, signedUrlSchema } from './schemas/push-service-schemas.js';
-import { baseResponseHttpMetaDataSchema } from './schemas/monday-code-service-schemas.js';
 
 export const getSignedStorageUrl = async (accessToken: string, appVersionId: number): Promise<string> => {
   try {
@@ -34,33 +28,6 @@ export const getSignedStorageUrl = async (accessToken: string, appVersionId: num
     }
 
     throw new Error('Failed to build remote location for upload.');
-  }
-};
-
-export const createAppFeatureDeploymentJob = async (
-  accessToken: string,
-  appFeatureId: number,
-): Promise<AppVersionDeploymentMetaData> => {
-  try {
-    const baseVersionIdUrl = appFeatureIdDeploymentUrl(appFeatureId);
-    const url = urlBuilder(baseVersionIdUrl);
-    const response = await execute<BaseResponseHttpMetaData>(
-      {
-        url,
-        headers: { Accept: 'application/json' },
-        method: HttpMethodTypes.PUT,
-      },
-      baseResponseHttpMetaDataSchema,
-    );
-    const appVersionDeploymentMetaData: AppVersionDeploymentMetaData = {
-      location: response.headers?.location,
-      retryAfter: response.headers?.['retry-after'] ? Number(response.headers?.['retry-after']) : undefined,
-    };
-    return appVersionDeploymentMetaData;
-  } catch (error_: any | ErrorMondayCode) {
-    const error =
-      error_ instanceof ErrorMondayCode ? error_ : new Error('Failed to start app version deployment process.');
-    throw error;
   }
 };
 
@@ -108,7 +75,7 @@ export const getAppFeatureIdStatus = async (
       return true;
     },
     retryAfter,
-    retryAfter * 20,
+    retryAfter * 60,
   );
   const response = await getAppVersionStatusInternal();
   return response;
