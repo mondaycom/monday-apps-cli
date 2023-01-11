@@ -2,7 +2,7 @@ import inquirer from 'inquirer';
 import autocomplete from 'inquirer-autocomplete-prompt';
 import isEmail from 'isemail';
 import fuzzy from 'fuzzy';
-import {checkIfFileExists, getFileExtension} from './files-service.js';
+import { checkIfFileExists, getFileExtension } from './files-service.js';
 
 inquirer.registerPrompt('autocomplete', autocomplete);
 
@@ -14,16 +14,17 @@ function validateIfRequired(input: string, message: string, isRequired = false):
   return true;
 }
 
-function validateIfValueIsANumber(input: number, message: string, isRequired = false): boolean | string {
+function validateIfValueIsANumber(input: string, message: string, isRequired = false): boolean | string {
   if (isRequired && !input) {
     return message;
   }
 
-  if (typeof input !== 'number') {
+  const isNumber = /^\d+$/.test(input);
+  if (!isNumber) {
     return message;
   }
 
-  return true
+  return true;
 }
 
 export const PromptService = {
@@ -111,7 +112,7 @@ export const PromptService = {
         name: 'input',
         message: message || 'Please enter value',
         type: 'input',
-        validate(input: number) {
+        validate(input: string) {
           return validateIfValueIsANumber(input, 'You must enter a number', required);
         },
       },
@@ -130,10 +131,9 @@ export const PromptService = {
         validate(input: string) {
           if (!input) return 'You must enter valid file path';
           if (!checkIfFileExists(input)) return 'You must enter valid file path';
-          if (extensions &&
-          extensions.length > 0 && !extensions.includes(getFileExtension(input).toLowerCase())) {
-              return `The process supports those file extensions: ${extensions.join(',')}`;
-            }
+          if (extensions && extensions.length > 0 && !extensions.includes(getFileExtension(input).toLowerCase())) {
+            return `The process supports those file extensions: ${extensions.join(',')}`;
+          }
 
           return true;
         },

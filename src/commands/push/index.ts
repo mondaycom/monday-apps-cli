@@ -13,16 +13,16 @@ import { spinner } from '../../services/push-spinner-service.js';
 
 export const ERROR_ON_DEPLOYMENT = 'Deployment process failed.';
 export const ZIP_FILE_LOCATION = 'Please type the zip file path on your machine.';
-export const APP_VERSION_ID_TO_ENTER = 'Please enter the app version id';
+export const APP_FEATURE_ID_TO_ENTER = 'Please enter the app feature id';
 
 const fileExtensions = ['zip'];
 const filePathPrompt = async () => PromptService.promptFile(ZIP_FILE_LOCATION, fileExtensions);
 
-const versionPrompt = async () => PromptService.promptInputNumber(APP_VERSION_ID_TO_ENTER, true);
+const versionPrompt = async () => PromptService.promptInputNumber(APP_FEATURE_ID_TO_ENTER, true);
 
 const MESSAGES = {
   file: ZIP_FILE_LOCATION,
-  appVersionId: APP_VERSION_ID_TO_ENTER,
+  appFeatureId: APP_FEATURE_ID_TO_ENTER,
 };
 
 export default class Push extends BaseCommand {
@@ -36,9 +36,9 @@ export default class Push extends BaseCommand {
       char: 'f',
       description: MESSAGES.file,
     }),
-    appVersionId: Flags.integer({
-      char: 'v',
-      description: MESSAGES.appVersionId,
+    appFeatureId: Flags.integer({
+      char: 'i',
+      description: MESSAGES.appFeatureId,
     }),
   };
 
@@ -55,7 +55,7 @@ export default class Push extends BaseCommand {
 
     const args: PushCommandArguments = {
       filePath: flags.filePath || (await filePathPrompt()),
-      appVersionId: flags.appVersionId || Number(await versionPrompt()),
+      appFeatureId: flags.appFeatureId || Number(await versionPrompt()),
     };
 
     spinner.start();
@@ -69,7 +69,7 @@ export default class Push extends BaseCommand {
       }
 
       spinner.setText('Building zip file remote location.');
-      const signedCloudStorageUrl = await getSignedStorageUrl(accessToken, args.appVersionId);
+      const signedCloudStorageUrl = await getSignedStorageUrl(accessToken, args.appFeatureId);
       const zipFileContent = readFileData(args.filePath);
       spinner.setText('Uploading zip file.');
       await uploadFileToStorage(signedCloudStorageUrl, zipFileContent, 'application/zip');
@@ -77,7 +77,7 @@ export default class Push extends BaseCommand {
       const retryAfterSeconds = 1000;
       const appVersionStatus = await getAppFeatureIdStatus(
         accessToken,
-        args.appVersionId,
+        args.appFeatureId,
         retryAfterSeconds,
         (message: string) => {
           spinner.setText(message);

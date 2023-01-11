@@ -9,9 +9,9 @@ import { pollPromise } from './polling-service.js';
 import { ErrorMondayCode } from '../types/errors/index.js';
 import { appVersionDeploymentStatusSchema, signedUrlSchema } from './schemas/push-service-schemas.js';
 
-export const getSignedStorageUrl = async (accessToken: string, appVersionId: number): Promise<string> => {
+export const getSignedStorageUrl = async (accessToken: string, appFeatureId: number): Promise<string> => {
   try {
-    const baseSignUrl = deploymentSignUrl(appVersionId);
+    const baseSignUrl = deploymentSignUrl(appFeatureId);
     const url = urlBuilder(baseSignUrl);
     const response = await execute<SignedUrl>(
       {
