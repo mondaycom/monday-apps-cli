@@ -1,13 +1,13 @@
 import { getAppFeatureDeploymentUrl, deploymentSignUrl } from '../consts/urls.js';
 import urlBuilder from '../utils/urls-builder.js';
-import { AppVersionDeploymentStatus, DeploymentStatusTypesSchema, SignedUrl } from '../types/services/push-service.js';
+import { AppFeatureDeploymentStatus, DeploymentStatusTypesSchema, SignedUrl } from '../types/services/push-service.js';
 import axios from 'axios';
 import { execute } from './monday-code-service.js';
 import { HttpMethodTypes } from '../types/services/monday-code-service.js';
 import logger from '../utils/logger.js';
 import { pollPromise } from './polling-service.js';
 import { ErrorMondayCode } from '../types/errors/index.js';
-import { appVersionDeploymentStatusSchema, signedUrlSchema } from './schemas/push-service-schemas.js';
+import { appFeatureDeploymentStatusSchema, signedUrlSchema } from './schemas/push-service-schemas.js';
 
 export const getSignedStorageUrl = async (accessToken: string, appFeatureId: number): Promise<string> => {
   try {
@@ -36,23 +36,23 @@ export const getAppFeatureIdStatus = async (
   appFeatureId: number,
   retryAfter: number,
   progressLogger?: (message: string) => void,
-): Promise<AppVersionDeploymentStatus> => {
-  const getAppVersionStatusInternal = async () => {
+): Promise<AppFeatureDeploymentStatus> => {
+  const getAppFeatureStatusInternal = async () => {
     try {
-      const baseVersionIdStatusUrl = getAppFeatureDeploymentUrl(appFeatureId);
-      const url = urlBuilder(baseVersionIdStatusUrl);
-      const response = await execute<AppVersionDeploymentStatus>(
+      const baseFeatureIdStatusUrl = getAppFeatureDeploymentUrl(appFeatureId);
+      const url = urlBuilder(baseFeatureIdStatusUrl);
+      const response = await execute<AppFeatureDeploymentStatus>(
         {
           url,
           headers: { Accept: 'application/json' },
           method: HttpMethodTypes.GET,
         },
-        appVersionDeploymentStatusSchema,
+        appFeatureDeploymentStatusSchema,
       );
       return response;
     } catch (error_: any | ErrorMondayCode) {
       const error =
-        error_ instanceof ErrorMondayCode ? error_ : new Error('Failed to check app version deployment status.');
+        error_ instanceof ErrorMondayCode ? error_ : new Error('Failed to check app feature deployment status.');
       throw error;
     }
   };
@@ -63,7 +63,7 @@ export const getAppFeatureIdStatus = async (
         DeploymentStatusTypesSchema.started,
         DeploymentStatusTypesSchema.pending,
       ];
-      const response = await getAppVersionStatusInternal();
+      const response = await getAppFeatureStatusInternal();
       if (statusesToKeepPolling.includes(response.status)) {
         if (progressLogger) {
           progressLogger(`Deployment state: ${response.status}`);
@@ -77,7 +77,7 @@ export const getAppFeatureIdStatus = async (
     retryAfter,
     retryAfter * 60,
   );
-  const response = await getAppVersionStatusInternal();
+  const response = await getAppFeatureStatusInternal();
   return response;
 };
 

@@ -9,7 +9,7 @@ export const signedUrlSchema = z
 
 export const deploymentStatusTypesArray = ['started', 'pending', 'successful', 'failed'] as const;
 export const deploymentStatusTypesSchema = z.enum(deploymentStatusTypesArray);
-export const appVersionDeploymentStatusSchema = z
+export const appFeatureDeploymentStatusSchema = z
   .object({
     status: deploymentStatusTypesSchema,
     deployment: z
