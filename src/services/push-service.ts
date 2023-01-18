@@ -35,8 +35,9 @@ export const getAppFeatureIdStatus = async (
   accessToken: string,
   appFeatureId: number,
   retryAfter: number,
-  progressLogger?: (message: string) => void,
+  options: { ttl?: number; progressLogger?: (message: string) => void } = {},
 ): Promise<AppFeatureDeploymentStatus> => {
+  const { ttl, progressLogger } = options;
   const getAppFeatureStatusInternal = async () => {
     try {
       const baseFeatureIdStatusUrl = getAppFeatureDeploymentUrl(appFeatureId);
@@ -62,6 +63,7 @@ export const getAppFeatureIdStatus = async (
       const statusesToKeepPolling: string[] = [
         DeploymentStatusTypesSchema.started,
         DeploymentStatusTypesSchema.pending,
+        DeploymentStatusTypesSchema.building,
       ];
       const response = await getAppFeatureStatusInternal();
       if (statusesToKeepPolling.includes(response.status)) {
@@ -75,7 +77,7 @@ export const getAppFeatureIdStatus = async (
       return true;
     },
     retryAfter,
-    retryAfter * 60,
+    ttl || retryAfter * 60,
   );
   const response = await getAppFeatureStatusInternal();
   return response;
@@ -93,6 +95,6 @@ export const uploadFileToStorage = async (
     return response;
   } catch (error: any) {
     logger.debug(error);
-    throw new Error('Failed in uploading the zip file.');
+    throw new Error('Failed in uploading the project.');
   }
 };

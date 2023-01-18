@@ -5,36 +5,49 @@ import { PromptService } from '../../services/prompt-service.js';
 import { PushCommandArguments } from '../../types/commands/push.js';
 import { getAppFeatureIdStatus, getSignedStorageUrl, uploadFileToStorage } from '../../services/push-service.js';
 import { ACCESS_TOKEN_NOT_FOUND } from '../../consts/messages.js';
-import { getFileExtension, readFileData } from '../../services/files-service.js';
+import { readFileData, createTarGzArchive } from '../../services/files-service.js';
 import logger from '../../utils/logger.js';
 import { BaseCommand } from '../base-command.js';
 import { deploymentStatusTypesSchema } from '../../services/schemas/push-service-schemas.js';
 import { spinner } from '../../services/push-spinner-service.js';
+import { TimeInMs } from '../../types/general/time.js';
+import { getCurrentWorkingDirectory } from '../../services/env-service.js';
 
-export const ERROR_ON_DEPLOYMENT = 'Deployment process failed.';
-export const ZIP_FILE_LOCATION = 'Please type the zip file path on your machine.';
-export const APP_FEATURE_ID_TO_ENTER = 'Please enter the app feature id';
-
-const fileExtensions = ['zip'];
-const filePathPrompt = async () => PromptService.promptFile(ZIP_FILE_LOCATION, fileExtensions);
+export const ERROR_ON_DEPLOYMENT = 'Deployment process has failed.';
+export const DIRECTORY_TO_COMPRESS_LOCATION =
+  'Directory path of you project in your machine. If not included will use the current working directory.';
+export const APP_FEATURE_ID_TO_ENTER = 'The app feature id of your app';
 
 const appFeaturePrompt = async () => PromptService.promptInputNumber(APP_FEATURE_ID_TO_ENTER, true);
 
 const MESSAGES = {
-  file: ZIP_FILE_LOCATION,
+  directory: DIRECTORY_TO_COMPRESS_LOCATION,
   appFeatureId: APP_FEATURE_ID_TO_ENTER,
 };
 
-export default class Push extends BaseCommand {
-  static description = 'Push your code to get hosted on monday-code.';
+const handleFileToUpload = async (directoryPath?: string): Promise<string> => {
+  if (!directoryPath) {
+    const currentDirectoryPath = getCurrentWorkingDirectory();
+    logger.debug(`Directory path not provided using current directory: ${currentDirectoryPath}`);
+    directoryPath = currentDirectoryPath;
+  }
 
-  static examples = ['<%= config.bin %> <%= command.id %> -f ZIP FILE PATH -i APP FEATURE ID TO PUSH '];
+  return createTarGzArchive(directoryPath, 'code');
+};
+
+export default class Push extends BaseCommand {
+  static description = 'Push your project to get hosted on monday-code.';
+
+  static examples = [
+    '<%= config.bin %> <%= command.id %> -d PROJECT DIRECTORY PATH -i APP FEATURE ID TO PUSH',
+    '<%= config.bin %> <%= command.id %> -i APP FEATURE ID TO PUSH',
+  ];
 
   static flags = {
     ...BaseCommand.globalFlags,
-    filePath: Flags.string({
-      char: 'f',
-      description: MESSAGES.file,
+    directoryPath: Flags.string({
+      char: 'd',
+      description: MESSAGES.directory,
     }),
     appFeatureId: Flags.integer({
       char: 'i',
@@ -54,35 +67,25 @@ export default class Push extends BaseCommand {
     const { flags } = await this.parse(Push);
 
     const args: PushCommandArguments = {
-      filePath: flags.filePath || (await filePathPrompt()),
+      filePath: await handleFileToUpload(flags.directoryPath),
       appFeatureId: flags.appFeatureId || Number(await appFeaturePrompt()),
     };
 
     spinner.start();
     try {
-      if (
-        fileExtensions &&
-        fileExtensions.length > 0 &&
-        !fileExtensions.includes(getFileExtension(args.filePath).toLowerCase())
-      ) {
-        throw new Error(`The process supports those file extensions: ${fileExtensions.join(',')}`);
-      }
-
-      spinner.setText('Building zip file remote location.');
+      spinner.setText('Building project remote location.');
       const signedCloudStorageUrl = await getSignedStorageUrl(accessToken, args.appFeatureId);
-      const zipFileContent = readFileData(args.filePath);
-      spinner.setText('Uploading zip file.');
-      await uploadFileToStorage(signedCloudStorageUrl, zipFileContent, 'application/zip');
-      spinner.setText('Zip file uploaded successful, starting the deployment.');
-      const retryAfterSeconds = 1000;
-      const appFeatureStatus = await getAppFeatureIdStatus(
-        accessToken,
-        args.appFeatureId,
-        retryAfterSeconds,
-        (message: string) => {
+      const archiveContent = readFileData(args.filePath);
+      spinner.setText('Uploading project.');
+      await uploadFileToStorage(signedCloudStorageUrl, archiveContent, 'application/zip');
+      spinner.setText('Project uploaded successful, starting the deployment.');
+
+      const appFeatureStatus = await getAppFeatureIdStatus(accessToken, args.appFeatureId, TimeInMs.second * 5, {
+        ttl: TimeInMs.minute * 5,
+        progressLogger: (message: string) => {
           spinner.setText(message);
         },
-      );
+      });
       if (appFeatureStatus.status === deploymentStatusTypesSchema.enum.failed) {
         spinner.setError(appFeatureStatus.error?.message || ERROR_ON_DEPLOYMENT);
       } else if (appFeatureStatus.deployment) {
