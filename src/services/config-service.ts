@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { BadConfigError } from '../errors/bad-config-error.js';
 import Logger from '../utils/logger.js';
 
-export const CONFIG_NAME = '.mcoderc';
+export const CONFIG_NAME = '.mappsrc';
 const ENCODING = 'utf8';
 const CONFIG_PROCESS_ENV_DOMAIN = 'MONDAY_CODE';
 
