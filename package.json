@@ -5,7 +5,7 @@
   "author": "monday.com Apps Team",
   "type": "module",
   "bin": {
-    "mcode": "./bin/run.js"
+    "mapps": "./bin/run.js"
   },
   "homepage": "https://github.com/mondaycom/monday-code-cli",
   "license": "MIT",
@@ -65,8 +65,8 @@
     "typescript": "^4.9.3"
   },
   "oclif": {
-    "bin": "mcode",
-    "dirname": "mcode",
+    "bin": "mapps",
+    "dirname": "mapps",
     "commands": "./dist/commands",
     "hooks": {
       "init": "./dist/hooks/init.js"
