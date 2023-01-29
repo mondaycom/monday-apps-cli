@@ -68,6 +68,11 @@
     "bin": "mapps",
     "dirname": "mapps",
     "commands": "./dist/commands",
+    "topics": {
+      "code": {
+        "description": "Perform operations related to apps in monday-code, monday.com's server hosting service"
+      }
+    },
     "hooks": {
       "init": "./dist/hooks/init.js"
     },
