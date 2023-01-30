@@ -32,8 +32,9 @@ export const createTarGzArchive = async (directoryPath: string, fileName = 'code
     }
 
     const archivePath = `${directoryPath}/${fileName}.tar.gz`;
+    const fullFileName = `**/${fileName}.tar.gz`;
     const pathsToIgnoreFromGitIgnore = getFilesToExcludeForGitIgnore(directoryPath);
-    const pathsToIgnore = [...pathsToIgnoreFromGitIgnore, archivePath];
+    const pathsToIgnore = [...pathsToIgnoreFromGitIgnore, archivePath, fullFileName];
 
     await compressDirectoryToTarGz(directoryPath, archivePath, pathsToIgnore);
     return archivePath;
@@ -104,6 +105,7 @@ const compressDirectoryToTarGz = async (
       cwd: directoryPath,
       ignore: pathsToIgnore,
       nodir: true,
+      dot: true,
     });
     Logger.debug(`${DEBUG_TAG} - Added directory`);
 
