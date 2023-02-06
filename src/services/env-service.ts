@@ -3,7 +3,7 @@ export const getNodeEnv = (): string => {
 };
 
 export const geMondayCodeDomain = (): string => {
-  return process.env.MONDAY_CODE_DOMAIN!;
+  return process.env.MONDAY_CODE_DOMAIN! || 'https://monday-code.monday.com';
 };
 
 export const initCurrentWorkingDirectory = (): string => {
