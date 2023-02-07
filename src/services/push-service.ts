@@ -27,6 +27,7 @@ export const getSignedStorageUrl = async (accessToken: string, appFeatureId: num
       throw error;
     }
 
+    logger.debug(error);
     throw new Error('Failed to build remote location for upload.');
   }
 };
@@ -64,6 +65,8 @@ export const getAppFeatureIdStatus = async (
         DeploymentStatusTypesSchema.started,
         DeploymentStatusTypesSchema.pending,
         DeploymentStatusTypesSchema.building,
+        DeploymentStatusTypesSchema['building-infra'],
+        DeploymentStatusTypesSchema['building-app'],
       ];
       const response = await getAppFeatureStatusInternal();
       if (statusesToKeepPolling.includes(response.status)) {
