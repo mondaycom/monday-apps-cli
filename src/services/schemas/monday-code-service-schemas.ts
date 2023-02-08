@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const baseResponseHttpMetaDataSchema = z.object({
   statusCode: z.number(),
-  headers: z.record(z.string(), z.string()),
+  headers: z.record(z.string(), z.array(z.string()).or(z.string())),
 });
 
 export const baseErrorResponseSchema = z.object({
