@@ -28,7 +28,6 @@ export const getSignedStorageUrl = async (accessToken: string, appFeatureId: num
       throw error;
     }
 
-    logger.debug(error);
     throw new Error('Failed to build remote location for upload.');
   }
 };
