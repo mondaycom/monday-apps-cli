@@ -81,7 +81,7 @@ export default class Push extends BaseCommand {
       spinner.setText('Project uploaded successful, starting the deployment.');
 
       const appFeatureStatus = await getAppFeatureIdStatus(accessToken, args.appFeatureId, TimeInMs.second * 5, {
-        ttl: TimeInMs.minute * 5,
+        ttl: TimeInMs.minute * 30,
         progressLogger: (message: string) => {
           spinner.setText(message);
         },
