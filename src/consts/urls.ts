@@ -1,5 +1,5 @@
 export const appFeatureIdDeploymentUrl = (appFeatureId: number): string => {
-  return `/deployments/appFeature/${appFeatureId}`;
+  return `/deployments/appfeature/${appFeatureId}`;
 };
 
 export const getAppFeatureDeploymentUrl = (appFeatureId: number): string => {

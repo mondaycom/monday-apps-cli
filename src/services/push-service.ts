@@ -23,6 +23,7 @@ export const getSignedStorageUrl = async (accessToken: string, appFeatureId: num
     );
     return response.signed;
   } catch (error: any | ErrorMondayCode) {
+    logger.debug(error);
     if (error instanceof ErrorMondayCode) {
       throw error;
     }
@@ -64,6 +65,8 @@ export const getAppFeatureIdStatus = async (
         DeploymentStatusTypesSchema.started,
         DeploymentStatusTypesSchema.pending,
         DeploymentStatusTypesSchema.building,
+        DeploymentStatusTypesSchema['building-infra'],
+        DeploymentStatusTypesSchema['building-app'],
       ];
       const response = await getAppFeatureStatusInternal();
       if (statusesToKeepPolling.includes(response.status)) {
