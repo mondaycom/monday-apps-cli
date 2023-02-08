@@ -23,6 +23,7 @@ export const getSignedStorageUrl = async (accessToken: string, appFeatureId: num
     );
     return response.signed;
   } catch (error: any | ErrorMondayCode) {
+    logger.debug(error);
     if (error instanceof ErrorMondayCode) {
       throw error;
     }
