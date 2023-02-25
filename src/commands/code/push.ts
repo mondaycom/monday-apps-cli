@@ -1,12 +1,11 @@
 import { Flags } from '@oclif/core';
 import { ConfigService } from '../../services/config-service.js';
-import Logger from '../../utils/logger.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { PushCommandArguments } from '../../types/commands/push.js';
 import { getAppFeatureIdStatus, getSignedStorageUrl, uploadFileToStorage } from '../../services/push-service.js';
 import { ACCESS_TOKEN_NOT_FOUND } from '../../consts/messages.js';
 import { readFileData, createTarGzArchive } from '../../services/files-service.js';
-import logger from '../../utils/logger.js';
+import Logger from '../../utils/logger.js';
 import { BaseCommand } from '../base-command.js';
 import { deploymentStatusTypesSchema } from '../../services/schemas/push-service-schemas.js';
 import { spinner } from '../../services/push-spinner-service.js';
@@ -28,7 +27,7 @@ const MESSAGES = {
 const handleFileToUpload = async (directoryPath?: string): Promise<string> => {
   if (!directoryPath) {
     const currentDirectoryPath = getCurrentWorkingDirectory();
-    logger.debug(`Directory path not provided using current directory: ${currentDirectoryPath}`);
+    Logger.debug(`Directory path not provided using current directory: ${currentDirectoryPath}`);
     directoryPath = currentDirectoryPath;
   }
 
@@ -95,7 +94,7 @@ export default class Push extends BaseCommand {
         spinner.setError('Something went wrong, the deployment url is missing.');
       }
     } catch (error: any) {
-      logger.debug(error);
+      Logger.debug(error);
       spinner.setError(`${ERROR_ON_DEPLOYMENT} "${(error as Error).message}"`);
     } finally {
       spinner.clear();
