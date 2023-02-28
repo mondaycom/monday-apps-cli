@@ -1,7 +1,7 @@
-import Logger from '../utils/logger.js';
-import { ErrorMondayCode } from '../types/errors/index.js';
-import { ClientChannel } from '../types/services/stats-service.js';
+import logger from '../utils/logger.js';
+import { ClientChannel } from '../types/services/notification-service.js';
 import Pusher from 'pusher-js';
+import Channel from 'pusher-js/types/src/core/channels/channel';
 
 export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
   return new Promise(resolve => {
@@ -10,35 +10,38 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
         throw new Error('ClientChannel is missing.');
       }
 
+      if (!clientChannel.credentials) {
+        throw new Error('ClientChannel credentials are missing.');
+      }
+
       const writePusherLogs = (data: any): void => {
-        console.log(data);
+        logger.log(data);
       };
 
-      const disconnect = (channel: any): void => {
+      const disconnect = (channel: Channel): void => {
         if (channel) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
           channel.unsubscribe();
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+
           channel.unbind_all();
         }
 
         resolve();
-        console.log('Closed connection');
+        logger.log('Closed connection');
       };
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
 
       Pusher.logToConsole = true;
       Pusher.log = msg => {
-        Logger.debug(msg);
+        logger.debug(msg);
       };
 
-      const pusher = new Pusher(clientChannel.credentials!.key, {
+      const pusher = new Pusher(clientChannel.credentials.key, {
         cluster: clientChannel.cluster,
       });
 
       const channel = pusher.subscribe(clientChannel.channelName);
-      channel.bind('my-event', function (data: any) {
+      channel.bind(clientChannel.channelEvents[0], function (data: any) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         switch (data?.type) {
           case 'log': {
@@ -53,17 +56,14 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
           }
         }
       });
-      console.log('Started to listen to logs');
+      logger.log('Started to listen to logs');
       setTimeout(() => {
-        // disconnect(channel);
+        disconnect(channel);
       }, clientChannel.ttl * 1000);
-    } catch (error: any | ErrorMondayCode) {
-      Logger.debug(error);
-      if (error instanceof ErrorMondayCode) {
-        throw error;
-      }
+    } catch (error: any) {
+      logger.debug(error);
 
-      throw new Error('Failed to messages stream channel.');
+      throw new Error(`Failed to stream messages to channel "${clientChannel.channelName}"`);
     }
   });
 };

@@ -3,7 +3,7 @@ import path from 'node:path';
 import glob from 'glob';
 import archiver from 'archiver';
 import parseGitIgnore from 'parse-gitignore';
-import Logger from '../utils/logger.js';
+import logger from '../utils/logger.js';
 
 export const readFileData = (filePath: string): Buffer => {
   if (!checkIfFileExists(filePath)) {
@@ -25,7 +25,7 @@ export const getFileExtension = (filePath: string): string => {
 export const createTarGzArchive = async (directoryPath: string, fileName = 'code'): Promise<string> => {
   const DEBUG_TAG = 'create_archive';
   try {
-    Logger.debug(`${DEBUG_TAG} - Check directory exists`, { directoryPath });
+    logger.debug(`${DEBUG_TAG} - Check directory exists`, { directoryPath });
     const directoryExists = fs.existsSync(directoryPath);
     if (!directoryExists) {
       throw new Error(`Directory not found: ${directoryPath}`);
@@ -39,26 +39,26 @@ export const createTarGzArchive = async (directoryPath: string, fileName = 'code
     await compressDirectoryToTarGz(directoryPath, archivePath, pathsToIgnore);
     return archivePath;
   } catch (error) {
-    Logger.debug(DEBUG_TAG, error);
+    logger.debug(DEBUG_TAG, error);
     throw new Error('Failed in creating archive');
   }
 };
 
 const getFilesToExcludeForGitIgnore = (directoryPath: string): string[] => {
   const DEBUG_TAG = '.gitignore';
-  Logger.debug(`${DEBUG_TAG} - Searching for .gitignore file`);
+  logger.debug(`${DEBUG_TAG} - Searching for .gitignore file`);
   const searchPattern = `${directoryPath}/**/.gitignore`;
   const [gitIgnorePath] = glob.sync(searchPattern);
   if (gitIgnorePath) {
-    Logger.debug(`${DEBUG_TAG} - Found .gitignore in: ${gitIgnorePath}`);
-    Logger.debug(`${DEBUG_TAG} - Creating exclude files list`);
+    logger.debug(`${DEBUG_TAG} - Found .gitignore in: ${gitIgnorePath}`);
+    logger.debug(`${DEBUG_TAG} - Creating exclude files list`);
     const parsedGitIgnore = parseGitIgnore.parse(gitIgnorePath);
-    Logger.debug(`${DEBUG_TAG} - validating and aligning exclude files list`);
+    logger.debug(`${DEBUG_TAG} - validating and aligning exclude files list`);
     const filesToExclude = alignPatternsForArchive(parsedGitIgnore?.patterns, directoryPath);
     return filesToExclude;
   }
 
-  Logger.debug(`${DEBUG_TAG} - No .gitignore found`);
+  logger.debug(`${DEBUG_TAG} - No .gitignore found`);
   return [];
 };
 
@@ -87,7 +87,7 @@ const compressDirectoryToTarGz = async (
   pathsToIgnore?: string[],
 ): Promise<string> => {
   const DEBUG_TAG = 'archive';
-  Logger.debug(`${DEBUG_TAG} - Starting`, { directoryPath, archivePath });
+  logger.debug(`${DEBUG_TAG} - Starting`, { directoryPath, archivePath });
 
   const outputStream = fs.createWriteStream(archivePath);
   const archive = archiver('tar', {
@@ -97,23 +97,23 @@ const compressDirectoryToTarGz = async (
     },
   });
 
-  Logger.debug(`${DEBUG_TAG} - Initialized`);
+  logger.debug(`${DEBUG_TAG} - Initialized`);
   await new Promise((resolve, reject) => {
     archive.pipe(outputStream);
-    Logger.debug(`${DEBUG_TAG} - Added paths to ignore`, pathsToIgnore);
+    logger.debug(`${DEBUG_TAG} - Added paths to ignore`, pathsToIgnore);
     archive.glob('**/*', {
       cwd: directoryPath,
       ignore: pathsToIgnore,
       nodir: true,
       dot: true,
     });
-    Logger.debug(`${DEBUG_TAG} - Added directory`);
+    logger.debug(`${DEBUG_TAG} - Added directory`);
 
     outputStream.on('close', resolve);
     archive.on('error', reject);
     archive.finalize().catch(reject);
   });
-  Logger.debug(`${DEBUG_TAG} - created successfully`);
+  logger.debug(`${DEBUG_TAG} - created successfully`);
 
   return archivePath;
 };

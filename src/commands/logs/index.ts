@@ -1,23 +1,28 @@
 import { Flags } from '@oclif/core';
 import { PromptService } from '../../services/prompt-service.js';
-import { logsStream } from '../../services/stats-service.js';
+import { logsStream } from '../../services/notification-service.js';
 import { BaseCommand } from '../base-command.js';
 import { APP_FEATURE_ID_TO_ENTER } from '../code/push.js';
-import { LogsCommandArguments } from '../../types/commands/logs.js';
+import { LogsCommandArguments, LogType } from '../../types/commands/logs.js';
 import { ConfigService } from '../../services/config-service.js';
-import Logger from '../../utils/logger.js';
+import logger from '../../utils/logger.js';
 import { ACCESS_TOKEN_NOT_FOUND } from '../../consts/messages.js';
 import { streamMessages } from '../../services/client-channel-service.js';
 
-export const LOGS_TYPE_TO_LISTEN = 'Logs type: "http" for http events, "console" for stdout';
+export const LOGS_TYPE_TO_LISTEN_PROMPT_MESSAGE = 'Logs type: "http" for http events, "console" for stdout';
 
 const appFeaturePrompt = async () => PromptService.promptInputNumber(APP_FEATURE_ID_TO_ENTER, true);
 
-const logsTypePrompt = async () => PromptService.promptList(LOGS_TYPE_TO_LISTEN, ['http', 'console'], 'console');
+/// / Preparation when we expose HTTP events
+// const logsTypePrompt = async () =>
+//   PromptService.promptList(LOGS_TYPE_TO_LISTEN_PROMPT_MESSAGE, LOG_TYPES, 'console');
+
 export default class Logs extends BaseCommand {
   static description = 'Stream logs';
 
-  static examples = ['<%= config.bin %> <%= command.id %> -i APP FEATURE ID TO STREAM LOGS -t LOGS TYPE TO WATCH'];
+  /// / Preparation when we expose HTTP events
+  // static examples = ['<%= config.bin %> <%= command.id %> -i APP FEATURE ID TO STREAM LOGS -t LOGS TYPE TO WATCH'];
+  static examples = ['<%= config.bin %> <%= command.id %> -i APP FEATURE ID TO STREAM LOGS']; // -t LOGS TYPE TO WATCH'];
 
   static flags = {
     ...BaseCommand.globalFlags,
@@ -27,7 +32,7 @@ export default class Logs extends BaseCommand {
     }),
     logsType: Flags.string({
       char: 't',
-      description: LOGS_TYPE_TO_LISTEN,
+      description: LOGS_TYPE_TO_LISTEN_PROMPT_MESSAGE,
     }),
   };
 
@@ -35,7 +40,7 @@ export default class Logs extends BaseCommand {
   public async run(): Promise<void> {
     const accessToken = ConfigService.getConfigDataByKey('accessToken');
     if (!accessToken) {
-      Logger.error(ACCESS_TOKEN_NOT_FOUND);
+      logger.error(ACCESS_TOKEN_NOT_FOUND);
       return;
     }
 
@@ -43,11 +48,11 @@ export default class Logs extends BaseCommand {
 
     const args: LogsCommandArguments = {
       appFeatureId: flags.appFeatureId || Number(await appFeaturePrompt()),
-      logsType: flags.logsType || (await logsTypePrompt()),
+      logsType: LogType.CONSOLE, // flags.logsType || (await logsTypePrompt()),
     };
 
-    const clientChannel = await logsStream(args.appFeatureId, args.logsType.toLowerCase());
+    const clientChannel = await logsStream(args.appFeatureId, args.logsType);
     await streamMessages(clientChannel);
-    process.exit(0);
+    this.exit(0);
   }
 }

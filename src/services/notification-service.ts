@@ -4,13 +4,14 @@ import { execute } from './monday-code-service.js';
 import { HttpMethodTypes } from '../types/services/monday-code-service.js';
 import logger from '../utils/logger.js';
 import { ErrorMondayCode } from '../types/errors/index.js';
-import { clientChannelSchema } from './schemas/stats-schema.js';
-import { ClientChannel } from '../types/services/stats-service.js';
+import { clientChannelSchema } from './schemas/notification-schema.js';
+import { ClientChannel } from '../types/services/notification-service.js';
+import { LogType } from '../types/commands/logs.js';
 
-export const logsStream = async (appFeatureId: number, logsType: string): Promise<ClientChannel> => {
+export const logsStream = async (appFeatureId: number, logsType: LogType): Promise<ClientChannel> => {
   try {
-    const baseSignUrl = logsStreamForAppFeatureIdUrl(appFeatureId);
-    const url = urlBuilder(baseSignUrl);
+    const logsStreamForUrl = logsStreamForAppFeatureIdUrl(appFeatureId);
+    const url = urlBuilder(logsStreamForUrl);
     const response = await execute<ClientChannel>(
       {
         url,

@@ -12,7 +12,7 @@
     "target": "ES2022",
     "lib": [
       "ES2022",
-      "DOM"
+      "DOM" /*Added it to support PUSHER-JS lib*/
     ]
   },
   "include": [

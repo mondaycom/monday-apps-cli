@@ -1,5 +1,5 @@
 import { Flags } from '@oclif/core';
-import Logger from '../../utils/logger.js';
+import logger from '../../utils/logger.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { ConfigService, CONFIG_NAME } from '../../services/config-service.js';
 import { InitCommandArguments } from '../../types/commands/init.js';
@@ -36,10 +36,10 @@ export default class Init extends BaseCommand {
 
     try {
       ConfigService.init(args, this.config.configDir, { override: true, setInProcessEnv: true });
-      Logger.info(`'${CONFIG_NAME}' created`);
+      logger.info(`'${CONFIG_NAME}' created`);
     } catch (error) {
-      Logger.debug((error as Error).message);
-      Logger.error(`'${CONFIG_NAME}' failed to initialize`);
+      logger.debug((error as Error).message);
+      logger.error(`'${CONFIG_NAME}' failed to initialize`);
     }
   }
 }

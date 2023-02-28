@@ -1,4 +1,4 @@
 import { z } from 'zod';
-import { clientChannelSchema } from '../../services/schemas/stats-schema';
+import { clientChannelSchema } from '../../services/schemas/notification-schema.js';
 
 export type ClientChannel = z.infer<typeof clientChannelSchema>;
