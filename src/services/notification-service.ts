@@ -24,7 +24,7 @@ export const logsStream = async (appFeatureId: number, logsType: LogType): Promi
       clientChannelSchema,
     );
     return response;
-  } catch (error: any | ErrorMondayCode) {
+  } catch (error: any) {
     logger.debug(error);
     if (error instanceof ErrorMondayCode) {
       throw error;
