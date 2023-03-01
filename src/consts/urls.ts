@@ -17,5 +17,5 @@ export const appFeatureIdLogstUrl = (appFeatureId: number): string => {
 };
 
 export const logsStreamForAppFeatureIdUrl = (appFeatureId: number, logsType: LogType): string => {
-  return `${appFeatureIdLogstUrl(appFeatureId)}/logsStream?type=${logsType}`;
+  return `${appFeatureIdLogstUrl(appFeatureId)}/channel?type=${logsType}`;
 };
