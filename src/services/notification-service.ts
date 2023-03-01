@@ -10,16 +10,13 @@ import { LogType } from '../types/commands/logs.js';
 
 export const logsStream = async (appFeatureId: number, logsType: LogType): Promise<ClientChannel> => {
   try {
-    const logsStreamForUrl = logsStreamForAppFeatureIdUrl(appFeatureId);
+    const logsStreamForUrl = logsStreamForAppFeatureIdUrl(appFeatureId, logsType);
     const url = urlBuilder(logsStreamForUrl);
     const response = await execute<ClientChannel>(
       {
         url,
-        body: {
-          logsType,
-        },
         headers: { Accept: 'application/json' },
-        method: HttpMethodTypes.POST,
+        method: HttpMethodTypes.GET,
       },
       clientChannelSchema,
     );

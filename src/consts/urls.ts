@@ -1,3 +1,5 @@
+import { LogType } from '../types/commands/logs';
+
 export const appFeatureIdDeploymentUrl = (appFeatureId: number): string => {
   return `/deployments/appfeature/${appFeatureId}`;
 };
@@ -14,6 +16,6 @@ export const appFeatureIdLogstUrl = (appFeatureId: number): string => {
   return `/logs/appfeature/${appFeatureId}`;
 };
 
-export const logsStreamForAppFeatureIdUrl = (appFeatureId: number): string => {
-  return `${appFeatureIdLogstUrl(appFeatureId)}/logsStream`;
+export const logsStreamForAppFeatureIdUrl = (appFeatureId: number, logsType: LogType): string => {
+  return `${appFeatureIdLogstUrl(appFeatureId)}/logsStream?type=${logsType}`;
 };
