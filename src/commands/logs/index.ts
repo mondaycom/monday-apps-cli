@@ -13,9 +13,8 @@ export const LOGS_TYPE_TO_LISTEN_PROMPT_MESSAGE = 'Logs type: "http" for http ev
 
 const appFeaturePrompt = async () => PromptService.promptInputNumber(APP_FEATURE_ID_TO_ENTER, true);
 
-/// / Preparation when we expose HTTP events
-// const logsTypePrompt = async () =>
-//   PromptService.promptList(LOGS_TYPE_TO_LISTEN_PROMPT_MESSAGE, LOG_TYPES, 'console');
+const logsTypePrompt = async () =>
+  PromptService.promptList(LOGS_TYPE_TO_LISTEN_PROMPT_MESSAGE, [LogType.CONSOLE, LogType.HTTP], LogType.CONSOLE);
 
 export default class Logs extends BaseCommand {
   static description = 'Stream logs';
@@ -48,7 +47,7 @@ export default class Logs extends BaseCommand {
 
     const args: LogsCommandArguments = {
       appFeatureId: flags.appFeatureId || Number(await appFeaturePrompt()),
-      logsType: LogType.CONSOLE, // flags.logsType || (await logsTypePrompt()),
+      logsType: (flags.logsType || (await logsTypePrompt())) as LogType,
     };
 
     const clientChannel = await logsStream(args.appFeatureId, args.logsType);

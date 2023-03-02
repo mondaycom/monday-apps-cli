@@ -1,5 +1,5 @@
 export enum LogType {
-  // HTTP = 'http',
+  HTTP = 'http',
   CONSOLE = 'console',
 }
 
