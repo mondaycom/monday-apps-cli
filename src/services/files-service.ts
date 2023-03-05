@@ -33,7 +33,7 @@ export const createTarGzArchive = async (directoryPath: string, fileName = 'code
 
     const archivePath = `${directoryPath}/${fileName}.tar.gz`;
     const fullFileName = `**/${fileName}.tar.gz`;
-    const pathsToIgnoreFromGitIgnore = getFilesToExcludeForGitIgnore(directoryPath);
+    const pathsToIgnoreFromGitIgnore = getFilesToExcludeForArchive(directoryPath);
     const pathsToIgnore = [...pathsToIgnoreFromGitIgnore, archivePath, fullFileName];
 
     await compressDirectoryToTarGz(directoryPath, archivePath, pathsToIgnore);
@@ -44,7 +44,7 @@ export const createTarGzArchive = async (directoryPath: string, fileName = 'code
   }
 };
 
-const getFilesToExcludeForGitIgnore = (directoryPath: string): string[] => {
+const getFilesToExcludeForArchive = (directoryPath: string): string[] => {
   const DEBUG_TAG = '.gitignore';
   logger.debug(`${DEBUG_TAG} - Searching for .gitignore file`);
   const searchPattern = `${directoryPath}/**/.gitignore`;
@@ -60,7 +60,7 @@ const getFilesToExcludeForGitIgnore = (directoryPath: string): string[] => {
 
   logger.debug(`${DEBUG_TAG} - No .gitignore found`);
   return [];
-};
+}
 
 const alignPatternsForArchive = (patterns: string[], directoryPath: string): string[] => {
   const alignedPatterns = patterns?.reduce<string[]>((realPatterns, pattern) => {
