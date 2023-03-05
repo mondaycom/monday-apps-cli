@@ -1,6 +1,5 @@
 import { Flags } from '@oclif/core';
 import { ConfigService } from '../../services/config-service.js';
-import Logger from '../../utils/logger.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { PushCommandArguments } from '../../types/commands/push.js';
 import { getAppFeatureIdStatus, getSignedStorageUrl, uploadFileToStorage } from '../../services/push-service.js';
@@ -60,7 +59,7 @@ export default class Push extends BaseCommand {
   public async run(): Promise<void> {
     const accessToken = ConfigService.getConfigDataByKey('accessToken');
     if (!accessToken) {
-      Logger.error(ACCESS_TOKEN_NOT_FOUND);
+      logger.error(ACCESS_TOKEN_NOT_FOUND);
       return;
     }
 
