@@ -20,8 +20,7 @@ export default class Logs extends BaseCommand {
   static description = 'Stream logs';
 
   /// / Preparation when we expose HTTP events
-  // static examples = ['<%= config.bin %> <%= command.id %> -i APP FEATURE ID TO STREAM LOGS -t LOGS TYPE TO WATCH'];
-  static examples = ['<%= config.bin %> <%= command.id %> -i APP FEATURE ID TO STREAM LOGS']; // -t LOGS TYPE TO WATCH'];
+  static examples = ['<%= config.bin %> <%= command.id %> -i APP FEATURE ID TO STREAM LOGS -t LOGS TYPE TO WATCH'];
 
   static flags = {
     ...BaseCommand.globalFlags,

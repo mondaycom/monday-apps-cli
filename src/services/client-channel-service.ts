@@ -2,6 +2,7 @@ import logger from '../utils/logger.js';
 import { ClientChannel } from '../types/services/notification-service.js';
 import Pusher from 'pusher-js';
 import Channel from 'pusher-js/types/src/core/channels/channel';
+import { StreamLogType, StreamMessage } from '../types/services/client-channel-service.js';
 
 export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
   return new Promise(resolve => {
@@ -28,8 +29,6 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
         resolve();
         logger.log('Closed connection');
       };
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
 
       Pusher.logToConsole = true;
       Pusher.log = msg => {
@@ -41,21 +40,21 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
       });
 
       const channel = pusher.subscribe(clientChannel.channelName);
-      channel.bind(clientChannel.channelEvents[0], function (data: any) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      channel.bind(clientChannel.channelEvents[0], function (data: StreamMessage) {
         switch (data?.type) {
-          case 'log': {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          case StreamLogType.HTTP:
+          case StreamLogType.CONSOLE: {
             writePusherLogs(data.data);
             break;
           }
 
-          case 'disconnect': {
+          case StreamLogType.DISCONNECT: {
             disconnect(channel);
             break;
           }
         }
       });
+
       logger.log('Started to listen to logs');
       setTimeout(() => {
         disconnect(channel);
