@@ -45,20 +45,25 @@ export const createTarGzArchive = async (directoryPath: string, fileName = 'code
 };
 
 const getFilesToExcludeForArchive = (directoryPath: string): string[] => {
-  const DEBUG_TAG = '.gitignore';
-  logger.debug(`${DEBUG_TAG} - Searching for .gitignore file`);
-  const searchPattern = `${directoryPath}/**/.gitignore`;
-  const [gitIgnorePath] = glob.sync(searchPattern);
-  if (gitIgnorePath) {
-    logger.debug(`${DEBUG_TAG} - Found .gitignore in: ${gitIgnorePath}`);
+  const mcodeIgnoreFiles = findIgnoredFiles(directoryPath, '.mcodeignore');
+  return mcodeIgnoreFiles.length > 0 ? mcodeIgnoreFiles : findIgnoredFiles(directoryPath, '.gitignore');
+};
+
+const findIgnoredFiles = (directoryPath: string, ignoreFile: string): string[] => {
+  const DEBUG_TAG = 'ignore_files_for_archive';
+  logger.debug(`${DEBUG_TAG} - Searching for ${ignoreFile} file`);
+  const ignoreSearchPattern = `${directoryPath}/**/${ignoreFile}`;
+  const [ignorePath] = glob.sync(ignoreSearchPattern);
+  if (ignorePath) {
+    logger.debug(`${DEBUG_TAG} - Found ${ignoreFile} in: ${ignorePath}`);
     logger.debug(`${DEBUG_TAG} - Creating exclude files list`);
-    const parsedGitIgnore = parseGitIgnore.parse(gitIgnorePath);
+    const parsedIgnore = parseGitIgnore.parse(ignorePath);
     logger.debug(`${DEBUG_TAG} - validating and aligning exclude files list`);
-    const filesToExclude = alignPatternsForArchive(parsedGitIgnore?.patterns, directoryPath);
+    const filesToExclude = alignPatternsForArchive(parsedIgnore?.patterns, directoryPath);
     return filesToExclude;
   }
 
-  logger.debug(`${DEBUG_TAG} - No .gitignore found`);
+  logger.debug(`${DEBUG_TAG} - No ${ignoreFile} file found`);
   return [];
 }
 
