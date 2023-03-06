@@ -54,11 +54,14 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
           }
         }
       });
-
-      logger.log('Started to listen to logs');
-      setTimeout(() => {
-        disconnect(channel);
-      }, clientChannel.ttl * 1000);
+      logger.log('Opening communication a channel...');
+      logger.debug(`Trying to listen to channel: ${clientChannel.channelName}`);
+      pusher.connection.bind('connected', () => {
+        logger.log('Started to listen to logs');
+        setTimeout(() => {
+          disconnect(channel);
+        }, clientChannel.ttl * 1000);
+      });
     } catch (error: any) {
       logger.debug(error);
 
