@@ -18,11 +18,13 @@ export type LogItem = {
   request?: {
     url: string;
     method: string;
-    status: number;
     size: number;
     userAgent: string;
     remoteIp: string;
   };
-  response?: { size: number };
+  response?: {
+    status: number;
+    size: number;
+  };
   timestamp: Date;
 };
