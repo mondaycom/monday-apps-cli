@@ -1,9 +1,13 @@
+import Logger from '../utils/logger.js';
+
 export const getNodeEnv = (): string => {
   return process.env.NODE_ENV!;
 };
 
 export const geMondayCodeDomain = (): string => {
-  return process.env.MONDAY_CODE_DOMAIN! || 'https://monday-code.monday.com';
+  const mondayCodeDomain = process.env.MONDAY_CODE_DOMAIN! || 'https://monday-code.monday.com';
+  Logger.debug(`geMondayCodeDomain: ${mondayCodeDomain}`);
+  return mondayCodeDomain;
 };
 
 export const initCurrentWorkingDirectory = (): string => {

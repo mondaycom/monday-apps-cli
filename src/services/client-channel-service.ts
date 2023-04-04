@@ -3,6 +3,7 @@ import { ClientChannel } from '../types/services/notification-service.js';
 import Pusher from 'pusher-js';
 import Channel from 'pusher-js/types/src/core/channels/channel';
 import { StreamLogType, StreamMessage } from '../types/services/client-channel-service.js';
+import { LogItem } from '../types/communication/log-item-types.js';
 
 export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
   return new Promise(resolve => {
@@ -15,8 +16,10 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
         throw new Error('ClientChannel credentials are missing.');
       }
 
-      const writePusherLogs = (data: any): void => {
-        logger.log(data);
+      const writePusherLogs = (data: LogItem[]): void => {
+        data?.map(logItem => {
+          return logger.log(`[${logItem.type}]${JSON.stringify(logItem)}`);
+        });
       };
 
       const disconnect = (channel: Channel): void => {
@@ -44,7 +47,7 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
         switch (data?.type) {
           case StreamLogType.HTTP:
           case StreamLogType.CONSOLE: {
-            writePusherLogs(data.data);
+            writePusherLogs(data.data as LogItem[]);
             break;
           }
 
@@ -54,10 +57,10 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
           }
         }
       });
-      logger.log('Opening communication a channel...');
+      logger.log('Opening communication channel...');
       logger.debug(`Trying to listen to channel: ${clientChannel.channelName}`);
       pusher.connection.bind('connected', () => {
-        logger.log('Started to listen to logs');
+        logger.log('Started logs listening...');
         setTimeout(() => {
           disconnect(channel);
         }, clientChannel.ttl * 1000);
