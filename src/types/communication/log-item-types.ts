@@ -1,5 +1,5 @@
 export enum LogItemType {
-  STD = 'console',
+  CONSOLE = 'console',
   HTTP_REQUESTS = 'http',
 }
 
