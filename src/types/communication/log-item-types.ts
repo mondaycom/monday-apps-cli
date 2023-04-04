@@ -17,7 +17,6 @@ export type LogItem = {
   message?: string | null;
   request?: {
     url: string;
-    queryParams: string | null;
     method: string;
     status: number;
     size: number;
