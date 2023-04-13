@@ -14,7 +14,7 @@ export enum LogItemSeverity {
 export type LogItem = {
   type: LogItemType;
   severity?: LogItemSeverity;
-  message?: string | null;
+  message?: string;
   request?: {
     url: string;
     method: string;
