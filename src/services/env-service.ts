@@ -3,7 +3,8 @@ export const getNodeEnv = (): string => {
 };
 
 export const geMondayCodeDomain = (): string => {
-  return process.env.MONDAY_CODE_DOMAIN! || 'https://monday-code.monday.com';
+  const mondayCodeDomain = process.env.MONDAY_CODE_DOMAIN! || 'https://monday-code.monday.com';
+  return mondayCodeDomain;
 };
 
 export const initCurrentWorkingDirectory = (): string => {
