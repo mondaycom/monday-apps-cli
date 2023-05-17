@@ -3,7 +3,7 @@ import { ConfigService } from '../../services/config-service.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { PushCommandArguments } from '../../types/commands/push.js';
 import { getAppFeatureIdStatus, getSignedStorageUrl, uploadFileToStorage } from '../../services/push-service.js';
-import { ACCESS_TOKEN_NOT_FOUND } from '../../consts/messages.js';
+import { ACCESS_TOKEN_NOT_FOUND, APP_FEATURE_ID_TO_ENTER } from '../../consts/messages.js';
 import { readFileData, createTarGzArchive } from '../../services/files-service.js';
 import logger from '../../utils/logger.js';
 import { BaseCommand } from '../base-command.js';
@@ -15,7 +15,6 @@ import { getCurrentWorkingDirectory } from '../../services/env-service.js';
 export const ERROR_ON_DEPLOYMENT = 'Deployment process has failed.';
 export const DIRECTORY_TO_COMPRESS_LOCATION =
   'Directory path of you project in your machine. If not included will use the current working directory.';
-export const APP_FEATURE_ID_TO_ENTER = 'The app feature id of your app';
 
 const appFeaturePrompt = async () => PromptService.promptInputNumber(APP_FEATURE_ID_TO_ENTER, true);
 

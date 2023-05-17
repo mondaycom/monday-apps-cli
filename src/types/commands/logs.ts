@@ -4,6 +4,6 @@ export enum LogType {
 }
 
 export type LogsCommandArguments = {
-  appFeatureId: number;
+  appVersionId: number;
   logsType: LogType;
 };
