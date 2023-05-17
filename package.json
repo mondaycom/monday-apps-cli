@@ -1,6 +1,6 @@
 {
   "name": "monday-code-cli",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "A cli tool to manage monday-code projects in monday.com",
   "author": "monday.com Apps Team",
   "type": "module",

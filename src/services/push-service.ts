@@ -1,5 +1,5 @@
 import { getAppFeatureDeploymentUrl, deploymentSignUrl } from '../consts/urls.js';
-import urlBuilder from '../utils/urls-builder.js';
+import { mCodeUrlBuilder } from '../utils/urls-builder.js';
 import { AppFeatureDeploymentStatus, DeploymentStatusTypesSchema, SignedUrl } from '../types/services/push-service.js';
 import axios from 'axios';
 import { execute } from './monday-code-service.js';
@@ -12,7 +12,7 @@ import { appFeatureDeploymentStatusSchema, signedUrlSchema } from './schemas/pus
 export const getSignedStorageUrl = async (accessToken: string, appFeatureId: number): Promise<string> => {
   try {
     const baseSignUrl = deploymentSignUrl(appFeatureId);
-    const url = urlBuilder(baseSignUrl);
+    const url = mCodeUrlBuilder(baseSignUrl);
     const response = await execute<SignedUrl>(
       {
         url,
@@ -42,7 +42,7 @@ export const getAppFeatureIdStatus = async (
   const getAppFeatureStatusInternal = async () => {
     try {
       const baseFeatureIdStatusUrl = getAppFeatureDeploymentUrl(appFeatureId);
-      const url = urlBuilder(baseFeatureIdStatusUrl);
+      const url = mCodeUrlBuilder(baseFeatureIdStatusUrl);
       const response = await execute<AppFeatureDeploymentStatus>(
         {
           url,
