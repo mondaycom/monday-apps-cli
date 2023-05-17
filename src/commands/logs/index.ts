@@ -24,7 +24,7 @@ export default class Logs extends BaseCommand {
   static flags = {
     ...BaseCommand.globalFlags,
     appVersionId: Flags.integer({
-      char: 'v',
+      char: 'i',
       description: APP_VERSION_ID_TO_ENTER,
     }),
     logsType: Flags.string({
