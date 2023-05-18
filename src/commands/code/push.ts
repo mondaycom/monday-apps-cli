@@ -2,8 +2,8 @@ import { Flags } from '@oclif/core';
 import { ConfigService } from '../../services/config-service.js';
 import { PromptService } from '../../services/prompt-service.js';
 import { PushCommandArguments } from '../../types/commands/push.js';
-import { getAppFeatureIdStatus, getSignedStorageUrl, uploadFileToStorage } from '../../services/push-service.js';
-import { ACCESS_TOKEN_NOT_FOUND, APP_FEATURE_ID_TO_ENTER } from '../../consts/messages.js';
+import { getAppVersionIdStatus, getSignedStorageUrl, uploadFileToStorage } from '../../services/push-service.js';
+import { ACCESS_TOKEN_NOT_FOUND, APP_VERSION_ID_TO_ENTER } from '../../consts/messages.js';
 import { readFileData, createTarGzArchive } from '../../services/files-service.js';
 import logger from '../../utils/logger.js';
 import { BaseCommand } from '../base-command.js';
@@ -16,29 +16,41 @@ export const ERROR_ON_DEPLOYMENT = 'Deployment process has failed.';
 export const DIRECTORY_TO_COMPRESS_LOCATION =
   'Directory path of you project in your machine. If not included will use the current working directory.';
 
-const appFeaturePrompt = async () => PromptService.promptInputNumber(APP_FEATURE_ID_TO_ENTER, true);
+const appVersionPrompt = async () => PromptService.promptInputNumber(APP_VERSION_ID_TO_ENTER, true);
 
 const MESSAGES = {
   directory: DIRECTORY_TO_COMPRESS_LOCATION,
-  appFeatureId: APP_FEATURE_ID_TO_ENTER,
+  appVersionId: APP_VERSION_ID_TO_ENTER,
 };
 
-const handleFileToUpload = async (directoryPath?: string): Promise<string> => {
-  if (!directoryPath) {
-    const currentDirectoryPath = getCurrentWorkingDirectory();
-    logger.debug(`Directory path not provided using current directory: ${currentDirectoryPath}`);
-    directoryPath = currentDirectoryPath;
+const handleFileToUpload = async (directoryPath?: string): Promise<string | undefined> => {
+  try {
+    if (!directoryPath) {
+      const currentDirectoryPath = getCurrentWorkingDirectory();
+      logger.debug(`Directory path not provided using current directory: ${currentDirectoryPath}`);
+      directoryPath = currentDirectoryPath;
+    }
+
+    spinner.setText(`Building asset to deploy from "${directoryPath}" directory`);
+    spinner.start();
+    const archivePath = await createTarGzArchive(directoryPath, 'code');
+    return archivePath;
+  } catch (error) {
+    logger.debug(error);
+    spinner.setError(`${ERROR_ON_DEPLOYMENT} "${(error as Error).message}"`);
+  } finally {
+    spinner.clear();
   }
 
-  return createTarGzArchive(directoryPath, 'code');
+  return;
 };
 
 export default class Push extends BaseCommand {
   static description = 'Push your project to get hosted on monday-code.';
 
   static examples = [
-    '<%= config.bin %> <%= command.id %> -d PROJECT DIRECTORY PATH -i APP FEATURE ID TO PUSH',
-    '<%= config.bin %> <%= command.id %> -i APP FEATURE ID TO PUSH',
+    '<%= config.bin %> <%= command.id %> -d PROJECT DIRECTORY PATH -i APP VERSION ID TO PUSH',
+    '<%= config.bin %> <%= command.id %> -i APP VERSION ID TO PUSH',
   ];
 
   static flags = {
@@ -47,9 +59,9 @@ export default class Push extends BaseCommand {
       char: 'd',
       description: MESSAGES.directory,
     }),
-    appFeatureId: Flags.integer({
+    appVersionId: Flags.integer({
       char: 'i',
-      description: MESSAGES.appFeatureId,
+      description: MESSAGES.appVersionId,
     }),
   };
 
@@ -64,30 +76,36 @@ export default class Push extends BaseCommand {
 
     const { flags } = await this.parse(Push);
 
+    const appVersionId = flags.appVersionId || Number(await appVersionPrompt());
+    const archivePath = await handleFileToUpload(flags.directoryPath);
+    if (!archivePath) {
+      return;
+    }
+
     const args: PushCommandArguments = {
-      filePath: await handleFileToUpload(flags.directoryPath),
-      appFeatureId: flags.appFeatureId || Number(await appFeaturePrompt()),
+      filePath: archivePath,
+      appVersionId,
     };
 
     spinner.start();
     try {
       spinner.setText('Building project remote location.');
-      const signedCloudStorageUrl = await getSignedStorageUrl(accessToken, args.appFeatureId);
+      const signedCloudStorageUrl = await getSignedStorageUrl(accessToken, args.appVersionId);
       const archiveContent = readFileData(args.filePath);
       spinner.setText('Uploading project.');
       await uploadFileToStorage(signedCloudStorageUrl, archiveContent, 'application/zip');
       spinner.setText('Project uploaded successful, starting the deployment.');
 
-      const appFeatureStatus = await getAppFeatureIdStatus(accessToken, args.appFeatureId, TimeInMs.second * 5, {
+      const appVersionStatus = await getAppVersionIdStatus(accessToken, args.appVersionId, TimeInMs.second * 5, {
         ttl: TimeInMs.minute * 30,
         progressLogger: (message: string) => {
           spinner.setText(message);
         },
       });
-      if (appFeatureStatus.status === deploymentStatusTypesSchema.enum.failed) {
-        spinner.setError(appFeatureStatus.error?.message || ERROR_ON_DEPLOYMENT);
-      } else if (appFeatureStatus.deployment) {
-        const deploymentUrl = `Deployment successfully finished, deployment url: ${appFeatureStatus.deployment.url}`;
+      if (appVersionStatus.status === deploymentStatusTypesSchema.enum.failed) {
+        spinner.setError(appVersionStatus.error?.message || ERROR_ON_DEPLOYMENT);
+      } else if (appVersionStatus.deployment) {
+        const deploymentUrl = `Deployment successfully finished, deployment url: ${appVersionStatus.deployment.url}`;
         spinner.setSuccess(deploymentUrl);
       } else {
         spinner.setError('Something went wrong, the deployment url is missing.');

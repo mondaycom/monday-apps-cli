@@ -1,12 +1,12 @@
 import { z } from 'zod';
 import {
-  appFeatureDeploymentStatusSchema,
+  appVersionDeploymentStatusSchema,
   deploymentStatusTypesSchema,
   signedUrlSchema,
 } from '../../services/schemas/push-service-schemas.js';
 
 export type SignedUrl = z.infer<typeof signedUrlSchema>;
 
-export type AppFeatureDeploymentStatus = z.infer<typeof appFeatureDeploymentStatusSchema>;
+export type AppVersionDeploymentStatus = z.infer<typeof appVersionDeploymentStatusSchema>;
 
 export const DeploymentStatusTypesSchema = deploymentStatusTypesSchema.enum;
