@@ -1,16 +1,16 @@
-import { logsStreamForAppVersionIdUrl } from '../consts/urls.js';
-import { appsUrlBuilder } from '../utils/urls-builder.js';
-import { execute } from './monday-code-service.js';
-import { HttpMethodTypes } from '../types/services/monday-code-service.js';
-import logger from '../utils/logger.js';
-import { ErrorMondayCode } from '../types/errors/index.js';
-import { clientChannelSchema } from './schemas/notification-schema.js';
-import { ClientChannel } from '../types/services/notification-service.js';
-import { LogType } from '../types/commands/logs.js';
+import { getLogsStreamForAppVersionIdUrl } from 'consts/urls';
+import { execute } from 'services/monday-code-service';
+import { clientChannelSchema } from 'services/schemas/notification-schema';
+import { LogType } from 'types/commands/logs';
+import { ErrorMondayCode } from 'types/errors';
+import { HttpMethodTypes } from 'types/services/monday-code-service';
+import { ClientChannel } from 'types/services/notification-service';
+import logger from 'utils/logger';
+import { appsUrlBuilder } from 'utils/urls-builder';
 
 export const logsStream = async (appVersionId: number, logsType: LogType): Promise<ClientChannel> => {
   try {
-    const logsStreamForUrl = logsStreamForAppVersionIdUrl(appVersionId, logsType);
+    const logsStreamForUrl = getLogsStreamForAppVersionIdUrl(appVersionId, logsType);
     const url = appsUrlBuilder(logsStreamForUrl);
     const response = await execute<ClientChannel>(
       {

@@ -1,8 +1,9 @@
-import { existsSync, writeFileSync, readFileSync, unlinkSync, mkdirSync } from 'node:fs';
-import { ConfigData, InitConfigOptions } from '../types/services/config-service.js';
+import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { BadConfigError } from '../errors/bad-config-error.js';
-import logger from '../utils/logger.js';
+
+import { BadConfigError } from 'errors/bad-config-error';
+import { ConfigData, InitConfigOptions } from 'types/services/config-service';
+import logger from 'utils/logger';
 
 export const CONFIG_NAME = '.mappsrc';
 const ENCODING = 'utf8';
@@ -18,7 +19,7 @@ const checkConfigExists = (directoryPath: string, fileName = CONFIG_NAME) => {
   return configExists;
 };
 
-const camelToUpperSnakeCase = (str: string) => str.replace(/[A-Z]/g, letter => `_${letter}`).toUpperCase();
+const camelToUpperSnakeCase = (str: string) => str.replaceAll(/[A-Z]/g, letter => `_${letter}`).toUpperCase();
 
 const generateConfigKeyInProcessEnv = (configKey: keyof ConfigData) => {
   const keyInSnakeCase = camelToUpperSnakeCase(configKey);

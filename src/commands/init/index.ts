@@ -1,9 +1,10 @@
 import { Flags } from '@oclif/core';
-import logger from '../../utils/logger.js';
-import { PromptService } from '../../services/prompt-service.js';
-import { ConfigService, CONFIG_NAME } from '../../services/config-service.js';
-import { InitCommandArguments } from '../../types/commands/init.js';
-import { BaseCommand } from '../base-command.js';
+
+import { BaseCommand } from 'commands/base-command';
+import { CONFIG_NAME, ConfigService } from 'services/config-service';
+import { PromptService } from 'services/prompt-service';
+import { InitCommandArguments } from 'types/commands/init';
+import logger from 'utils/logger';
 
 const accessTokenPrompt = async () =>
   PromptService.promptForHiddenInput(

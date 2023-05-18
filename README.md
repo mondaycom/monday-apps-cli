@@ -31,7 +31,7 @@ $ npm install -g monday-code-cli
 $ mapps COMMAND
 running command...
 $ mapps (--version)
-monday-code-cli/0.0.2 darwin-arm64 node-v18.12.1
+monday-code-cli/0.1.1 darwin-arm64 node-v18.12.1
 $ mapps --help [COMMAND]
 USAGE
   $ mapps COMMAND
@@ -40,20 +40,78 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`mapps help [COMMAND]`](#mapps-help-command)
+* [`mapps base-command`](#mapps-base-command)
+* [`mapps code:logs`](#mapps-codelogs)
+* [`mapps code:push`](#mapps-codepush)
+* [`mapps help [COMMANDS]`](#mapps-help-commands)
 * [`mapps init`](#mapps-init)
-* [`mapps login`](#mapps-login)
 
-## `mapps help [COMMAND]`
+## `mapps base-command`
+
+```
+USAGE
+  $ mapps base-command
+```
+
+_See code: [dist/commands/base-command.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.1/dist/commands/base-command.ts)_
+
+## `mapps code:logs`
+
+Stream logs
+
+```
+USAGE
+  $ mapps code:logs [--verbose] [-i <value>] [-t <value>]
+
+FLAGS
+  -i, --appVersionId=<value>  Please enter the app version id of your app:
+  -t, --logsType=<value>      Logs type: "http" for http events, "console" for stdout
+  --verbose                   Print advanced logs (optional).
+
+DESCRIPTION
+  Stream logs
+
+EXAMPLES
+  $ mapps code:logs -i APP VERSION ID TO STREAM LOGS -t LOGS TYPE TO WATCH
+```
+
+_See code: [dist/commands/code/logs.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.1/dist/commands/code/logs.ts)_
+
+## `mapps code:push`
+
+Push your project to get hosted on monday-code.
+
+```
+USAGE
+  $ mapps code:push [--verbose] [-d <value>] [-i <value>]
+
+FLAGS
+  -d, --directoryPath=<value>  Directory path of you project in your machine. If not included will use the current
+                               working directory.
+  -i, --appVersionId=<value>   Please enter the app version id of your app:
+  --verbose                    Print advanced logs (optional).
+
+DESCRIPTION
+  Push your project to get hosted on monday-code.
+
+EXAMPLES
+  $ mapps code:push -d PROJECT DIRECTORY PATH -i APP VERSION ID TO PUSH
+
+  $ mapps code:push -i APP VERSION ID TO PUSH
+```
+
+_See code: [dist/commands/code/push.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.1/dist/commands/code/push.ts)_
+
+## `mapps help [COMMANDS]`
 
 Display help for mapps.
 
 ```
 USAGE
-  $ mapps help [COMMAND] [-n]
+  $ mapps help [COMMANDS] [-n]
 
 ARGUMENTS
-  COMMAND  Command to show help for.
+  COMMANDS  Command to show help for.
 
 FLAGS
   -n, --nested-commands  Include all nested commands in the output.
@@ -62,46 +120,26 @@ DESCRIPTION
   Display help for mapps.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.19/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.9/src/commands/help.ts)_
 
 ## `mapps init`
 
-Initialize monday-code config file - '.mappsrc'
+Initialize monday-code config file - ".mappsrc".
 
 ```
 USAGE
-  $ mapps init [-t <value>]
+  $ mapps init [--verbose] [-t <value>]
 
 FLAGS
   -t, --token=<value>  monday.com api access token (https://developer.monday.com/api-reference/docs/authentication)
+  --verbose            Print advanced logs (optional).
 
 DESCRIPTION
-  Initialize monday-code config file - '.mappsrc'
+  Initialize monday-code config file - ".mappsrc".
 
 EXAMPLES
   $ mapps init -t SECRET_TOKEN
 ```
 
-_See code: [dist/commands/init/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.0.2/dist/commands/init/index.ts)_
-
-## `mapps login`
-
-Login to monday.com to make full use of `mapps`
-
-```
-USAGE
-  $ mapps login [-e <value> -m credentials|SSO|something_else]
-
-FLAGS
-  -e, --email=<value>                            Your monday.com email
-  -m, --method=(credentials|SSO|something_else)  Login method to monday.com
-
-DESCRIPTION
-  Login to monday.com to make full use of `mapps`
-
-EXAMPLES
-  $ mapps login -m credentials -e exa@ple.com
-```
-
-_See code: [dist/commands/login/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.0.2/dist/commands/login/index.ts)_
+_See code: [dist/commands/init/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.1/dist/commands/init/index.ts)_
 <!-- commandsstop -->

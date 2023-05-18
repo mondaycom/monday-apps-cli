@@ -1,9 +1,10 @@
 import { z } from 'zod';
+
 import {
   appVersionDeploymentStatusSchema,
   deploymentStatusTypesSchema,
   signedUrlSchema,
-} from '../../services/schemas/push-service-schemas.js';
+} from 'services/schemas/push-service-schemas';
 
 export type SignedUrl = z.infer<typeof signedUrlSchema>;
 

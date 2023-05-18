@@ -1,4 +1,4 @@
-import { ErrorParams, ErrorParamsValues } from '../types/errors/index.js';
+import { ErrorParams, ErrorParamsValues } from 'types/errors';
 
 export class BaseError extends Error {
   constructor(public message: string, public params: ErrorParams = {}) {

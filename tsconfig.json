@@ -8,21 +8,29 @@
     "module": "ES2022",
     "outDir": "dist",
     "rootDir": "src",
+    "baseUrl": ".",
     "strict": true,
     "target": "ES2022",
     "lib": [
       "ES2022",
       "DOM" /*Added it to support PUSHER-JS lib*/
-    ]
+    ],
+    "paths": {
+      "src/*": ["./src/*"],
+      "consts/*": ["./src/consts/*"],
+      "services/*": ["./src/services/*"],
+      "types/*": ["./src/types/*"],
+      "errors/*": ["./src/errors/*"],
+      "utils/*": ["./src/utils/*"],
+      "commands/*": ["./src/commands/*"]
+    }
   },
   "include": [
     "src/**/*"
   ],
-  "ts-node": {
-    "esm": true
-  },
   "exclude": [
     "node_modules",
+    "bin",
     "dist",
     "__tests__",
     "**/*.test.ts"
