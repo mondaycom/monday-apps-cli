@@ -1,15 +1,15 @@
 import { LogType } from '../types/commands/logs';
 
-export const appFeatureIdDeploymentUrl = (appFeatureId: number): string => {
-  return `/deployments/appfeature/${appFeatureId}`;
+export const appVersionIdDeploymentUrl = (appVersionId: number): string => {
+  return `/deployments/appfeature/${appVersionId}`;
 };
 
-export const getAppFeatureDeploymentUrl = (appFeatureId: number): string => {
-  return `${appFeatureIdDeploymentUrl(appFeatureId)}`;
+export const getAppVersionDeploymentUrl = (appVersionId: number): string => {
+  return `${appVersionIdDeploymentUrl(appVersionId)}`;
 };
 
-export const deploymentSignUrl = (appFeatureId: number): string => {
-  return `${appFeatureIdDeploymentUrl(appFeatureId)}/signed-url`;
+export const deploymentSignUrl = (appVersionId: number): string => {
+  return `${appVersionIdDeploymentUrl(appVersionId)}/signed-url`;
 };
 
 export const appVersionIdLogsUrl = (appVersionId: number): string => {

@@ -1,17 +1,17 @@
-import { getAppFeatureDeploymentUrl, deploymentSignUrl } from '../consts/urls.js';
+import { getAppVersionDeploymentUrl, deploymentSignUrl } from '../consts/urls.js';
 import { mCodeUrlBuilder } from '../utils/urls-builder.js';
-import { AppFeatureDeploymentStatus, DeploymentStatusTypesSchema, SignedUrl } from '../types/services/push-service.js';
+import { AppVersionDeploymentStatus, DeploymentStatusTypesSchema, SignedUrl } from '../types/services/push-service.js';
 import axios from 'axios';
 import { execute } from './monday-code-service.js';
 import { HttpMethodTypes } from '../types/services/monday-code-service.js';
 import logger from '../utils/logger.js';
 import { pollPromise } from './polling-service.js';
 import { ErrorMondayCode } from '../types/errors/index.js';
-import { appFeatureDeploymentStatusSchema, signedUrlSchema } from './schemas/push-service-schemas.js';
+import { appVersionDeploymentStatusSchema, signedUrlSchema } from './schemas/push-service-schemas.js';
 
-export const getSignedStorageUrl = async (accessToken: string, appFeatureId: number): Promise<string> => {
+export const getSignedStorageUrl = async (accessToken: string, appVersionId: number): Promise<string> => {
   try {
-    const baseSignUrl = deploymentSignUrl(appFeatureId);
+    const baseSignUrl = deploymentSignUrl(appVersionId);
     const url = mCodeUrlBuilder(baseSignUrl);
     const response = await execute<SignedUrl>(
       {
@@ -32,24 +32,24 @@ export const getSignedStorageUrl = async (accessToken: string, appFeatureId: num
   }
 };
 
-export const getAppFeatureIdStatus = async (
+export const getAppVersionIdStatus = async (
   accessToken: string,
-  appFeatureId: number,
+  appVersionId: number,
   retryAfter: number,
   options: { ttl?: number; progressLogger?: (message: string) => void } = {},
-): Promise<AppFeatureDeploymentStatus> => {
+): Promise<AppVersionDeploymentStatus> => {
   const { ttl, progressLogger } = options;
-  const getAppFeatureStatusInternal = async () => {
+  const getAppVersionStatusInternal = async () => {
     try {
-      const baseFeatureIdStatusUrl = getAppFeatureDeploymentUrl(appFeatureId);
+      const baseFeatureIdStatusUrl = getAppVersionDeploymentUrl(appVersionId);
       const url = mCodeUrlBuilder(baseFeatureIdStatusUrl);
-      const response = await execute<AppFeatureDeploymentStatus>(
+      const response = await execute<AppVersionDeploymentStatus>(
         {
           url,
           headers: { Accept: 'application/json' },
           method: HttpMethodTypes.GET,
         },
-        appFeatureDeploymentStatusSchema,
+        appVersionDeploymentStatusSchema,
       );
       return response;
     } catch (error_: any | ErrorMondayCode) {
@@ -68,7 +68,7 @@ export const getAppFeatureIdStatus = async (
         DeploymentStatusTypesSchema['building-infra'],
         DeploymentStatusTypesSchema['building-app'],
       ];
-      const response = await getAppFeatureStatusInternal();
+      const response = await getAppVersionStatusInternal();
       if (statusesToKeepPolling.includes(response.status)) {
         if (progressLogger) {
           progressLogger(`Deployment state: ${response.status}`);
@@ -82,7 +82,7 @@ export const getAppFeatureIdStatus = async (
     retryAfter,
     ttl || retryAfter * 60,
   );
-  const response = await getAppFeatureStatusInternal();
+  const response = await getAppVersionStatusInternal();
   return response;
 };
 

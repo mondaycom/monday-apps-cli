@@ -17,7 +17,7 @@ export const deploymentStatusTypesArray = [
   'building-app',
 ] as const;
 export const deploymentStatusTypesSchema = z.enum(deploymentStatusTypesArray);
-export const appFeatureDeploymentStatusSchema = z
+export const appVersionDeploymentStatusSchema = z
   .object({
     status: deploymentStatusTypesSchema,
     deployment: z

@@ -10,7 +10,7 @@ import { streamMessages } from '../../services/client-channel-service.js';
 
 export const LOGS_TYPE_TO_LISTEN_PROMPT_MESSAGE = 'Logs type: "http" for http events, "console" for stdout';
 
-const appFeaturePrompt = async () => PromptService.promptInputNumber(APP_VERSION_ID_TO_ENTER, true);
+const appVersionPrompt = async () => PromptService.promptInputNumber(APP_VERSION_ID_TO_ENTER, true);
 
 const logsTypePrompt = async () =>
   PromptService.promptList(LOGS_TYPE_TO_LISTEN_PROMPT_MESSAGE, [LogType.CONSOLE, LogType.HTTP], LogType.CONSOLE);
@@ -44,7 +44,7 @@ export default class Logs extends BaseCommand {
     const { flags } = await this.parse(Logs);
 
     const args: LogsCommandArguments = {
-      appVersionId: flags.appVersionId || Number(await appFeaturePrompt()),
+      appVersionId: flags.appVersionId || Number(await appVersionPrompt()),
       logsType: (flags.logsType || (await logsTypePrompt())) as LogType,
     };
 
