@@ -20,6 +20,7 @@
   },
   "plugins": [
     "import",
+    "unicorn",
     "@typescript-eslint"
   ],
   "extends": [
@@ -29,17 +30,20 @@
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "prettier",
     "oclif",
-    "oclif-typescript"
+    "oclif-typescript",
+    "plugin:import/recommended",
+    "plugin:import/typescript"
   ],
   "rules": {
     "@typescript-eslint/consistent-type-definitions": ["error", "type"],
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-var-requires": "off",
+    "unicorn/expiring-todo-comments": "off",
+    "unicorn/no-array-method-this-argument": "off",
+    "unicorn/no-array-callback-reference": "off",
     "no-useless-return": "off",
     "object-curly-spacing": "off",
     "semi": "off",
-    "unicorn/no-array-callback-reference": "off",
-    "unicorn/no-array-method-this-argument": "off",
     "indent": "off",
     "import/no-unresolved": 2,
     "import/no-commonjs": 2,
@@ -47,7 +51,44 @@
       "ts": "never"
     }],
     "node/no-missing-import": "off",
-    "n/no-missing-import": "off"
+    "n/no-missing-import": "off",
+    "sort-imports": [
+      "error",
+      {
+        "ignoreCase": false,
+        "ignoreDeclarationSort": true,
+        // don"t want to sort import lines, use eslint-plugin-import instead
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": [
+          "none",
+          "all",
+          "multiple",
+          "single"
+        ],
+        "allowSeparatedGroups": true
+      }
+    ],
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          [
+            "sibling",
+            "parent"
+          ],
+          "index",
+          "unknown"
+        ],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ]
   },
   "env": {
     "browser": true,

@@ -1,4 +1,4 @@
-import { LoginTypes } from '../shared/login';
+import { LoginTypes } from 'types/shared/login';
 
 export type LoginCommandArguments = {
   password?: string;

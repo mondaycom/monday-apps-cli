@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { baseResponseHttpMetaDataSchema } from './monday-code-service-schemas.js';
+
+import { baseResponseHttpMetaDataSchema } from 'services/schemas/monday-code-service-schemas.js';
 
 export const signedUrlSchema = z
   .object({
@@ -16,7 +17,9 @@ export const deploymentStatusTypesArray = [
   'building-infra',
   'building-app',
 ] as const;
+
 export const deploymentStatusTypesSchema = z.enum(deploymentStatusTypesArray);
+
 export const appVersionDeploymentStatusSchema = z
   .object({
     status: deploymentStatusTypesSchema,

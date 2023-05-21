@@ -1,12 +1,13 @@
 import { Flags } from '@oclif/core';
-import { PromptService } from '../../services/prompt-service.js';
-import { logsStream } from '../../services/notification-service.js';
-import { BaseCommand } from '../base-command.js';
-import { LogsCommandArguments, LogType } from '../../types/commands/logs.js';
-import { ConfigService } from '../../services/config-service.js';
-import logger from '../../utils/logger.js';
-import { ACCESS_TOKEN_NOT_FOUND, APP_VERSION_ID_TO_ENTER } from '../../consts/messages.js';
-import { streamMessages } from '../../services/client-channel-service.js';
+
+import { BaseCommand } from 'commands/base-command.js';
+import { ACCESS_TOKEN_NOT_FOUND, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
+import { streamMessages } from 'services/client-channel-service';
+import { ConfigService } from 'services/config-service';
+import { logsStream } from 'services/notification-service';
+import { PromptService } from 'services/prompt-service';
+import { LogType, LogsCommandArguments } from 'types/commands/logs';
+import logger from 'utils/logger';
 
 export const LOGS_TYPE_TO_LISTEN_PROMPT_MESSAGE = 'Logs type: "http" for http events, "console" for stdout';
 

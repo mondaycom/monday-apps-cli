@@ -1,8 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import glob from 'glob';
+
 import archiver from 'archiver';
+import glob from 'glob';
 import parseGitIgnore from 'parse-gitignore';
+
 import logger from '../utils/logger.js';
 
 export const readFileData = (filePath: string): Buffer => {
@@ -58,9 +60,8 @@ const getFilesToExcludeForArchive = (directoryPath: string): string[] => {
 
   logger.debug(`${DEBUG_TAG} - No ignore files found, you can use .gitignore or 
     .mappsignore to exclude some of the folders and files in your project`);
-  
-  return [];
 
+  return [];
 };
 
 const getIgnorePath = (directoryPath: string, ignoreFile: string): string | undefined => {
@@ -87,7 +88,7 @@ const alignPatternsForArchive = (patterns: string[], directoryPath: string): str
     const fullPath = `${directoryPath}${slashCharIfNeeded}${pattern}`;
     if (!fs.existsSync(fullPath)) return realPatterns;
     if (fs.statSync(fullPath).isDirectory()) {
-      const addGlobPattern = pattern[pattern.length - 1] === '/' ? '**' : '/**';
+      const addGlobPattern = pattern.at(-1) === '/' ? '**' : '/**';
       const patternWithoutBeginningSlash = pattern[0] === '/' ? pattern.slice(1, pattern.length) : pattern;
       realPatterns.push(`${patternWithoutBeginningSlash}${addGlobPattern}`);
     } else {

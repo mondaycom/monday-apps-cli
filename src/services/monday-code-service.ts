@@ -1,14 +1,16 @@
-import https from 'node:https';
 import crypto from 'node:crypto';
+import https from 'node:https';
+
 import axios, { AxiosError } from 'axios';
-import { ExecuteParams, BaseErrorResponse, BaseResponseHttpMetaData } from '../types/services/monday-code-service.js';
-import { ConfigService } from './config-service.js';
-import Logger from '../utils/logger.js';
-import { geMondayCodeDomain } from './env-service.js';
-import { ACCESS_TOKEN_NOT_FOUND } from '../consts/messages.js';
-import { ErrorMondayCode } from '../types/errors/index.js';
-import logger from '../utils/logger.js';
 import { ZodObject } from 'zod/lib/types';
+
+import { ACCESS_TOKEN_NOT_FOUND } from 'consts/messages';
+import { ConfigService } from 'services/config-service.js';
+import { getAppsDomain } from 'services/env-service.js';
+import { ErrorMondayCode } from 'types/errors';
+import { BaseErrorResponse, BaseResponseHttpMetaData, ExecuteParams } from 'types/services/monday-code-service';
+import logger from 'utils/logger';
+
 const DEFAULT_TIMEOUT = 10 * 1000;
 
 export async function execute<T extends BaseResponseHttpMetaData>(
@@ -17,13 +19,13 @@ export async function execute<T extends BaseResponseHttpMetaData>(
 ): Promise<T> {
   const accessToken = ConfigService.getConfigDataByKey('accessToken');
   if (!accessToken) {
-    Logger.error(ACCESS_TOKEN_NOT_FOUND);
+    logger.error(ACCESS_TOKEN_NOT_FOUND);
     throw new Error(ACCESS_TOKEN_NOT_FOUND);
   }
 
   const { body: data, query, url, method, timeout, headers } = params;
   const headersWithToken = { ...headers, Authorization: accessToken };
-  const baseURL = geMondayCodeDomain();
+  const baseURL = getAppsDomain();
   try {
     const httpsAgent = new https.Agent({
       secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,

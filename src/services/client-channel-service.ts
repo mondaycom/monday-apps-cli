@@ -1,9 +1,10 @@
-import logger from '../utils/logger.js';
-import { ClientChannel } from '../types/services/notification-service.js';
 import Pusher from 'pusher-js';
 import Channel from 'pusher-js/types/src/core/channels/channel';
-import { StreamLogType, StreamMessage } from '../types/services/client-channel-service.js';
-import { LogItem } from '../types/communication/log-item-types.js';
+
+import { LogItem } from 'types/communication/log-item-types';
+import { StreamLogType, StreamMessage } from 'types/services/client-channel-service';
+import { ClientChannel } from 'types/services/notification-service';
+import logger from 'utils/logger.js';
 
 export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
   return new Promise(resolve => {

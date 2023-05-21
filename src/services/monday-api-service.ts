@@ -1,6 +1,8 @@
 import { setTimeout } from 'node:timers/promises';
+
 import { createSpinner } from 'nanospinner';
-import { LoginArguments } from '../types/services/monday-api-service';
+
+import { LoginArguments } from 'types/services/monday-api-service';
 
 export const MondayApiService = {
   async login(loginArgs: LoginArguments) {

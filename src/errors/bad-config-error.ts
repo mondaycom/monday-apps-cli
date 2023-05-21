@@ -1,5 +1,5 @@
-import { BaseError } from './base-error.js';
-import { ErrorParams } from '../types/errors/index.js';
+import { BaseError } from 'errors/base-error';
+import { ErrorParams } from 'types/errors';
 
 export class BadConfigError extends BaseError {
   constructor(public message: string, public params: ErrorParams = {}) {

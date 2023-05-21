@@ -1,18 +1,19 @@
-import { getAppVersionDeploymentUrl, deploymentSignUrl } from '../consts/urls.js';
-import { mCodeUrlBuilder } from '../utils/urls-builder.js';
-import { AppVersionDeploymentStatus, DeploymentStatusTypesSchema, SignedUrl } from '../types/services/push-service.js';
 import axios from 'axios';
-import { execute } from './monday-code-service.js';
-import { HttpMethodTypes } from '../types/services/monday-code-service.js';
-import logger from '../utils/logger.js';
-import { pollPromise } from './polling-service.js';
-import { ErrorMondayCode } from '../types/errors/index.js';
-import { appVersionDeploymentStatusSchema, signedUrlSchema } from './schemas/push-service-schemas.js';
+
+import { getAppVersionDeploymentStatusUrl, getDeploymentSignedUrl } from 'consts/urls';
+import { execute } from 'services/monday-code-service.js';
+import { pollPromise } from 'services/polling-service';
+import { appVersionDeploymentStatusSchema, signedUrlSchema } from 'services/schemas/push-service-schemas';
+import { ErrorMondayCode } from 'types/errors';
+import { HttpMethodTypes } from 'types/services/monday-code-service';
+import { AppVersionDeploymentStatus, DeploymentStatusTypesSchema, SignedUrl } from 'types/services/push-service';
+import logger from 'utils/logger';
+import { appsUrlBuilder } from 'utils/urls-builder';
 
 export const getSignedStorageUrl = async (accessToken: string, appVersionId: number): Promise<string> => {
   try {
-    const baseSignUrl = deploymentSignUrl(appVersionId);
-    const url = mCodeUrlBuilder(baseSignUrl);
+    const baseSignUrl = getDeploymentSignedUrl(appVersionId);
+    const url = appsUrlBuilder(baseSignUrl);
     const response = await execute<SignedUrl>(
       {
         url,
@@ -32,7 +33,7 @@ export const getSignedStorageUrl = async (accessToken: string, appVersionId: num
   }
 };
 
-export const getAppVersionIdStatus = async (
+export const getDeploymentStatus = async (
   accessToken: string,
   appVersionId: number,
   retryAfter: number,
@@ -41,8 +42,8 @@ export const getAppVersionIdStatus = async (
   const { ttl, progressLogger } = options;
   const getAppVersionStatusInternal = async () => {
     try {
-      const baseFeatureIdStatusUrl = getAppVersionDeploymentUrl(appVersionId);
-      const url = mCodeUrlBuilder(baseFeatureIdStatusUrl);
+      const baseFeatureIdStatusUrl = getAppVersionDeploymentStatusUrl(appVersionId);
+      const url = appsUrlBuilder(baseFeatureIdStatusUrl);
       const response = await execute<AppVersionDeploymentStatus>(
         {
           url,

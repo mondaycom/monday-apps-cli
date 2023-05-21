@@ -1,16 +1,18 @@
 import { Flags } from '@oclif/core';
-import { ConfigService } from '../../services/config-service.js';
-import { PromptService } from '../../services/prompt-service.js';
-import { PushCommandArguments } from '../../types/commands/push.js';
-import { getAppVersionIdStatus, getSignedStorageUrl, uploadFileToStorage } from '../../services/push-service.js';
-import { ACCESS_TOKEN_NOT_FOUND, APP_VERSION_ID_TO_ENTER } from '../../consts/messages.js';
-import { readFileData, createTarGzArchive } from '../../services/files-service.js';
-import logger from '../../utils/logger.js';
+
+import { ACCESS_TOKEN_NOT_FOUND, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
+import { ConfigService } from 'services/config-service';
+import { getCurrentWorkingDirectory } from 'services/env-service';
+import { createTarGzArchive, readFileData } from 'services/files-service';
+import { PromptService } from 'services/prompt-service';
+import { getDeploymentStatus, getSignedStorageUrl, uploadFileToStorage } from 'services/push-service';
+import { spinner } from 'services/push-spinner-service';
+import { deploymentStatusTypesSchema } from 'services/schemas/push-service-schemas';
+import { PushCommandArguments } from 'types/commands/push';
+import { TimeInMs } from 'types/general/time';
+import logger from 'utils/logger';
+
 import { BaseCommand } from '../base-command.js';
-import { deploymentStatusTypesSchema } from '../../services/schemas/push-service-schemas.js';
-import { spinner } from '../../services/push-spinner-service.js';
-import { TimeInMs } from '../../types/general/time.js';
-import { getCurrentWorkingDirectory } from '../../services/env-service.js';
 
 export const ERROR_ON_DEPLOYMENT = 'Deployment process has failed.';
 export const DIRECTORY_TO_COMPRESS_LOCATION =
@@ -96,16 +98,16 @@ export default class Push extends BaseCommand {
       await uploadFileToStorage(signedCloudStorageUrl, archiveContent, 'application/zip');
       spinner.setText('Project uploaded successful, starting the deployment.');
 
-      const appVersionStatus = await getAppVersionIdStatus(accessToken, args.appVersionId, TimeInMs.second * 5, {
+      const deploymentStatus = await getDeploymentStatus(accessToken, args.appVersionId, TimeInMs.second * 5, {
         ttl: TimeInMs.minute * 30,
         progressLogger: (message: string) => {
           spinner.setText(message);
         },
       });
-      if (appVersionStatus.status === deploymentStatusTypesSchema.enum.failed) {
-        spinner.setError(appVersionStatus.error?.message || ERROR_ON_DEPLOYMENT);
-      } else if (appVersionStatus.deployment) {
-        const deploymentUrl = `Deployment successfully finished, deployment url: ${appVersionStatus.deployment.url}`;
+      if (deploymentStatus.status === deploymentStatusTypesSchema.enum.failed) {
+        spinner.setError(deploymentStatus.error?.message || ERROR_ON_DEPLOYMENT);
+      } else if (deploymentStatus.deployment) {
+        const deploymentUrl = `Deployment successfully finished, deployment url: ${deploymentStatus.deployment.url}`;
         spinner.setSuccess(deploymentUrl);
       } else {
         spinner.setError('Something went wrong, the deployment url is missing.');

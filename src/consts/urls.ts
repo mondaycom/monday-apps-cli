@@ -1,21 +1,17 @@
-import { LogType } from '../types/commands/logs';
+import { LogType } from 'types/commands/logs';
 
-export const appVersionIdDeploymentUrl = (appVersionId: number): string => {
-  return `/deployments/appfeature/${appVersionId}`;
-};
-
-export const getAppVersionDeploymentUrl = (appVersionId: number): string => {
-  return `${appVersionIdDeploymentUrl(appVersionId)}`;
-};
-
-export const deploymentSignUrl = (appVersionId: number): string => {
-  return `${appVersionIdDeploymentUrl(appVersionId)}/signed-url`;
-};
-
-export const appVersionIdLogsUrl = (appVersionId: number): string => {
+export const appVersionIdBaseUrl = (appVersionId: number): string => {
   return `/api/code/${appVersionId}`;
 };
 
-export const logsStreamForAppVersionIdUrl = (appVersionId: number, logsType: LogType): string => {
-  return `${appVersionIdLogsUrl(appVersionId)}/logs?type=${logsType}`;
+export const getAppVersionDeploymentStatusUrl = (appVersionId: number): string => {
+  return `${appVersionIdBaseUrl(appVersionId)}/deployments`;
+};
+
+export const getDeploymentSignedUrl = (appVersionId: number): string => {
+  return `${appVersionIdBaseUrl(appVersionId)}/deployments/signed-url`;
+};
+
+export const getLogsStreamForAppVersionIdUrl = (appVersionId: number, logsType: LogType): string => {
+  return `${appVersionIdBaseUrl(appVersionId)}/logs?type=${logsType}`;
 };

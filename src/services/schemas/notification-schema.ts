@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { baseResponseHttpMetaDataSchema } from './monday-code-service-schemas.js';
+
+import { baseResponseHttpMetaDataSchema } from 'services/schemas/monday-code-service-schemas.js';
 
 export const clientChannelSchema = z
   .object({

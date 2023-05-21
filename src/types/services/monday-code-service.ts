@@ -1,8 +1,6 @@
 import { z } from 'zod';
-import {
-  baseErrorResponseSchema,
-  baseResponseHttpMetaDataSchema,
-} from '../../services/schemas/monday-code-service-schemas.js';
+
+import { baseErrorResponseSchema, baseResponseHttpMetaDataSchema } from 'services/schemas/monday-code-service-schemas';
 
 export type ExecuteParams = {
   body?: object;

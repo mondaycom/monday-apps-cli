@@ -1,8 +1,9 @@
+import fuzzy from 'fuzzy';
 import inquirer from 'inquirer';
 import autocomplete from 'inquirer-autocomplete-prompt';
 import isEmail from 'isemail';
-import fuzzy from 'fuzzy';
-import { checkIfFileExists, getFileExtension } from './files-service.js';
+
+import { checkIfFileExists, getFileExtension } from 'services/files-service.js';
 
 inquirer.registerPrompt('autocomplete', autocomplete);
 
