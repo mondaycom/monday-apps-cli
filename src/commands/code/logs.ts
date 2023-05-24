@@ -1,29 +1,24 @@
 import { Flags } from '@oclif/core';
 
-import { BaseCommand } from 'commands/base-command.js';
-import { ACCESS_TOKEN_NOT_FOUND, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
+import { AuthenticatedCommand } from 'commands-base/authenticated-command';
+import { APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { streamMessages } from 'services/client-channel-service';
-import { ConfigService } from 'services/config-service';
 import { logsStream } from 'services/notification-service';
 import { PromptService } from 'services/prompt-service';
 import { LogType, LogsCommandArguments } from 'types/commands/logs';
-import logger from 'utils/logger';
 
 export const LOGS_TYPE_TO_LISTEN_PROMPT_MESSAGE = 'Logs type: "http" for http events, "console" for stdout';
-
-const appVersionPrompt = async () => PromptService.promptInputNumber(APP_VERSION_ID_TO_ENTER, true);
 
 const logsTypePrompt = async () =>
   PromptService.promptList(LOGS_TYPE_TO_LISTEN_PROMPT_MESSAGE, [LogType.CONSOLE, LogType.HTTP], LogType.CONSOLE);
 
-export default class Logs extends BaseCommand {
+export default class Logs extends AuthenticatedCommand {
   static description = 'Stream logs';
 
   /// / Preparation when we expose HTTP events
-  static examples = ['<%= config.bin %> <%= command.id %> -i APP VERSION ID TO STREAM LOGS -t LOGS TYPE TO WATCH'];
+  static examples = ['<%= config.bin %> <%= command.id %> -i APP_VERSION_ID -t LOGS_TYPE'];
 
-  static flags = {
-    ...BaseCommand.globalFlags,
+  static flags = Logs.serializeFlags({
     appVersionId: Flags.integer({
       char: 'i',
       description: APP_VERSION_ID_TO_ENTER,
@@ -32,20 +27,14 @@ export default class Logs extends BaseCommand {
       char: 't',
       description: LOGS_TYPE_TO_LISTEN_PROMPT_MESSAGE,
     }),
-  };
+  });
 
-  static args = [];
+  static args = {};
   public async run(): Promise<void> {
-    const accessToken = ConfigService.getConfigDataByKey('accessToken');
-    if (!accessToken) {
-      logger.error(ACCESS_TOKEN_NOT_FOUND);
-      return;
-    }
-
     const { flags } = await this.parse(Logs);
 
     const args: LogsCommandArguments = {
-      appVersionId: flags.appVersionId || Number(await appVersionPrompt()),
+      appVersionId: flags.appVersionId || Number(await PromptService.appVersionPrompt()),
       logsType: (flags.logsType || (await logsTypePrompt())) as LogType,
     };
 

@@ -1,24 +1,20 @@
 import { Flags } from '@oclif/core';
 
-import { ACCESS_TOKEN_NOT_FOUND, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
-import { ConfigService } from 'services/config-service';
+import { AuthenticatedCommand } from 'commands-base/authenticated-command';
+import { APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import { createTarGzArchive, readFileData } from 'services/files-service';
 import { PromptService } from 'services/prompt-service';
-import { getDeploymentStatus, getSignedStorageUrl, uploadFileToStorage } from 'services/push-service';
-import { spinner } from 'services/push-spinner-service';
+import { getSignedStorageUrl, pollForDeploymentStatus, uploadFileToStorage } from 'services/push-service';
 import { deploymentStatusTypesSchema } from 'services/schemas/push-service-schemas';
+import { spinner } from 'services/spinner-service';
 import { PushCommandArguments } from 'types/commands/push';
 import { TimeInMs } from 'types/general/time';
 import logger from 'utils/logger';
 
-import { BaseCommand } from '../base-command.js';
-
 export const ERROR_ON_DEPLOYMENT = 'Deployment process has failed.';
 export const DIRECTORY_TO_COMPRESS_LOCATION =
   'Directory path of you project in your machine. If not included will use the current working directory.';
-
-const appVersionPrompt = async () => PromptService.promptInputNumber(APP_VERSION_ID_TO_ENTER, true);
 
 const MESSAGES = {
   directory: DIRECTORY_TO_COMPRESS_LOCATION,
@@ -47,16 +43,15 @@ const handleFileToUpload = async (directoryPath?: string): Promise<string | unde
   return;
 };
 
-export default class Push extends BaseCommand {
+export default class Push extends AuthenticatedCommand {
   static description = 'Push your project to get hosted on monday-code.';
 
   static examples = [
-    '<%= config.bin %> <%= command.id %> -d PROJECT DIRECTORY PATH -i APP VERSION ID TO PUSH',
-    '<%= config.bin %> <%= command.id %> -i APP VERSION ID TO PUSH',
+    '<%= config.bin %> <%= command.id %> -d PROJECT DIRECTORY PATH -i APP_VERSION_ID_TO_PUSH',
+    '<%= config.bin %> <%= command.id %> -i APP_VERSION_ID_TO_PUSH',
   ];
 
-  static flags = {
-    ...BaseCommand.globalFlags,
+  static flags = Push.serializeFlags({
     directoryPath: Flags.string({
       char: 'd',
       description: MESSAGES.directory,
@@ -65,20 +60,14 @@ export default class Push extends BaseCommand {
       char: 'i',
       description: MESSAGES.appVersionId,
     }),
-  };
+  });
 
-  static args = [];
+  static args = {};
 
   public async run(): Promise<void> {
-    const accessToken = ConfigService.getConfigDataByKey('accessToken');
-    if (!accessToken) {
-      logger.error(ACCESS_TOKEN_NOT_FOUND);
-      return;
-    }
-
     const { flags } = await this.parse(Push);
 
-    const appVersionId = flags.appVersionId || Number(await appVersionPrompt());
+    const appVersionId = flags.appVersionId || Number(await PromptService.appVersionPrompt());
     const archivePath = await handleFileToUpload(flags.directoryPath);
     if (!archivePath) {
       return;
@@ -92,13 +81,13 @@ export default class Push extends BaseCommand {
     spinner.start();
     try {
       spinner.setText('Building project remote location.');
-      const signedCloudStorageUrl = await getSignedStorageUrl(accessToken, args.appVersionId);
+      const signedCloudStorageUrl = await getSignedStorageUrl(args.appVersionId);
       const archiveContent = readFileData(args.filePath);
       spinner.setText('Uploading project.');
       await uploadFileToStorage(signedCloudStorageUrl, archiveContent, 'application/zip');
       spinner.setText('Project uploaded successful, starting the deployment.');
 
-      const deploymentStatus = await getDeploymentStatus(accessToken, args.appVersionId, TimeInMs.second * 5, {
+      const deploymentStatus = await pollForDeploymentStatus(args.appVersionId, TimeInMs.second * 5, {
         ttl: TimeInMs.minute * 30,
         progressLogger: (message: string) => {
           spinner.setText(message);

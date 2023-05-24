@@ -3,6 +3,7 @@ import inquirer from 'inquirer';
 import autocomplete from 'inquirer-autocomplete-prompt';
 import isEmail from 'isemail';
 
+import { APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { checkIfFileExists, getFileExtension } from 'services/files-service.js';
 
 inquirer.registerPrompt('autocomplete', autocomplete);
@@ -29,14 +30,14 @@ function validateIfValueIsANumber(input: string, message: string, isRequired = f
 }
 
 export const PromptService = {
-  async promptList(message: string, choices: string[], defaultValue: string) {
+  async promptList(message: string, choices: string[], defaultValue?: string) {
     const res = await inquirer.prompt<{ selection: string }>([
       {
         name: 'selection',
         message: message || 'Please choose one of the values',
         type: 'list',
         choices,
-        default: defaultValue,
+        ...(defaultValue && { default: defaultValue }),
       },
     ]);
 
@@ -162,5 +163,9 @@ export const PromptService = {
     ]);
 
     return res.selection;
+  },
+
+  async appVersionPrompt() {
+    return PromptService.promptInputNumber(APP_VERSION_ID_TO_ENTER, true);
   },
 };

@@ -1,3 +1,5 @@
+import { CONFIG_KEYS } from 'consts/config';
+
 export type InitCommandArguments = {
-  accessToken?: string;
+  [CONFIG_KEYS.ACCESS_TOKEN]?: string;
 };
