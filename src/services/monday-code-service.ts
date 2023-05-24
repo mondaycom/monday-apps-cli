@@ -4,6 +4,7 @@ import https from 'node:https';
 import axios, { AxiosError } from 'axios';
 import { ZodObject } from 'zod/lib/types';
 
+import { CONFIG_KEYS } from 'consts/config';
 import { ACCESS_TOKEN_NOT_FOUND } from 'consts/messages';
 import { ConfigService } from 'services/config-service.js';
 import { getAppsDomain } from 'services/env-service.js';
@@ -17,7 +18,7 @@ export async function execute<T extends BaseResponseHttpMetaData>(
   params: ExecuteParams,
   schemaValidator?: ZodObject<any>,
 ): Promise<T> {
-  const accessToken = ConfigService.getConfigDataByKey('accessToken');
+  const accessToken = ConfigService.getConfigDataByKey(CONFIG_KEYS.ACCESS_TOKEN);
   if (!accessToken) {
     logger.error(ACCESS_TOKEN_NOT_FOUND);
     throw new Error(ACCESS_TOKEN_NOT_FOUND);

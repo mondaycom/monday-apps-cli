@@ -3,14 +3,13 @@ import { StatusCodes } from 'http-status-codes';
 export type ErrorParamsValues = string | number | Date | null | undefined;
 export type ErrorParams = Record<string, ErrorParamsValues>;
 export class ErrorMondayCode extends Error {
-  private code;
+  public code;
   private description;
   private title;
 
   constructor(message: string, title?: string | null, code?: number | null) {
     super(message);
     this.code = code;
-    this.name = 'ErrorSignedUrl';
     switch (code) {
       case StatusCodes.BAD_REQUEST: {
         this.description =

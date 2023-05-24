@@ -10,7 +10,7 @@ import { AppVersionDeploymentStatus, DeploymentStatusTypesSchema, SignedUrl } fr
 import logger from 'utils/logger';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
-export const getSignedStorageUrl = async (accessToken: string, appVersionId: number): Promise<string> => {
+export const getSignedStorageUrl = async (appVersionId: number): Promise<string> => {
   try {
     const baseSignUrl = getDeploymentSignedUrl(appVersionId);
     const url = appsUrlBuilder(baseSignUrl);
@@ -33,32 +33,32 @@ export const getSignedStorageUrl = async (accessToken: string, appVersionId: num
   }
 };
 
-export const getDeploymentStatus = async (
-  accessToken: string,
+export const getAppVersionDeploymentStatus = async (appVersionId: number) => {
+  try {
+    const baseAppVersionIdStatusUrl = getAppVersionDeploymentStatusUrl(appVersionId);
+    const url = appsUrlBuilder(baseAppVersionIdStatusUrl);
+    const response = await execute<AppVersionDeploymentStatus>(
+      {
+        url,
+        headers: { Accept: 'application/json' },
+        method: HttpMethodTypes.GET,
+      },
+      appVersionDeploymentStatusSchema,
+    );
+    return response;
+  } catch (error_: any | ErrorMondayCode) {
+    const error =
+      error_ instanceof ErrorMondayCode ? error_ : new Error('Failed to check app version deployment status.');
+    throw error;
+  }
+};
+
+export const pollForDeploymentStatus = async (
   appVersionId: number,
   retryAfter: number,
   options: { ttl?: number; progressLogger?: (message: string) => void } = {},
 ): Promise<AppVersionDeploymentStatus> => {
   const { ttl, progressLogger } = options;
-  const getAppVersionStatusInternal = async () => {
-    try {
-      const baseFeatureIdStatusUrl = getAppVersionDeploymentStatusUrl(appVersionId);
-      const url = appsUrlBuilder(baseFeatureIdStatusUrl);
-      const response = await execute<AppVersionDeploymentStatus>(
-        {
-          url,
-          headers: { Accept: 'application/json' },
-          method: HttpMethodTypes.GET,
-        },
-        appVersionDeploymentStatusSchema,
-      );
-      return response;
-    } catch (error_: any | ErrorMondayCode) {
-      const error =
-        error_ instanceof ErrorMondayCode ? error_ : new Error('Failed to check app feature deployment status.');
-      throw error;
-    }
-  };
 
   await pollPromise(
     async (): Promise<boolean> => {
@@ -69,7 +69,7 @@ export const getDeploymentStatus = async (
         DeploymentStatusTypesSchema['building-infra'],
         DeploymentStatusTypesSchema['building-app'],
       ];
-      const response = await getAppVersionStatusInternal();
+      const response = await getAppVersionDeploymentStatus(appVersionId);
       if (statusesToKeepPolling.includes(response.status)) {
         if (progressLogger) {
           progressLogger(`Deployment state: ${response.status}`);
@@ -83,7 +83,7 @@ export const getDeploymentStatus = async (
     retryAfter,
     ttl || retryAfter * 60,
   );
-  const response = await getAppVersionStatusInternal();
+  const response = await getAppVersionDeploymentStatus(appVersionId);
   return response;
 };
 

@@ -22,7 +22,8 @@
       "types/*": ["./src/types/*"],
       "errors/*": ["./src/errors/*"],
       "utils/*": ["./src/utils/*"],
-      "commands/*": ["./src/commands/*"]
+      "commands/*": ["./src/commands/*"],
+      "commands-base/*": ["./src/commands-base/*"]
     }
   },
   "include": [
