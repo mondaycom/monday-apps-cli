@@ -42,6 +42,7 @@ export default class Status extends AuthenticatedCommand {
       const deploymentStatus = await getAppVersionDeploymentStatus(appVersionId);
       printDeploymentStatus(appVersionId, deploymentStatus);
     } catch (error: unknown) {
+      logger.debug(error);
       if (error instanceof ErrorMondayCode && error.code === StatusCodes.NOT_FOUND) {
         logger.error(`Not deployment found for provided app version id - "${appVersionId}"`);
       } else {
