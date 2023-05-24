@@ -15,7 +15,7 @@ const accessTokenPrompt = async () =>
   );
 
 export default class Init extends BaseCommand {
-  static description = `Initialize monday-code config file - "${CONFIG_NAME}".`;
+  static description = `Initialize mapps config file - "${CONFIG_NAME}".`;
 
   static examples = ['<%= config.bin %> <%= command.id %> -t SECRET_TOKEN'];
 
