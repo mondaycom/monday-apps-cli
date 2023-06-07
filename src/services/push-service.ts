@@ -1,13 +1,23 @@
 import axios from 'axios';
+import { ListrTaskWrapper } from 'listr2';
 
 import { getAppVersionDeploymentStatusUrl, getDeploymentSignedUrl } from 'consts/urls';
+import { getCurrentWorkingDirectory } from 'services/env-service';
+import { createTarGzArchive, readFileData } from 'services/files-service';
 import { execute } from 'services/monday-code-service.js';
 import { pollPromise } from 'services/polling-service';
-import { appVersionDeploymentStatusSchema, signedUrlSchema } from 'services/schemas/push-service-schemas';
+import {
+  appVersionDeploymentStatusSchema,
+  deploymentStatusTypesSchema,
+  signedUrlSchema,
+} from 'services/schemas/push-service-schemas';
+import { PushCommandTasksContext } from 'types/commands/push';
 import { ErrorMondayCode } from 'types/errors';
+import { TimeInMs } from 'types/general/time';
 import { HttpMethodTypes } from 'types/services/monday-code-service';
 import { AppVersionDeploymentStatus, DeploymentStatusTypesSchema, SignedUrl } from 'types/services/push-service';
 import logger from 'utils/logger';
+import { createProgressBarString } from 'utils/progress-bar';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
 export const getSignedStorageUrl = async (appVersionId: number): Promise<string> => {
@@ -56,7 +66,7 @@ export const getAppVersionDeploymentStatus = async (appVersionId: number) => {
 export const pollForDeploymentStatus = async (
   appVersionId: number,
   retryAfter: number,
-  options: { ttl?: number; progressLogger?: (message: string) => void } = {},
+  options: { ttl?: number; progressLogger?: (message: keyof typeof DeploymentStatusTypesSchema) => void } = {},
 ): Promise<AppVersionDeploymentStatus> => {
   const { ttl, progressLogger } = options;
 
@@ -72,7 +82,7 @@ export const pollForDeploymentStatus = async (
       const response = await getAppVersionDeploymentStatus(appVersionId);
       if (statusesToKeepPolling.includes(response.status)) {
         if (progressLogger) {
-          progressLogger(`Deployment state: ${response.status}`);
+          progressLogger(response.status);
         }
 
         return false;
@@ -101,4 +111,100 @@ export const uploadFileToStorage = async (
     logger.debug(error);
     throw new Error('Failed in uploading the project.');
   }
+};
+
+export const buildAssetToDeployTask = async (
+  ctx: PushCommandTasksContext,
+  task: ListrTaskWrapper<PushCommandTasksContext, any>,
+) => {
+  try {
+    if (!ctx.directoryPath) {
+      const currentDirectoryPath = getCurrentWorkingDirectory();
+      logger.debug(`Directory path not provided using current directory: ${currentDirectoryPath}`);
+      ctx.directoryPath = currentDirectoryPath;
+    }
+
+    task.output = `Building asset to deploy from "${ctx.directoryPath}" directory`;
+    const archivePath = await createTarGzArchive(ctx.directoryPath, 'code');
+    ctx.archivePath = archivePath;
+    ctx.showPrepareEnvironmentTask = true;
+  } catch (error) {
+    logger.debug(error);
+    throw error;
+  }
+};
+
+export const prepareEnvironmentTask = async (ctx: PushCommandTasksContext) => {
+  const signedCloudStorageUrl = await getSignedStorageUrl(ctx.appVersionId);
+  const archiveContent = readFileData(ctx.archivePath!);
+  ctx.signedCloudStorageUrl = signedCloudStorageUrl;
+  ctx.archiveContent = archiveContent;
+  ctx.showUploadAssetTask = true;
+};
+
+export const uploadAssetTask = async (
+  ctx: PushCommandTasksContext,
+  task: ListrTaskWrapper<PushCommandTasksContext, any>,
+) => {
+  const { signedCloudStorageUrl, archiveContent } = ctx;
+  await uploadFileToStorage(signedCloudStorageUrl!, archiveContent!, 'application/zip');
+  task.title = 'Asset uploaded successfully';
+  ctx.showHandleDeploymentTask = true;
+};
+
+const MAX_PROGRESS_VALUE = 100;
+const PROGRESS_STEP = Math.round(MAX_PROGRESS_VALUE / 100);
+
+const STATUS_TO_PROGRESS_VALUE: Record<keyof typeof DeploymentStatusTypesSchema, number> = {
+  [DeploymentStatusTypesSchema.failed]: 0,
+  [DeploymentStatusTypesSchema.started]: 0,
+  [DeploymentStatusTypesSchema.pending]: PROGRESS_STEP * 5,
+  [DeploymentStatusTypesSchema.building]: PROGRESS_STEP * 10,
+  [DeploymentStatusTypesSchema['building-infra']]: PROGRESS_STEP * 33,
+  [DeploymentStatusTypesSchema['building-app']]: PROGRESS_STEP * 66,
+  [DeploymentStatusTypesSchema.successful]: PROGRESS_STEP * 100,
+};
+
+const finalizeDeployment = (
+  deploymentStatus: AppVersionDeploymentStatus,
+  task: ListrTaskWrapper<PushCommandTasksContext, any>,
+) => {
+  switch (deploymentStatus.status) {
+    case DeploymentStatusTypesSchema.failed: {
+      task.title = deploymentStatus.error?.message || 'Deployment process has failed';
+      throw new Error(task.title);
+    }
+
+    case DeploymentStatusTypesSchema.successful: {
+      const deploymentUrl = `Deployment successfully finished, deployment url: ${deploymentStatus.deployment!.url}`;
+      task.title = deploymentUrl;
+      break;
+    }
+
+    default: {
+      const generalErrorMessage = 'Something went wrong, the deployment url is missing.';
+      task.title = generalErrorMessage;
+      throw new Error(generalErrorMessage);
+    }
+  }
+};
+
+export const handleDeploymentTask = async (
+  ctx: PushCommandTasksContext,
+  task: ListrTaskWrapper<PushCommandTasksContext, any>,
+) => {
+  task.output = createProgressBarString(MAX_PROGRESS_VALUE, 0);
+  const now = Date.now();
+  const retryAfter = TimeInMs.second * 5;
+  const ttl = TimeInMs.minute * 30;
+  const deploymentStatus = await pollForDeploymentStatus(ctx.appVersionId, retryAfter, {
+    ttl,
+    progressLogger: (message: keyof typeof DeploymentStatusTypesSchema) => {
+      const deltaInSeconds = (Date.now() - now) / TimeInMs.second;
+      task.title = `Deployment in progress: ${message}`;
+      task.output = createProgressBarString(MAX_PROGRESS_VALUE, STATUS_TO_PROGRESS_VALUE[message], deltaInSeconds);
+    },
+  });
+
+  finalizeDeployment(deploymentStatus, task);
 };
