@@ -31,7 +31,7 @@ $ npm install -g monday-code-cli
 $ mapps COMMAND
 running command...
 $ mapps (--version)
-monday-code-cli/0.1.3 darwin-arm64 node-v18.12.1
+monday-code-cli/0.1.4 darwin-arm64 node-v18.12.1
 $ mapps --help [COMMAND]
 USAGE
   $ mapps COMMAND
@@ -100,7 +100,7 @@ EXAMPLES
   $ mapps code:logs -i APP_VERSION_ID -t LOGS_TYPE
 ```
 
-_See code: [dist/commands/code/logs.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.3/dist/commands/code/logs.ts)_
+_See code: [dist/commands/code/logs.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.4/dist/commands/code/logs.ts)_
 
 ## `mapps code:push`
 
@@ -127,7 +127,7 @@ EXAMPLES
   $ mapps code:push -i APP_VERSION_ID_TO_PUSH
 ```
 
-_See code: [dist/commands/code/push.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.3/dist/commands/code/push.ts)_
+_See code: [dist/commands/code/push.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.4/dist/commands/code/push.ts)_
 
 ## `mapps code:status`
 
@@ -150,7 +150,7 @@ EXAMPLES
   $ mapps code:status -i APP_VERSION_ID
 ```
 
-_See code: [dist/commands/code/status.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.3/dist/commands/code/status.ts)_
+_See code: [dist/commands/code/status.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.4/dist/commands/code/status.ts)_
 
 ## `mapps help [COMMANDS]`
 
@@ -174,7 +174,7 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.9
 
 ## `mapps init`
 
-Initialize monday-code config file - ".mappsrc".
+Initialize mapps config file - ".mappsrc".
 
 ```
 USAGE
@@ -187,11 +187,11 @@ GLOBAL FLAGS
   --verbose  Print advanced logs (optional).
 
 DESCRIPTION
-  Initialize monday-code config file - ".mappsrc".
+  Initialize mapps config file - ".mappsrc".
 
 EXAMPLES
   $ mapps init -t SECRET_TOKEN
 ```
 
-_See code: [dist/commands/init/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.3/dist/commands/init/index.ts)_
+_See code: [dist/commands/init/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.4/dist/commands/init/index.ts)_
 <!-- commandsstop -->
