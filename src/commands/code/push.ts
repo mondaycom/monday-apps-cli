@@ -46,7 +46,7 @@ export default class Push extends AuthenticatedCommand {
 
     const tasks = new Listr<PushCommandTasksContext>(
       [
-        { title: 'Build asset to deploy', task: buildAssetToDeployTask(flags.directoryPath) },
+        { title: 'Build asset to deploy', task: buildAssetToDeployTask },
         {
           title: 'Preparing environment',
           task: prepareEnvironmentTask,
@@ -63,7 +63,7 @@ export default class Push extends AuthenticatedCommand {
           enabled: ctx => Boolean(ctx.showHandleDeploymentTask),
         },
       ],
-      { ctx: { appVersionId } },
+      { ctx: { appVersionId, directoryPath: flags.directoryPath } },
     );
 
     try {

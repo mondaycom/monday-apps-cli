@@ -6,4 +6,5 @@ export type PushCommandTasksContext = {
   showPrepareEnvironmentTask?: boolean;
   showUploadAssetTask?: boolean;
   showHandleDeploymentTask?: boolean;
+  directoryPath?: string;
 };

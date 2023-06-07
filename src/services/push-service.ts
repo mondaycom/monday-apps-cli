@@ -113,26 +113,26 @@ export const uploadFileToStorage = async (
   }
 };
 
-export const buildAssetToDeployTask =
-  (providedDirectoryPath?: string) =>
-  async (ctx: PushCommandTasksContext, task: ListrTaskWrapper<PushCommandTasksContext, any>) => {
-    try {
-      let directoryPath = providedDirectoryPath;
-      if (!directoryPath) {
-        const currentDirectoryPath = getCurrentWorkingDirectory();
-        logger.debug(`Directory path not provided using current directory: ${currentDirectoryPath}`);
-        directoryPath = currentDirectoryPath;
-      }
-
-      task.output = `Building asset to deploy from "${directoryPath}" directory`;
-      const archivePath = await createTarGzArchive(directoryPath, 'code');
-      ctx.archivePath = archivePath;
-      ctx.showPrepareEnvironmentTask = true;
-    } catch (error) {
-      logger.debug(error);
-      throw error;
+export const buildAssetToDeployTask = async (
+  ctx: PushCommandTasksContext,
+  task: ListrTaskWrapper<PushCommandTasksContext, any>,
+) => {
+  try {
+    if (!ctx.directoryPath) {
+      const currentDirectoryPath = getCurrentWorkingDirectory();
+      logger.debug(`Directory path not provided using current directory: ${currentDirectoryPath}`);
+      ctx.directoryPath = currentDirectoryPath;
     }
-  };
+
+    task.output = `Building asset to deploy from "${ctx.directoryPath}" directory`;
+    const archivePath = await createTarGzArchive(ctx.directoryPath, 'code');
+    ctx.archivePath = archivePath;
+    ctx.showPrepareEnvironmentTask = true;
+  } catch (error) {
+    logger.debug(error);
+    throw error;
+  }
+};
 
 export const prepareEnvironmentTask = async (ctx: PushCommandTasksContext) => {
   const signedCloudStorageUrl = await getSignedStorageUrl(ctx.appVersionId);
@@ -152,30 +152,40 @@ export const uploadAssetTask = async (
   ctx.showHandleDeploymentTask = true;
 };
 
+const MAX_PROGRESS_VALUE = 100;
+const PROGRESS_STEP = Math.round(MAX_PROGRESS_VALUE / 100);
+
 const STATUS_TO_PROGRESS_VALUE: Record<keyof typeof DeploymentStatusTypesSchema, number> = {
   [DeploymentStatusTypesSchema.failed]: 0,
   [DeploymentStatusTypesSchema.started]: 0,
-  [DeploymentStatusTypesSchema.pending]: 5,
-  [DeploymentStatusTypesSchema.building]: 10,
-  [DeploymentStatusTypesSchema['building-infra']]: 33,
-  [DeploymentStatusTypesSchema['building-app']]: 66,
-  [DeploymentStatusTypesSchema.successful]: 100,
+  [DeploymentStatusTypesSchema.pending]: PROGRESS_STEP * 5,
+  [DeploymentStatusTypesSchema.building]: PROGRESS_STEP * 10,
+  [DeploymentStatusTypesSchema['building-infra']]: PROGRESS_STEP * 33,
+  [DeploymentStatusTypesSchema['building-app']]: PROGRESS_STEP * 66,
+  [DeploymentStatusTypesSchema.successful]: PROGRESS_STEP * 100,
 };
 
 const finalizeDeployment = (
   deploymentStatus: AppVersionDeploymentStatus,
   task: ListrTaskWrapper<PushCommandTasksContext, any>,
 ) => {
-  if (deploymentStatus.status === deploymentStatusTypesSchema.enum.failed) {
-    task.title = deploymentStatus.error?.message || 'Deployment process has failed';
-    throw new Error(task.title);
-  } else if (deploymentStatus.deployment) {
-    const deploymentUrl = `Deployment successfully finished, deployment url: ${deploymentStatus.deployment.url}`;
-    task.title = deploymentUrl;
-  } else {
-    const generalErrorMessage = 'Something went wrong, the deployment url is missing.';
-    task.title = generalErrorMessage;
-    throw new Error(generalErrorMessage);
+  switch (deploymentStatus.status) {
+    case DeploymentStatusTypesSchema.failed: {
+      task.title = deploymentStatus.error?.message || 'Deployment process has failed';
+      throw new Error(task.title);
+    }
+
+    case DeploymentStatusTypesSchema.successful: {
+      const deploymentUrl = `Deployment successfully finished, deployment url: ${deploymentStatus.deployment!.url}`;
+      task.title = deploymentUrl;
+      break;
+    }
+
+    default: {
+      const generalErrorMessage = 'Something went wrong, the deployment url is missing.';
+      task.title = generalErrorMessage;
+      throw new Error(generalErrorMessage);
+    }
   }
 };
 
@@ -183,14 +193,16 @@ export const handleDeploymentTask = async (
   ctx: PushCommandTasksContext,
   task: ListrTaskWrapper<PushCommandTasksContext, any>,
 ) => {
-  task.output = createProgressBarString(100, 0);
+  task.output = createProgressBarString(MAX_PROGRESS_VALUE, 0);
   const now = Date.now();
-  const deploymentStatus = await pollForDeploymentStatus(ctx.appVersionId, TimeInMs.second * 5, {
-    ttl: TimeInMs.minute * 30,
+  const retryAfter = TimeInMs.second * 5;
+  const ttl = TimeInMs.minute * 30;
+  const deploymentStatus = await pollForDeploymentStatus(ctx.appVersionId, retryAfter, {
+    ttl,
     progressLogger: (message: keyof typeof DeploymentStatusTypesSchema) => {
       const deltaInSeconds = (Date.now() - now) / TimeInMs.second;
       task.title = `Deployment in progress: ${message}`;
-      task.output = createProgressBarString(100, STATUS_TO_PROGRESS_VALUE[message], deltaInSeconds);
+      task.output = createProgressBarString(MAX_PROGRESS_VALUE, STATUS_TO_PROGRESS_VALUE[message], deltaInSeconds);
     },
   });
 
