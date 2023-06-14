@@ -3,9 +3,9 @@ import { StatusCodes } from 'http-status-codes';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_VERSION_ID_TO_ENTER } from 'consts/messages';
-import { PromptService } from 'services/prompt-service';
+import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getAppVersionDeploymentStatus } from 'services/push-service';
-import { ErrorMondayCode } from 'types/errors';
+import { HttpError } from 'types/errors';
 import { AppVersionDeploymentStatus } from 'types/services/push-service';
 import logger from 'utils/logger';
 
@@ -37,14 +37,19 @@ export default class Status extends AuthenticatedCommand {
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Status);
-    const appVersionId = flags.appVersionId || Number(await PromptService.appVersionPrompt());
+    let appVersionId = flags.appVersionId;
+    if (!appVersionId) {
+      const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion();
+      appVersionId = appAndAppVersion.appVersionId;
+    }
+
     try {
       const deploymentStatus = await getAppVersionDeploymentStatus(appVersionId);
       printDeploymentStatus(appVersionId, deploymentStatus);
     } catch (error: unknown) {
       logger.debug(error);
-      if (error instanceof ErrorMondayCode && error.code === StatusCodes.NOT_FOUND) {
-        logger.error(`Not deployment found for provided app version id - "${appVersionId}"`);
+      if (error instanceof HttpError && error.code === StatusCodes.NOT_FOUND) {
+        logger.error(`No deployment found for provided app version id - "${appVersionId}"`);
       } else {
         logger.error(
           `An unknown error happened while fetching deployment status for app version id - "${appVersionId}"`,

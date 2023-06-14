@@ -2,19 +2,15 @@ import axios from 'axios';
 import { ListrTaskWrapper } from 'listr2';
 
 import { getAppVersionDeploymentStatusUrl, getDeploymentSignedUrl } from 'consts/urls';
+import { execute } from 'services/api-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import { createTarGzArchive, readFileData } from 'services/files-service';
-import { execute } from 'services/monday-code-service.js';
 import { pollPromise } from 'services/polling-service';
-import {
-  appVersionDeploymentStatusSchema,
-  deploymentStatusTypesSchema,
-  signedUrlSchema,
-} from 'services/schemas/push-service-schemas';
+import { appVersionDeploymentStatusSchema, signedUrlSchema } from 'services/schemas/push-service-schemas';
 import { PushCommandTasksContext } from 'types/commands/push';
-import { ErrorMondayCode } from 'types/errors';
+import { HttpError } from 'types/errors';
 import { TimeInMs } from 'types/general/time';
-import { HttpMethodTypes } from 'types/services/monday-code-service';
+import { HttpMethodTypes } from 'types/services/api-service';
 import { AppVersionDeploymentStatus, DeploymentStatusTypesSchema, SignedUrl } from 'types/services/push-service';
 import logger from 'utils/logger';
 import { createProgressBarString } from 'utils/progress-bar';
@@ -33,9 +29,9 @@ export const getSignedStorageUrl = async (appVersionId: number): Promise<string>
       signedUrlSchema,
     );
     return response.signed;
-  } catch (error: any | ErrorMondayCode) {
+  } catch (error: any | HttpError) {
     logger.debug(error);
-    if (error instanceof ErrorMondayCode) {
+    if (error instanceof HttpError) {
       throw error;
     }
 
@@ -56,9 +52,8 @@ export const getAppVersionDeploymentStatus = async (appVersionId: number) => {
       appVersionDeploymentStatusSchema,
     );
     return response;
-  } catch (error_: any | ErrorMondayCode) {
-    const error =
-      error_ instanceof ErrorMondayCode ? error_ : new Error('Failed to check app version deployment status.');
+  } catch (error_: any | HttpError) {
+    const error = error_ instanceof HttpError ? error_ : new Error('Failed to check app version deployment status.');
     throw error;
   }
 };

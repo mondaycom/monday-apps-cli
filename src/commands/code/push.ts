@@ -3,7 +3,7 @@ import { Listr } from 'listr2';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_VERSION_ID_TO_ENTER } from 'consts/messages';
-import { PromptService } from 'services/prompt-service';
+import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import {
   buildAssetToDeployTask,
   handleDeploymentTask,
@@ -42,7 +42,11 @@ export default class Push extends AuthenticatedCommand {
   public async run(): Promise<void> {
     const { flags } = await this.parse(Push);
 
-    const appVersionId = flags.appVersionId || Number(await PromptService.appVersionPrompt());
+    let appVersionId = flags.appVersionId;
+    if (!appVersionId) {
+      const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion();
+      appVersionId = appAndAppVersion.appVersionId;
+    }
 
     const tasks = new Listr<PushCommandTasksContext>(
       [

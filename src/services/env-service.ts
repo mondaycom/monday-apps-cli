@@ -3,8 +3,8 @@ export const getNodeEnv = (): string => {
 };
 
 export const getAppsDomain = (): string => {
-  const mondayCodeDomain = process.env.APPS_DOMAIN! || 'https://monday-apps-ms.monday.com';
-  return mondayCodeDomain;
+  const appsDomain = process.env.APPS_DOMAIN! || 'https://monday-apps-ms.monday.com';
+  return appsDomain;
 };
 
 export const initCurrentWorkingDirectory = (): string => {

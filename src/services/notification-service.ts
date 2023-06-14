@@ -1,9 +1,9 @@
 import { getLogsStreamForAppVersionIdUrl } from 'consts/urls';
-import { execute } from 'services/monday-code-service';
+import { execute } from 'services/api-service';
 import { clientChannelSchema } from 'services/schemas/notification-schema';
 import { LogType } from 'types/commands/logs';
-import { ErrorMondayCode } from 'types/errors';
-import { HttpMethodTypes } from 'types/services/monday-code-service';
+import { HttpError } from 'types/errors';
+import { HttpMethodTypes } from 'types/services/api-service';
 import { ClientChannel } from 'types/services/notification-service';
 import logger from 'utils/logger';
 import { appsUrlBuilder } from 'utils/urls-builder';
@@ -23,7 +23,7 @@ export const logsStream = async (appVersionId: number, logsType: LogType): Promi
     return response;
   } catch (error: any) {
     logger.debug(error);
-    if (error instanceof ErrorMondayCode) {
+    if (error instanceof HttpError) {
       throw error;
     }
 
