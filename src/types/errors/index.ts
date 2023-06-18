@@ -2,7 +2,8 @@ import { StatusCodes } from 'http-status-codes';
 
 export type ErrorParamsValues = string | number | Date | null | undefined;
 export type ErrorParams = Record<string, ErrorParamsValues>;
-export class ErrorMondayCode extends Error {
+
+export class HttpError extends Error {
   public code;
   private description;
   private title;

@@ -3,7 +3,7 @@ import inquirer from 'inquirer';
 import autocomplete from 'inquirer-autocomplete-prompt';
 import isEmail from 'isemail';
 
-import { APP_VERSION_ID_TO_ENTER } from 'consts/messages';
+import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { checkIfFileExists, getFileExtension } from 'services/files-service.js';
 
 inquirer.registerPrompt('autocomplete', autocomplete);
@@ -167,5 +167,9 @@ export const PromptService = {
 
   async appVersionPrompt() {
     return PromptService.promptInputNumber(APP_VERSION_ID_TO_ENTER, true);
+  },
+
+  async appPrompt() {
+    return PromptService.promptInputNumber(APP_ID_TO_ENTER, true);
   },
 };

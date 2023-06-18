@@ -8,8 +8,8 @@ import { CONFIG_KEYS } from 'consts/config';
 import { ACCESS_TOKEN_NOT_FOUND } from 'consts/messages';
 import { ConfigService } from 'services/config-service.js';
 import { getAppsDomain } from 'services/env-service.js';
-import { ErrorMondayCode } from 'types/errors';
-import { BaseErrorResponse, BaseResponseHttpMetaData, ExecuteParams } from 'types/services/monday-code-service';
+import { HttpError } from 'types/errors';
+import { BaseErrorResponse, BaseResponseHttpMetaData, ExecuteParams } from 'types/services/api-service';
 import logger from 'utils/logger';
 
 const DEFAULT_TIMEOUT = 10 * 1000;
@@ -52,12 +52,12 @@ export async function execute<T extends BaseResponseHttpMetaData>(
       const statusCode = error.response?.status;
       const title = errorAxiosResponse?.title;
       const message = errorAxiosResponse?.message || defaultErrorMessage;
-      throw new ErrorMondayCode(message, title, statusCode);
+      throw new HttpError(message, title, statusCode);
     } else if (error instanceof Error) {
       const message = error.message || defaultErrorMessage;
-      throw new ErrorMondayCode(message);
+      throw new HttpError(message);
     } else {
-      throw new ErrorMondayCode('An un known error occurred.');
+      throw new HttpError('An un known error occurred.');
     }
   }
 }

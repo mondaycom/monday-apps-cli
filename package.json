@@ -1,6 +1,6 @@
 {
   "name": "monday-code-cli",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A cli tool to manage apps (and monday-code projects) in monday.com",
   "author": "monday.com Apps Team",
   "type": "module",
@@ -105,6 +105,12 @@
     "topics": {
       "code": {
         "description": "Perform operations related to apps in monday-code, monday.com's server hosting service"
+      },
+      "app": {
+        "description": "Perform operations related to apps in monday.com"
+      },
+      "app-version": {
+        "description": "Perform operations related to app versions in monday.com"
       }
     },
     "hooks": {
