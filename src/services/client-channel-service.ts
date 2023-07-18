@@ -18,8 +18,10 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
       }
 
       const writePusherLogs = (data: LogItem[]): void => {
-        data?.map(logItem => {
-          return logger.log(`[${logItem.type}]${JSON.stringify(logItem)}`);
+        data.map(logItem => {
+          const object = logItem.request || logItem.response;
+          return object ? logger.log(object, `[${logItem.type}]`) :
+            logger.log(`[${logItem.type}]${logItem.message ?? ''}`);
         });
       };
 
