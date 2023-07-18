@@ -19,7 +19,7 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
 
       const writePusherLogs = (data: LogItem[]): void => {
         data.map(logItem => {
-          const object = logItem.request || logItem.response;
+          const object = {request: logItem.request, response: logItem.response};
           return object ? logger.log(object, `[${logItem.type}]`) :
             logger.log(`[${logItem.type}]${logItem.message ?? ''}`);
         });
