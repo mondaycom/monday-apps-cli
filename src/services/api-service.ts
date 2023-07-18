@@ -42,6 +42,7 @@ export async function execute<T extends BaseResponseHttpMetaData>(
       params: query,
       timeout: timeout || DEFAULT_TIMEOUT,
     });
+    logger.debug({res: response});
     const result = { ...response.data, statusCode: 200, headers: response.headers };
     return (schemaValidator && (schemaValidator.parse(result) as T)) || result;
   } catch (error: any | Error | AxiosError) {

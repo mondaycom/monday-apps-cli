@@ -41,7 +41,7 @@ export const createTarGzArchive = async (directoryPath: string, fileName = 'code
     await compressDirectoryToTarGz(directoryPath, archivePath, pathsToIgnore);
     return archivePath;
   } catch (error) {
-    logger.debug(DEBUG_TAG, error);
+    logger.debug(error);
     throw new Error('Failed in creating archive');
   }
 };
@@ -58,7 +58,7 @@ const getFilesToExcludeForArchive = (directoryPath: string): string[] => {
     return findIgnoredFiles(directoryPath, gitIgnorePath);
   }
 
-  logger.debug(`${DEBUG_TAG} - No ignore files found, you can use .gitignore or 
+  logger.debug(`${DEBUG_TAG} - No ignore files found, you can use .gitignore or
     .mappsignore to exclude some of the folders and files in your project`);
 
   return [];
