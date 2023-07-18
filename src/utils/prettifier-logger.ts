@@ -1,16 +1,13 @@
+import {AxiosResponse} from 'axios';
 import pino from 'pino';
 import pretty from 'pino-pretty';
 
-type Response = {
-  status: number;
-  config: {
-    url: string;
-    method: string;
-  };
-};
-
 const responseSerializer = (res: unknown) => {
-  const response: Response = res as Response;
+  const response = res as AxiosResponse;
+  if (!response.status || !response?.config?.method || !response?.config?.url) {
+    return JSON.stringify(res);
+  }
+
   return `${response.config.method.toUpperCase()}/${response.config.url} - ${response.status}`;
 };
 
