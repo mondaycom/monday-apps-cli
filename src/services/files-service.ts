@@ -70,7 +70,7 @@ const getIgnorePath = (directoryPath: string, ignoreFile: string): string | unde
   const ignoreSearchPattern = `${directoryPath}/**/${ignoreFile}`;
   const [ignorePath] = glob.sync(ignoreSearchPattern);
   return ignorePath;
-}
+};
 
 const findIgnoredFiles = (directoryPath: string, ignorePath: string): string[] => {
   const DEBUG_TAG = 'ignore_files_for_archive';
@@ -80,7 +80,7 @@ const findIgnoredFiles = (directoryPath: string, ignorePath: string): string[] =
   logger.debug(`${DEBUG_TAG} - validating and aligning exclude files list`);
   const filesToExclude = alignPatternsForArchive(parsedIgnore?.patterns, directoryPath);
   return filesToExclude;
-}
+};
 
 const alignPatternsForArchive = (patterns: string[], directoryPath: string): string[] => {
   const alignedPatterns = patterns?.reduce<string[]>((realPatterns, pattern) => {

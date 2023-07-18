@@ -3,10 +3,10 @@ import pretty from 'pino-pretty';
 
 type Response = {
   status: number;
-  config:  {
+  config: {
     url: string;
     method: string;
-  }
+  };
 };
 
 const responseSerializer = (res: unknown) => {

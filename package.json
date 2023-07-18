@@ -27,7 +27,9 @@
     "posttest": "yarn lint",
     "test": "mocha --forbid-only \"test/**/*.test.ts\"",
     "prepack": "yarn build && oclif manifest && oclif readme",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "prettier:check": "prettier --check ./src",
+    "prettier:fix": "prettier --write ./src"
   },
   "engines": {
     "node": ">=18.0.0"

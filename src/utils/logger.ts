@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import {pinoLogger} from 'utils/prettifier-logger';
+import { pinoLogger } from 'utils/prettifier-logger';
 
 type ConsoleMethod = (...args: any[]) => void;
 type ConsoleProperties = keyof Console & (typeof LOG_PROPS)[keyof typeof LOG_PROPS];
@@ -44,7 +44,7 @@ const consoleHandler = {
       return emptyFunction;
     }
 
-     if (isDebugMode && property === LOG_PROPS.DEBUG) {
+    if (isDebugMode && property === LOG_PROPS.DEBUG) {
       return (...args: unknown[]) => {
         const isError = args[0] instanceof Error;
         if (isError) {
@@ -52,7 +52,7 @@ const consoleHandler = {
         } else {
           (pinoLogger.info as ConsoleMethod)(...args);
         }
-      }
+      };
     }
 
     if (typeof originalMethod === 'function') {
