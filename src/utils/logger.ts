@@ -1,61 +1,41 @@
-import chalk from 'chalk';
+import { pinoLogger } from 'utils/prettifier-logger';
 
-type ConsoleMethod = (...args: any[]) => void;
-type ConsoleProperties = keyof Console & (typeof LOG_PROPS)[keyof typeof LOG_PROPS];
-type Logger = typeof console & { success: typeof console.log };
-
-const LOG_PROPS = {
-  DEBUG: 'debug',
-  ERROR: 'error',
-  INFO: 'info',
-  LOG: 'log',
-  WARN: 'warn',
-  TABLE: 'table',
-  SUCCESS: 'success',
-};
-const LOG_PROPS_MAPPING = {
-  [LOG_PROPS.SUCCESS]: LOG_PROPS.INFO,
-};
-const STANDARD_COLORS_MAPPING = {
-  [LOG_PROPS.ERROR]: chalk.bold.red,
-  [LOG_PROPS.WARN]: chalk.bold.yellow,
-  [LOG_PROPS.INFO]: chalk.dim,
-  [LOG_PROPS.SUCCESS]: chalk.bold.green,
-};
+type MethodConsole = (...args: unknown[]) => void;
 
 let isDebugMode = false;
 
-function emptyFunction() {
-  return;
+class Logger {
+  info = (...args: unknown[]) => (pinoLogger.info as MethodConsole)(...args);
+
+  error = (...args: unknown[]) => (pinoLogger.error as MethodConsole)(...args);
+
+  warn = (...args: unknown[]) => (pinoLogger.warn as MethodConsole)(...args);
+
+  log = (...args: unknown[]) => (pinoLogger.info as MethodConsole)(...args);
+
+  success = (...args: unknown[]) => (pinoLogger.info as MethodConsole)(...args);
+
+  debug(...args: unknown[]): void {
+    if (!isDebugMode) {
+      return;
+    }
+
+    const obj: unknown = args[0];
+    const isError = obj instanceof Error;
+    if (isError) {
+      this.error(...args);
+    } else {
+      this.info(...args);
+    }
+  }
+
+  table = (...args: unknown[]) => (console.table as MethodConsole)(...args);
 }
 
 export function enableDebugMode() {
   isDebugMode = true;
 }
 
-const consoleHandler = {
-  get: function (target: Console, property: ConsoleProperties, receiver: Console): ConsoleMethod | any {
-    const mappedMethodProperty = LOG_PROPS_MAPPING[property] || property;
-    const originalMethod = Reflect.get(target, mappedMethodProperty, receiver) as ConsoleMethod;
-
-    if (!isDebugMode && property === LOG_PROPS.DEBUG) {
-      return emptyFunction;
-    }
-
-    if (typeof originalMethod === 'function') {
-      return (...args: unknown[]) => {
-        const colorFunction = STANDARD_COLORS_MAPPING[property];
-        let finalArguments = args;
-        if (colorFunction) {
-          finalArguments = args.map(arg => colorFunction(arg));
-        }
-
-        originalMethod(...finalArguments);
-      };
-    }
-  },
-};
-
-const logger: Logger = new Proxy(console, consoleHandler) as Logger;
+const logger: Logger = new Logger();
 
 export default logger;

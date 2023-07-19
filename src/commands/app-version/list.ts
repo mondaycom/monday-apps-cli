@@ -12,6 +12,8 @@ const printAppVersions = (appVersions: Array<AppVersion>) => {
 };
 
 export default class AppVersionList extends AuthenticatedCommand {
+  DEBUG_TAG = 'app_version_list';
+
   static description = 'List all versions for a specific app.';
 
   static examples = ['<%= config.bin %> <%= command.id %>'];
@@ -40,7 +42,7 @@ export default class AppVersionList extends AuthenticatedCommand {
 
       printAppVersions(appVersions);
     } catch (error: unknown) {
-      logger.debug(error);
+      logger.debug(error, this.DEBUG_TAG);
       logger.error(`An unknown error happened while fetching app version for app id - "${appId}"`);
       this.exit(0);
     }

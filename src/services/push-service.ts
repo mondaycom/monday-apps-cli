@@ -17,6 +17,7 @@ import { createProgressBarString } from 'utils/progress-bar';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
 export const getSignedStorageUrl = async (appVersionId: number): Promise<string> => {
+  const DEBUG_TAG = 'get_signed_storage_url';
   try {
     const baseSignUrl = getDeploymentSignedUrl(appVersionId);
     const url = appsUrlBuilder(baseSignUrl);
@@ -30,7 +31,7 @@ export const getSignedStorageUrl = async (appVersionId: number): Promise<string>
     );
     return response.signed;
   } catch (error: any | HttpError) {
-    logger.debug(error);
+    logger.debug(error, DEBUG_TAG);
     if (error instanceof HttpError) {
       throw error;
     }
@@ -97,13 +98,14 @@ export const uploadFileToStorage = async (
   fileData: Buffer,
   fileType: string,
 ): Promise<any> => {
+  const DEBUG_TAG = 'upload_file_to_storage';
   try {
     const response = await axios.put(cloudStorageUrl, fileData, {
       headers: { 'Content-Type': fileType },
     });
     return response;
   } catch (error: any) {
-    logger.debug(error);
+    logger.debug(error, DEBUG_TAG);
     throw new Error('Failed in uploading the project.');
   }
 };
@@ -112,6 +114,7 @@ export const buildAssetToDeployTask = async (
   ctx: PushCommandTasksContext,
   task: ListrTaskWrapper<PushCommandTasksContext, any>,
 ) => {
+  const DEBUG_TAG = 'build_asset_to_deploy_task';
   try {
     if (!ctx.directoryPath) {
       const currentDirectoryPath = getCurrentWorkingDirectory();
@@ -124,7 +127,7 @@ export const buildAssetToDeployTask = async (
     ctx.archivePath = archivePath;
     ctx.showPrepareEnvironmentTask = true;
   } catch (error) {
-    logger.debug(error);
+    logger.debug(error, DEBUG_TAG);
     throw error;
   }
 };

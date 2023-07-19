@@ -19,6 +19,7 @@ const MESSAGES = {
 };
 
 export default class Push extends AuthenticatedCommand {
+  DEBUG_TAG = 'code_push';
   static description = 'Push your project to get hosted on monday-code.';
 
   static examples = [
@@ -73,7 +74,7 @@ export default class Push extends AuthenticatedCommand {
     try {
       await tasks.run();
     } catch (error: any) {
-      logger.debug(error);
+      logger.debug(error, this.DEBUG_TAG);
     }
   }
 }
