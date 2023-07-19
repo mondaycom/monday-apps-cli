@@ -1,47 +1,36 @@
 import { pinoLogger } from 'utils/prettifier-logger';
 
-type ConsoleMethod = (...args: any[]) => void;
+type MethodConsole = (...args: unknown[]) => void;
+
+let isDebugMode = false;
 
 class Logger {
-  info(...args: unknown[]): void {
-    (pinoLogger.info as ConsoleMethod)(...args);
-  }
+  info = (...args: unknown[]) => (pinoLogger.info as MethodConsole)(...args);
 
-  error(...args: unknown[]): void {
-      pinoLogger.error(args[0]);
-  }
+  error = (...args: unknown[]) => (pinoLogger.error as MethodConsole)(...args);
 
-  warn(...args: unknown[]): void {
-    (pinoLogger.warn as ConsoleMethod)(...args);
-  }
+  warn = (...args: unknown[]) => (pinoLogger.warn as MethodConsole)(...args);
+
+  log = (...args: unknown[]) => (pinoLogger.info as MethodConsole)(...args);
+
+  success = (...args: unknown[]) => (pinoLogger.info as MethodConsole)(...args);
 
   debug(...args: unknown[]): void {
     if (!isDebugMode) {
       return;
     }
 
-    const isError = args[0] instanceof Error;
+    const obj: unknown = args[0];
+    const isError = obj instanceof Error;
     if (isError) {
-      pinoLogger.error(args[0]);
+      this.error(...args);
     } else {
       this.info(...args);
     }
   }
 
-  log(...args: unknown[]): void {
-    (pinoLogger.info as ConsoleMethod)(...args);
-  }
-
-  success(...args: unknown[]): void {
-    (pinoLogger.info as ConsoleMethod)(...args);
-  }
-
-  table(...args: unknown[]): void {
-    (console.table as ConsoleMethod)(...args);
-  }
+  table = (...args: unknown[]) => (console.table as MethodConsole)(...args);
 }
-
-let isDebugMode = false;
 
 export function enableDebugMode() {
   isDebugMode = true;

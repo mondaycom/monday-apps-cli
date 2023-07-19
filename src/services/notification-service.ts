@@ -9,6 +9,7 @@ import logger from 'utils/logger';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
 export const logsStream = async (appVersionId: number, logsType: LogType): Promise<ClientChannel> => {
+  const DEBUG_TAG = 'logs_stream';
   try {
     const logsStreamForUrl = getLogsStreamForAppVersionIdUrl(appVersionId, logsType);
     const url = appsUrlBuilder(logsStreamForUrl);
@@ -22,7 +23,7 @@ export const logsStream = async (appVersionId: number, logsType: LogType): Promi
     );
     return response;
   } catch (error: any) {
-    logger.debug(error);
+    logger.debug(error, DEBUG_TAG);
     if (error instanceof HttpError) {
       throw error;
     }

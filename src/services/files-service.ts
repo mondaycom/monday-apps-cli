@@ -27,7 +27,7 @@ export const getFileExtension = (filePath: string): string => {
 export const createTarGzArchive = async (directoryPath: string, fileName = 'code'): Promise<string> => {
   const DEBUG_TAG = 'create_archive';
   try {
-    logger.debug(`${DEBUG_TAG} - Check directory exists`, { directoryPath });
+    logger.debug({ directoryPath }, `${DEBUG_TAG} - Check directory exists`);
     const directoryExists = fs.existsSync(directoryPath);
     if (!directoryExists) {
       throw new Error(`Directory not found: ${directoryPath}`);
@@ -41,7 +41,7 @@ export const createTarGzArchive = async (directoryPath: string, fileName = 'code
     await compressDirectoryToTarGz(directoryPath, archivePath, pathsToIgnore);
     return archivePath;
   } catch (error) {
-    logger.debug(error);
+    logger.debug(error, DEBUG_TAG);
     throw new Error('Failed in creating archive');
   }
 };
@@ -107,7 +107,7 @@ const compressDirectoryToTarGz = async (
   pathsToIgnore?: string[],
 ): Promise<string> => {
   const DEBUG_TAG = 'archive';
-  logger.debug(`${DEBUG_TAG} - Starting`, { directoryPath, archivePath });
+  logger.debug({ directoryPath, archivePath }, `${DEBUG_TAG} - Starting`);
 
   const outputStream = fs.createWriteStream(archivePath);
   const archive = archiver('tar', {
@@ -120,7 +120,7 @@ const compressDirectoryToTarGz = async (
   logger.debug(`${DEBUG_TAG} - Initialized`);
   await new Promise((resolve, reject) => {
     archive.pipe(outputStream);
-    logger.debug(`${DEBUG_TAG} - Added paths to ignore`, pathsToIgnore);
+    logger.debug(pathsToIgnore, `${DEBUG_TAG} - Added paths to ignore`);
     archive.glob('**/*', {
       cwd: directoryPath,
       ignore: pathsToIgnore,

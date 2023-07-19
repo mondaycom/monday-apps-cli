@@ -7,6 +7,7 @@ import { ClientChannel } from 'types/services/notification-service';
 import logger from 'utils/logger.js';
 
 export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
+  const DEBUG_TAG = 'streamMessages';
   return new Promise(resolve => {
     try {
       if (!clientChannel) {
@@ -20,8 +21,9 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
       const writePusherLogs = (data: LogItem[]): void => {
         data.map(logItem => {
           const object = {request: logItem.request, response: logItem.response};
-          return object ? logger.log(object, `[${logItem.type}]`) :
-            logger.log(`[${logItem.type}]${logItem.message ?? ''}`);
+          return logItem.message ?
+            logger.log(`[${logItem.type}]${logItem.message}`) :
+            logger.log(object, `[${logItem.type}]`)
         });
       };
 
@@ -38,7 +40,7 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
 
       Pusher.logToConsole = true;
       Pusher.log = msg => {
-        logger.debug(msg);
+        logger.debug(msg, DEBUG_TAG);
       };
 
       const pusher = new Pusher(clientChannel.credentials.key, {
@@ -61,7 +63,7 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
         }
       });
       logger.log('Opening communication channel...');
-      logger.debug(`Trying to listen to channel: ${clientChannel.channelName}`);
+      logger.debug(`Trying to listen to channel: ${clientChannel.channelName}`, DEBUG_TAG);
       pusher.connection.bind('connected', () => {
         logger.log('Started logs listening...');
         setTimeout(() => {
@@ -69,7 +71,7 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
         }, clientChannel.ttl * 1000);
       });
     } catch (error: any) {
-      logger.debug(error);
+      logger.debug(error, DEBUG_TAG);
 
       throw new Error(`Failed to stream messages to channel "${clientChannel.channelName}"`);
     }

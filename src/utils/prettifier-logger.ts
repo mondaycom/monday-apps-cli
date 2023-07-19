@@ -8,7 +8,7 @@ const responseSerializer = (res: unknown) => {
     return JSON.stringify(res);
   }
 
-  return `${response.config.method.toUpperCase()}/${response.config.url} - ${response.status}`;
+  return `${response.config.method.toUpperCase()}: ${response.config.url} - ${response.status}`;
 };
 
 const stream = pretty({
