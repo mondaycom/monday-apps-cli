@@ -14,8 +14,10 @@ monday.com cli tool for `<monday-code />` apps management.
 ```ssh-session
 $ cd <monday-code-cli repo>
 $ nvm use
-$ npm i -g ./
-$ npm run build
+$ npm i yarn
+$ yarn global add ./
+$ yarn
+$ yarn build
 $ mapps YOUR_COMMAND
 ```
 ## Add new command
@@ -27,7 +29,7 @@ $ oclif generate command <COMMAND_NAME>
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g monday-code-cli
+$ yarn global add @mondaycom/apps-cli
 $ mapps COMMAND
 running command...
 $ mapps (--version)
