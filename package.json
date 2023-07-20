@@ -55,6 +55,7 @@
     "http-status-codes": "^2.2.0",
     "inquirer": "^9.1.4",
     "inquirer-autocomplete-prompt": "^3.0.0",
+    "inquirer-date-prompt": "^3.0.0",
     "isemail": "^3.2.0",
     "listr2": "^6.6.0",
     "nanospinner": "^1.1.0",
