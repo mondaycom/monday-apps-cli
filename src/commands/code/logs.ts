@@ -224,8 +224,9 @@ export default class Logs extends AuthenticatedCommand {
     };
 
     const toDate = await this.getLogsToDate(logsEndDate, fromDate, fromDatePlus1Day, options);
+
     const text =
-      isLogTypeHistory && logSearchFromText !== ''
+      isLogTypeHistory && logSearchFromText === undefined
         ? await PromptService.promptInput(LOGS_PROMPT_SEARCH_FOR_TEXT)
         : logSearchFromText;
 

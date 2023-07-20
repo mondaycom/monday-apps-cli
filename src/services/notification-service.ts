@@ -15,7 +15,7 @@ export const logsStream = async (
 ): Promise<ClientChannel> => {
   const DEBUG_TAG = 'logs_stream';
   try {
-    const logsStreamForUrl = getLogsStreamForAppVersionIdUrl(appVersionId, logsType);
+    const logsStreamForUrl = getLogsStreamForAppVersionIdUrl(appVersionId, logsType, logsFilterCriteria);
     const url = appsUrlBuilder(logsStreamForUrl);
     logger.debug(`fetching logs url: ${url}`);
     const response = await execute<ClientChannel>(
