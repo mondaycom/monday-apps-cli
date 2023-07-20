@@ -15,6 +15,7 @@ const accessTokenPrompt = async () =>
   );
 
 export default class Init extends BaseCommand {
+  DEBUG_TAG = 'init';
   static description = `Initialize mapps config file - "${CONFIG_NAME}".`;
 
   static examples = ['<%= config.bin %> <%= command.id %> -t SECRET_TOKEN'];
@@ -39,7 +40,7 @@ export default class Init extends BaseCommand {
       ConfigService.init(args, this.config.configDir, { override: true, setInProcessEnv: true });
       logger.info(`'${CONFIG_NAME}' created`);
     } catch (error) {
-      logger.debug((error as Error).message);
+      logger.debug(error, this.DEBUG_TAG);
       logger.error(`'${CONFIG_NAME}' failed to initialize`);
     }
   }

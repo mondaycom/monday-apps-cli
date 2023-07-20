@@ -8,6 +8,7 @@ import logger from 'utils/logger';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
 export const listApps = async (): Promise<Array<App>> => {
+  const DEBUG_TAG = 'app_list';
   try {
     const path = listAppsUrl();
     const url = appsUrlBuilder(path);
@@ -21,7 +22,7 @@ export const listApps = async (): Promise<Array<App>> => {
     );
     return response.apps;
   } catch (error: any) {
-    logger.debug(error);
+    logger.debug(error, DEBUG_TAG);
     if (error instanceof HttpError) {
       throw error;
     }

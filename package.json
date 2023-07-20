@@ -1,6 +1,6 @@
 {
-  "name": "monday-code-cli",
-  "version": "0.1.5",
+  "name": "@mondaycom/apps-cli",
+  "version": "0.1.7",
   "description": "A cli tool to manage apps (and monday-code projects) in monday.com",
   "author": "monday.com Apps Team",
   "type": "module",
@@ -14,8 +14,8 @@
   "files": [
     "/bin",
     "/dist",
-    "/npm-shrinkwrap.json",
-    "/oclif.manifest.json"
+    "/oclif.manifest.json",
+    "README.md"
   ],
   "scripts": {
     "start": "./bin/run.js",
@@ -27,7 +27,10 @@
     "posttest": "yarn lint",
     "test": "mocha --forbid-only \"test/**/*.test.ts\"",
     "prepack": "yarn build && oclif manifest && oclif readme",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "prettier:check": "prettier --check ./src",
+    "prettier:fix": "prettier --write ./src",
+    "prepublish-and-build": "yarn install --frozen-lockfile && yarn prepack"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -60,6 +63,8 @@
     "listr2": "^6.6.0",
     "nanospinner": "^1.1.0",
     "parse-gitignore": "^2.0.0",
+    "pino": "^8.14.1",
+    "pino-pretty": "^10.0.1",
     "pusher-js": "^8.0.1",
     "zod": "^3.20.2"
   },

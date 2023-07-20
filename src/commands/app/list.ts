@@ -8,6 +8,7 @@ const printApps = (apps: Array<App>) => {
 };
 
 export default class AppList extends AuthenticatedCommand {
+  DEBUG_TAG = 'app_list';
   static description = 'List all apps for a specific user.';
 
   static examples = ['<%= config.bin %> <%= command.id %>'];
@@ -24,7 +25,7 @@ export default class AppList extends AuthenticatedCommand {
 
       printApps(apps);
     } catch (error: unknown) {
-      logger.debug(error);
+      logger.debug(error, this.DEBUG_TAG);
       logger.error('An unknown error happened while fetching apps');
       this.exit(0);
     }

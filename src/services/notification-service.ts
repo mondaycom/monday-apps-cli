@@ -13,8 +13,9 @@ export const logsStream = async (
   logsType: LogType,
   logsFilterCriteria?: LogsFilterCriteriaArguments | null,
 ): Promise<ClientChannel> => {
+  const DEBUG_TAG = 'logs_stream';
   try {
-    const logsStreamForUrl = getLogsStreamForAppVersionIdUrl(appVersionId, logsType, logsFilterCriteria);
+    const logsStreamForUrl = getLogsStreamForAppVersionIdUrl(appVersionId, logsType);
     const url = appsUrlBuilder(logsStreamForUrl);
     logger.debug(`fetching logs url: ${url}`);
     const response = await execute<ClientChannel>(
@@ -27,7 +28,7 @@ export const logsStream = async (
     );
     return response;
   } catch (error: any) {
-    logger.debug(error);
+    logger.debug(error, DEBUG_TAG);
     if (error instanceof HttpError) {
       throw error;
     }

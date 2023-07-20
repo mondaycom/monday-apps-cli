@@ -18,6 +18,7 @@ export async function execute<T extends BaseResponseHttpMetaData>(
   params: ExecuteParams,
   schemaValidator?: ZodObject<any>,
 ): Promise<T> {
+  const DEBUG_TAG = 'api_service';
   const accessToken = ConfigService.getConfigDataByKey(CONFIG_KEYS.ACCESS_TOKEN);
   if (!accessToken) {
     logger.error(ACCESS_TOKEN_NOT_FOUND);
@@ -42,10 +43,11 @@ export async function execute<T extends BaseResponseHttpMetaData>(
       params: query,
       timeout: timeout || DEFAULT_TIMEOUT,
     });
+    logger.debug({ res: response }, DEBUG_TAG);
     const result = { ...response.data, statusCode: 200, headers: response.headers };
     return (schemaValidator && (schemaValidator.parse(result) as T)) || result;
   } catch (error: any | Error | AxiosError) {
-    logger.debug(error);
+    logger.debug(error, DEBUG_TAG);
     const defaultErrorMessage = `Couldn't connect to the remote server "${baseURL}"`;
     if (error instanceof AxiosError) {
       const errorAxiosResponse = error.response?.data as BaseErrorResponse;

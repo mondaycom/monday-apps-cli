@@ -1,0 +1,15 @@
+on: pull_request
+name: Pull Request
+jobs:
+  test:
+    name: Run validations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.12.x"
+      - run: yarn install
+      - run: yarn build
+      - run: yarn lint
