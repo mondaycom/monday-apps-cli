@@ -29,7 +29,7 @@ $ oclif generate command <COMMAND_NAME>
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g monday-code-cli
+$ yarn global add @mondaycom/apps-cli
 $ mapps COMMAND
 running command...
 $ mapps (--version)
