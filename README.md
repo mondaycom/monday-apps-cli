@@ -33,7 +33,7 @@ $ npm install -g @mondaycom/apps-cli
 $ mapps COMMAND
 running command...
 $ mapps (--version)
-@mondaycom/apps-cli/0.1.7 darwin-arm64 node-v18.12.1
+@mondaycom/apps-cli/0.1.8 darwin-arm64 node-v18.12.1
 $ mapps --help [COMMAND]
 USAGE
   $ mapps COMMAND
@@ -73,7 +73,7 @@ EXAMPLES
   $ mapps app-version:list
 ```
 
-_See code: [dist/commands/app-version/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.7/dist/commands/app-version/list.ts)_
+_See code: [dist/commands/app-version/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.8/dist/commands/app-version/list.ts)_
 
 ## `mapps app:list`
 
@@ -93,7 +93,7 @@ EXAMPLES
   $ mapps app:list
 ```
 
-_See code: [dist/commands/app/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.7/dist/commands/app/list.ts)_
+_See code: [dist/commands/app/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.8/dist/commands/app/list.ts)_
 
 ## `mapps autocomplete [SHELL]`
 
@@ -148,7 +148,7 @@ EXAMPLES
   $ mapps code:logs -i APP_VERSION_ID -t LOGS_TYPE
 ```
 
-_See code: [dist/commands/code/logs.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.7/dist/commands/code/logs.ts)_
+_See code: [dist/commands/code/logs.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.8/dist/commands/code/logs.ts)_
 
 ## `mapps code:push`
 
@@ -175,7 +175,7 @@ EXAMPLES
   $ mapps code:push -i APP_VERSION_ID_TO_PUSH
 ```
 
-_See code: [dist/commands/code/push.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.7/dist/commands/code/push.ts)_
+_See code: [dist/commands/code/push.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.8/dist/commands/code/push.ts)_
 
 ## `mapps code:secrets`
 
@@ -202,7 +202,7 @@ EXAMPLES
   $ mapps code:secrets
 ```
 
-_See code: [dist/commands/code/secrets.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.7/dist/commands/code/secrets.ts)_
+_See code: [dist/commands/code/secrets.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.8/dist/commands/code/secrets.ts)_
 
 ## `mapps code:status`
 
@@ -225,7 +225,7 @@ EXAMPLES
   $ mapps code:status -i APP_VERSION_ID
 ```
 
-_See code: [dist/commands/code/status.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.7/dist/commands/code/status.ts)_
+_See code: [dist/commands/code/status.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.8/dist/commands/code/status.ts)_
 
 ## `mapps help [COMMANDS]`
 
@@ -268,5 +268,5 @@ EXAMPLES
   $ mapps init -t SECRET_TOKEN
 ```
 
-_See code: [dist/commands/init/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.7/dist/commands/init/index.ts)_
+_See code: [dist/commands/init/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.8/dist/commands/init/index.ts)_
 <!-- commandsstop -->
