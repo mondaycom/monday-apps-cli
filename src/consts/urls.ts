@@ -26,3 +26,11 @@ export const listAppsUrl = (): string => {
 export const listAppVersionsByAppIdUrl = (appId: AppId): string => {
   return `${BASE_APPS_URL}/${appId}/versions`;
 };
+
+export const appSecretsUrl = (appId: AppId, key: string): string => {
+  return `/api/code/${appId}/secrets/${key}`;
+};
+
+export const appSecretKeysUrl = (appId: AppId): string => {
+  return `/api/code/${appId}/secrets/keys`;
+};
