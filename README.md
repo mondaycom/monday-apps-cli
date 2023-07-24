@@ -45,9 +45,9 @@ USAGE
 * [`mapps app-version:list`](#mapps-app-versionlist)
 * [`mapps app:list`](#mapps-applist)
 * [`mapps autocomplete [SHELL]`](#mapps-autocomplete-shell)
+* [`mapps code:env`](#mapps-codeenv)
 * [`mapps code:logs`](#mapps-codelogs)
 * [`mapps code:push`](#mapps-codepush)
-* [`mapps code:secrets`](#mapps-codesecrets)
 * [`mapps code:status`](#mapps-codestatus)
 * [`mapps help [COMMANDS]`](#mapps-help-commands)
 * [`mapps init`](#mapps-init)
@@ -126,6 +126,33 @@ EXAMPLES
 
 _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v2.2.0/src/commands/autocomplete/index.ts)_
 
+## `mapps code:env`
+
+Manage environment variables for your app hosted on monday-code.
+
+```
+USAGE
+  $ mapps code:env [--verbose] [-i <value>] [-m list-keys|set|delete] [-k <value>] [-v <value>]
+
+FLAGS
+  -i, --appId=<value>  Please enter app id:
+  -k, --key=<value>    Environment variable key
+  -m, --mode=<option>  Environment variables management mode
+                       <options: list-keys|set|delete>
+  -v, --value=<value>  The environment variable value
+
+GLOBAL FLAGS
+  --verbose  Print advanced logs (optional).
+
+DESCRIPTION
+  Manage environment variables for your app hosted on monday-code.
+
+EXAMPLES
+  $ mapps code:env
+```
+
+_See code: [dist/commands/code/env.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.8/dist/commands/code/env.ts)_
+
 ## `mapps code:logs`
 
 Stream logs
@@ -176,33 +203,6 @@ EXAMPLES
 ```
 
 _See code: [dist/commands/code/push.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.8/dist/commands/code/push.ts)_
-
-## `mapps code:secrets`
-
-Manage secrets for your project hosted on monday-code.
-
-```
-USAGE
-  $ mapps code:secrets [--verbose] [-i <value>] [-m list-keys|set|delete] [-k <value>] [-s <value>]
-
-FLAGS
-  -i, --appId=<value>   Please enter app id:
-  -k, --key=<value>     Secret key
-  -m, --mode=<option>   Secret management mode
-                        <options: list-keys|set|delete>
-  -s, --secret=<value>  The secret value
-
-GLOBAL FLAGS
-  --verbose  Print advanced logs (optional).
-
-DESCRIPTION
-  Manage secrets for your project hosted on monday-code.
-
-EXAMPLES
-  $ mapps code:secrets
-```
-
-_See code: [dist/commands/code/secrets.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.8/dist/commands/code/secrets.ts)_
 
 ## `mapps code:status`
 
