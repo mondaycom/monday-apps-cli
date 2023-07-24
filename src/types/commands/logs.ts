@@ -8,7 +8,7 @@ export enum LogType {
 export type LogsFilterCriteriaArguments = {
   fromDate: Date;
   toDate: Date;
-  text: string | undefined | null;
+  text?: string;
 };
 
 export type LogsCommandArguments = {
@@ -16,3 +16,8 @@ export type LogsCommandArguments = {
   logsType: LogType;
   logsFilterCriteria?: LogsFilterCriteriaArguments | null;
 };
+
+export enum EventSource {
+  LIVE = 'live',
+  HISTORY = 'history',
+}
