@@ -149,25 +149,9 @@ export default class Logs extends AuthenticatedCommand {
     return isLogTypeHistory && inputText === undefined ? PromptService.promptInput(title) : inputText;
   }
 
-  private async getLogsFilterCriteria(
-    logsType: EventSource,
-    logsStartDate?: string,
-    logsEndDate?: string,
-    logSearchFromText?: string,
-  ): Promise<LogsFilterCriteriaArguments | null> {
-    const isLogTypeHistory = logsType === EventSource.HISTORY;
-    if (!isLogTypeHistory) {
-      return null;
-    }
-
-    const fromDate: Date = await this.readDateInput('Start date', logsStartDate);
-    const fromDateInMS = fromDate.getTime();
-    const fromDatePlus1Day = new Date(fromDateInMS + DAY_IN_MS);
+  private buildDatePickerConfiguration = (fromDate: Date, maxDate: Date) => {
     const options = {
       validate: (selectedDate: Date) => {
-        const maxDateInMS = DAY_IN_MS * LOGS_MAX_RANGE_BETWEEN_DATES;
-        const minuteInMS = Number(TIME_IN_MILLISECONDS.MINUTE);
-        const maxDate = new Date(fromDateInMS + maxDateInMS + minuteInMS);
         const selectedDateSmallerThenMaxDate = selectedDate < maxDate;
         const selectedDateHigherThenFromDate = selectedDate > fromDate;
         if (!selectedDateSmallerThenMaxDate) {
@@ -183,8 +167,28 @@ export default class Logs extends AuthenticatedCommand {
         return true;
       },
     };
+    return options;
+  };
 
-    const toDate = await this.getLogsToDate(fromDate, fromDatePlus1Day, options, logsEndDate);
+  private async getLogsFilterCriteria(
+    logsType: EventSource,
+    logsStartDate?: string,
+    logsEndDate?: string,
+    logSearchFromText?: string,
+  ): Promise<LogsFilterCriteriaArguments | null> {
+    const isLogTypeHistory = logsType === EventSource.HISTORY;
+    if (!isLogTypeHistory) {
+      return null;
+    }
+
+    const fromDate: Date = await this.readDateInput('Start date', logsStartDate);
+    const fromDateInMS = fromDate.getTime();
+    const fromDatePlus1Day = new Date(fromDateInMS + DAY_IN_MS);
+    const maxDateInMS = DAY_IN_MS * LOGS_MAX_RANGE_BETWEEN_DATES;
+    const minuteInMS = Number(TIME_IN_MILLISECONDS.MINUTE);
+    const maxDate = new Date(fromDateInMS + maxDateInMS + minuteInMS);
+    const datePickerOptions = this.buildDatePickerConfiguration(fromDate, maxDate);
+    const toDate = await this.getLogsToDate(fromDate, fromDatePlus1Day, datePickerOptions, logsEndDate);
 
     const text = await this.readTextLogSearchInput(
       'Search for text (please put searching value in side a quotes)',
