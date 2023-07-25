@@ -43,9 +43,9 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
             logMethod = mapSeverityToLogFunction[severity];
           }
 
-          return logItem.message
-            ? logMethod(`[${logItem.type}]${logItem.message}`)
-            : logMethod(object, `[${logItem.type}]`);
+          return logItem.message ?
+            logMethod(`[${logItem.type}]${logItem.message}`) :
+            logMethod(object, `[${logItem.type}]`);
         });
       };
 

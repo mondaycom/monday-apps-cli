@@ -113,9 +113,9 @@ export default class Logs extends AuthenticatedCommand {
     options: unknown,
     logsEndDate?: string,
   ): Promise<Date> {
-    const toDate: Date = isDate(logsEndDate)
-      ? new Date(logsEndDate!)
-      : await PromptService.promptDateTimePicker(LOGS_PROMPT_END_DATE, fromDatePlus1Day, options);
+    const toDate: Date = isDate(logsEndDate) ?
+      new Date(logsEndDate!) :
+      await PromptService.promptDateTimePicker(LOGS_PROMPT_END_DATE, fromDatePlus1Day, options);
 
     const dayDiff = getDayDiff(fromDate, toDate);
     if (!isDefined(dayDiff)) {
