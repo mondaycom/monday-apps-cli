@@ -65,7 +65,7 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
       logger.log('Opening communication channel...');
       logger.debug(`Trying to listen to channel: ${clientChannel.channelName}`, DEBUG_TAG);
       pusher.connection.bind('connected', () => {
-        logger.log('Started logs listening...');
+        logger.log('Started logs listing...');
         setTimeout(() => {
           disconnect(channel);
         }, clientChannel.ttl * 1000);

@@ -14,7 +14,7 @@ monday.com cli tool for `<monday-code />` apps management.
 ```ssh-session
 $ cd <monday-code-cli repo>
 $ nvm use
-$ npm i yarn
+$ npm i -g yarn
 $ yarn global add ./
 $ yarn
 $ yarn build
