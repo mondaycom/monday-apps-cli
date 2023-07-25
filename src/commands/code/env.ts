@@ -3,7 +3,6 @@ import { Relationship } from '@oclif/core/lib/interfaces/parser';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ENV_MANAGEMENT_MODES } from 'consts/manage-app-env';
-import { APP_ID_TO_ENTER } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { handleEnvironmentRequest } from 'services/manage-app-env-service';
 import { PromptService } from 'services/prompt-service';
@@ -68,21 +67,21 @@ export default class Env extends AuthenticatedCommand {
   static flags = Env.serializeFlags({
     appId: Flags.integer({
       char: 'i',
-      description: APP_ID_TO_ENTER,
+      description: 'The id of the app to manage environment variables for',
     }),
     mode: Flags.string({
       char: 'm',
-      description: 'Environment variables management mode',
+      description: 'management mode',
       options: Object.values(APP_ENV_MANAGEMENT_MODES),
     }),
     key: Flags.string({
       char: 'k',
-      description: 'Environment variable key',
+      description: 'variable key [required for set and delete]]',
       relationships: [flagsWithModeRelationships],
     }),
     value: Flags.string({
       char: 'v',
-      description: 'The environment variable value',
+      description: 'variable value [required for set]',
       relationships: [flagsWithModeRelationships],
     }),
   });
