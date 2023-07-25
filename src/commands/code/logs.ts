@@ -87,11 +87,10 @@ export default class Logs extends AuthenticatedCommand {
     return appVersionId;
   }
 
-  private async getLogType(eventSource?: string, logsType?: string): Promise<LogType> {
-    const eventSourceType = (eventSource || (await eventSourcePrompt())) as EventSource;
+  private async getLogType(eventSource: EventSource, logsType?: string): Promise<LogType> {
     const logsTypeCandidate = (logsType || (await logsTypePrompt())) as LogType;
     let calcLogsType = logsTypeCandidate;
-    if (eventSourceType === EventSource.HISTORY) {
+    if (eventSource === EventSource.HISTORY) {
       switch (logsTypeCandidate) {
         case LogType.CONSOLE: {
           calcLogsType = LogType.CONSOLE_HISTORY;
@@ -114,8 +113,9 @@ export default class Logs extends AuthenticatedCommand {
     options: unknown,
     logsEndDate?: string,
   ): Promise<Date> {
-    const toDate: Date = isDate(logsEndDate) ? new Date(logsEndDate!) :
-      await PromptService.promptDateTimePicker(LOGS_PROMPT_END_DATE, fromDatePlus1Day, options);
+    const toDate: Date = isDate(logsEndDate)
+      ? new Date(logsEndDate!)
+      : await PromptService.promptDateTimePicker(LOGS_PROMPT_END_DATE, fromDatePlus1Day, options);
 
     const dayDiff = getDayDiff(fromDate, toDate);
     if (!isDefined(dayDiff)) {
@@ -137,7 +137,8 @@ export default class Logs extends AuthenticatedCommand {
   }
 
   private async readDateInput(title: string, inputDate?: string): Promise<Date> {
-    return isDate(inputDate) ? new Date(inputDate!) : PromptService.promptDateTimePicker(title);
+    const yesterday = new Date(Date.now() - DAY_IN_MS);
+    return isDate(inputDate) ? new Date(inputDate!) : PromptService.promptDateTimePicker(title, yesterday);
   }
 
   private async readTextLogSearchInput(
@@ -203,10 +204,13 @@ export default class Logs extends AuthenticatedCommand {
 
     const appVersionId = await this.getAppVersionId(flags.appVersionId);
 
-    const logsType = await this.getLogType(flags.eventSource, flags.logsType);
+    const eventSource = (flags.eventSource || (await eventSourcePrompt())) as EventSource;
+    const logsType = await this.getLogType(eventSource, flags.logsType);
+
+    logger.info('Starting to stream logs');
 
     const logsFilterCriteria = await this.getLogsFilterCriteria(
-      flags.eventSource as EventSource,
+      eventSource,
       flags.logsStartDate,
       flags.logsEndDate,
       flags.logSearchFromText,

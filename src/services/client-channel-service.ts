@@ -1,10 +1,25 @@
 import Pusher from 'pusher-js';
 import Channel from 'pusher-js/types/src/core/channels/channel';
 
-import { LogItem } from 'types/communication/log-item-types';
+import { LogItem, LogItemSeverity } from 'types/communication/log-item-types';
 import { StreamLogType, StreamMessage } from 'types/services/client-channel-service';
 import { ClientChannel } from 'types/services/notification-service';
+import { isDefined } from 'utils/guards';
 import logger from 'utils/logger.js';
+
+const mapSeverityToLogFunction: {
+  [LogItemSeverity.ERROR]: (...args: unknown[]) => void;
+  [LogItemSeverity.INFO]: (...args: unknown[]) => void;
+  [LogItemSeverity.DEBUG]: (...args: unknown[]) => void;
+  [LogItemSeverity.WARNING]: (...args: unknown[]) => void;
+} = {
+  [LogItemSeverity.DEBUG]: (...args: unknown[]) => logger.debug(args),
+  [LogItemSeverity.INFO]: logger.info,
+  [LogItemSeverity.WARNING]: logger.warn,
+  [LogItemSeverity.ERROR]: logger.error,
+};
+
+const SUPPORTED_LOG_SEVERITIES = Object.keys(LogItemSeverity) as Array<keyof typeof LogItemSeverity>;
 
 export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
   const DEBUG_TAG = 'streamMessages';
@@ -20,10 +35,17 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
 
       const writePusherLogs = (data: LogItem[]): void => {
         data.map(logItem => {
-          const object = {request: logItem.request, response: logItem.response};
-          return logItem.message ?
-            logger.log(`[${logItem.type}]${logItem.message}`) :
-            logger.log(object, `[${logItem.type}]`)
+          const object = { request: logItem.request, response: logItem.response };
+          let logMethod = logger.log;
+          const severity = logItem.severity as keyof typeof mapSeverityToLogFunction;
+          const isSeverityValid = SUPPORTED_LOG_SEVERITIES.includes(severity);
+          if (isSeverityValid && isDefined(severity)) {
+            logMethod = mapSeverityToLogFunction[severity];
+          }
+
+          return logItem.message
+            ? logMethod(`[${logItem.type}]${logItem.message}`)
+            : logMethod(object, `[${logItem.type}]`);
         });
       };
 
