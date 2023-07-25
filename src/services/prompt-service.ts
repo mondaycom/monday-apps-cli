@@ -1,11 +1,15 @@
 import fuzzy from 'fuzzy';
 import inquirer from 'inquirer';
 import autocomplete from 'inquirer-autocomplete-prompt';
+import DatePrompt from 'inquirer-date-prompt';
 import isEmail from 'isemail';
 
 import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { checkIfFileExists, getFileExtension } from 'services/files-service.js';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+inquirer.registerPrompt('date', DatePrompt);
 inquirer.registerPrompt('autocomplete', autocomplete);
 
 function validateIfRequired(input: string, message: string, isRequired = false): boolean | string {
@@ -42,6 +46,23 @@ export const PromptService = {
     ]);
 
     return res.selection;
+  },
+
+  async promptDateTimePicker(message: string, selectedDate = new Date(), options: any = {}): Promise<Date> {
+    const baseOptions = {
+      type: 'date',
+      name: 'timestamp',
+      message,
+      default: selectedDate,
+      locale: 'en-US',
+      format: { month: 'short', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' },
+      clearable: false,
+    };
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const config: any = Object.assign(baseOptions, options);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const prompt = await inquirer.prompt(config);
+    return prompt.timestamp! as Date;
   },
 
   async promptConfirm(message: string, defaultValue = false) {
