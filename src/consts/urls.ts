@@ -34,3 +34,11 @@ export const listAppsUrl = (): string => {
 export const listAppVersionsByAppIdUrl = (appId: AppId): string => {
   return `${BASE_APPS_URL}/${appId}/versions`;
 };
+
+export const appEnvironmentUrl = (appId: AppId, key: string): string => {
+  return `/api/code/${appId}/env/${key}`;
+};
+
+export const appEnvironmentKeysUrl = (appId: AppId): string => {
+  return `/api/code/${appId}/env-keys`;
+};

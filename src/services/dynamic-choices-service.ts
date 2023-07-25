@@ -23,7 +23,9 @@ export const DynamicChoicesService = {
     const appVersions = await listAppVersionsByAppId(appId);
     const appVersionChoicesMap: Record<string, number> = {};
     for (const appVersion of appVersions) {
-      appVersionChoicesMap[`${appVersion.versionNumber} | ${appVersion.status} | ${appVersion.name}`] = appVersion.id;
+      appVersionChoicesMap[
+        `${appVersion.id} | ${appVersion.versionNumber} | ${appVersion.name} | ${appVersion.status}`
+      ] = appVersion.id;
     }
 
     const selectedAppVersionKey = await PromptService.promptSelectionWithAutoComplete<string>(

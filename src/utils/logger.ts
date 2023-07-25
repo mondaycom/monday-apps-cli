@@ -1,6 +1,5 @@
+import { MethodConsole } from 'types/utils/logger';
 import { pinoLogger } from 'utils/prettifier-logger';
-
-type MethodConsole = (...args: unknown[]) => void;
 
 let isDebugMode = false;
 

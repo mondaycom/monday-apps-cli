@@ -4,11 +4,13 @@ export enum LogItemType {
 }
 
 export enum LogItemSeverity {
-  INFO = 'info',
-  LOG = 'log',
-  WARNING = 'warning',
-  ERROR = 'error',
-  UNDEFINED = 'undefined',
+  INFO = 'INFO',
+  LOG = 'LOG',
+  WARNING = 'WARNING',
+  ERROR = 'ERROR',
+  DEFAULT = 'DEFAULT',
+  DEBUG = 'DEBUG',
+  UNDEFINED = 'UNDEFINED',
 }
 
 export type LogItem = {
