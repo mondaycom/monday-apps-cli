@@ -20,10 +20,11 @@ export const getLogsStreamForAppVersionIdUrl = (
   logsType: LogType,
   logsFilterCriteria?: LogsFilterCriteriaArguments | null,
 ): string => {
-  const logsFilterCriteriaParams = logsFilterCriteria ? `&fromDate=${logsFilterCriteria.fromDate.getTime()}&toDate=${logsFilterCriteria.toDate.getTime()}&text=${encodeURIComponent(
+  const logsFilterCriteriaParams = logsFilterCriteria
+    ? `&fromDate=${logsFilterCriteria.fromDate.getTime()}&toDate=${logsFilterCriteria.toDate.getTime()}&text=${encodeURIComponent(
         logsFilterCriteria.text || '',
-      )}` :
-    '';
+      )}`
+    : '';
   return `${appVersionIdBaseUrl(appVersionId)}/logs?type=${logsType}${logsFilterCriteriaParams}`;
 };
 
