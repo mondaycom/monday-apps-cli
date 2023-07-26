@@ -1,4 +1,4 @@
-import {AxiosResponse} from 'axios';
+import { AxiosResponse } from 'axios';
 import pino from 'pino';
 import pretty from 'pino-pretty';
 

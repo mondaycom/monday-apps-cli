@@ -1,7 +1,10 @@
 import { ErrorParams, ErrorParamsValues } from 'types/errors';
 
 export class BaseError extends Error {
-  constructor(public message: string, public params: ErrorParams = {}) {
+  constructor(
+    public message: string,
+    public params: ErrorParams = {},
+  ) {
     super(message);
   }
 

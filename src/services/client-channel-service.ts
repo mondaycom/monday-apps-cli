@@ -19,7 +19,7 @@ const mapSeverityToLogFunction: {
   [LogItemSeverity.ERROR]: logger.error,
 };
 
-const SUPPORTED_LOG_SEVERITIES = Object.keys(LogItemSeverity) as Array<keyof typeof LogItemSeverity>;
+const SUPPORTED_LOG_SEVERITIES = Object.keys(mapSeverityToLogFunction) as Array<keyof typeof mapSeverityToLogFunction>;
 
 export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
   const DEBUG_TAG = 'streamMessages';
@@ -43,9 +43,9 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
             logMethod = mapSeverityToLogFunction[severity];
           }
 
-          return logItem.message ?
-            logMethod(`[${logItem.type}]${logItem.message}`) :
-            logMethod(object, `[${logItem.type}]`);
+          return logItem.message
+            ? logMethod(`[${logItem.type}]${logItem.message}`)
+            : logMethod(object, `[${logItem.type}]`);
         });
       };
 
