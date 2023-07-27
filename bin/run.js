@@ -1,4 +1,4 @@
-#!/usr/bin/env node --experimental-json-modules --no-warnings
+#!/usr/bin/env node
 
 import oclif from '@oclif/core';
 import { handlePackageVersionUpdate } from './package-version-utils.js';

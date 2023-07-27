@@ -1,6 +1,6 @@
 import updateNotifier from 'update-notifier';
 import argsParser from 'args-parser';
-import pkg from './minimal-package.json' assert { type: 'json' };
+import pkg from './minimal-package.js';
 import { spawn } from 'node:child_process';
 import chalk from 'chalk';
 
