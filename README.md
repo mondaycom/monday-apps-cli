@@ -1,4 +1,4 @@
-<h3 style="color:red"><b>Public access to this SDK is currently restricted but will become available in the next few months</b></h3>
+<h3 style="color:red"><b>Public access to this CLI is currently restricted but will become available in the next few months</b></h3>
 
 ---
 monday-code-cli
