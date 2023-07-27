@@ -1,6 +1,6 @@
 {
   "name": "@mondaycom/apps-cli",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "A cli tool to manage apps (and monday-code projects) in monday.com",
   "author": "monday.com Apps Team",
   "type": "module",
@@ -30,7 +30,7 @@
     "version": "oclif readme && git add README.md",
     "prettier:check": "prettier --check ./src",
     "prettier:fix": "prettier --write ./src",
-    "prepublish-and-build": "yarn install --frozen-lockfile && yarn prepack && ./scripts/create-minified-package-json"
+    "prepublish-and-build": "yarn install --frozen-lockfile && yarn prepack && ./scripts/create-minified-package-json.sh"
   },
   "engines": {
     "node": ">=18.0.0"
