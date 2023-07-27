@@ -16,8 +16,9 @@ fi
 package_name=$(jq -r '.name' package.json)
 package_version=$(jq -r '.version' package.json)
 
-# Create a new JSON file with package name and version
-output_file="bin/minimal-package.json"
-echo "{\"name\":\"$package_name\",\"version\":\"$package_version\"}" > "$output_file"
+# Create a JavaScript file with the object
+output_file="bin/minimal-package.js"
+
+echo "export default { name: \"$package_name\", version: \"$package_version\" };" > "$output_file"
 
 echo "Successfully created $output_file with package name and version."

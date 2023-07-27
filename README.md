@@ -7,28 +7,10 @@ monday-code-cli
 monday.com cli tool for `<monday-code />` apps management.
 
 <!-- toc -->
-* [Development](#development)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
-<!-- development -->
-# Development
-## Local install
-```ssh-session
-$ cd <monday-code-cli repo>
-$ nvm use
-$ npm i -g yarn
-$ yarn global add ./
-$ yarn
-$ yarn build
-$ mapps YOUR_COMMAND
-```
-## Add new command
-```ssh-session
-$ cd <monday-code-cli repo>
-$ oclif generate command <COMMAND_NAME>
-```
-<!-- developmentstop -->
+
 # Usage
 <!-- usage -->
 ```sh-session
