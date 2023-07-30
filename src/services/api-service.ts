@@ -29,6 +29,15 @@ const validateResponseIfError = (response: object, schemaValidator?: ZodObject<a
   return response;
 };
 
+const printTraceIdIfPresent = (traceId: string | undefined): void => {
+  if (traceId) {
+    const traceErrorMessage = `ErrorTraceId: ${traceId}`;
+    const line = '─'.repeat(traceErrorMessage.length + 2);
+    const traceIdBox = `\n┌${line}┐\n│ ${traceErrorMessage} │\n└${line}┘`;
+    logger.debug(traceIdBox);
+  }
+};
+
 const handleErrors = (error: any | Error | AxiosError): never => {
   const defaultErrorMessage = `Unexpected error occurred while communicating with the remote server`;
   if (error instanceof AxiosError) {
@@ -36,6 +45,8 @@ const handleErrors = (error: any | Error | AxiosError): never => {
     const statusCode = error.response?.status;
     const title = errorAxiosResponse?.title;
     const message = errorAxiosResponse?.message || defaultErrorMessage;
+    const traceId = errorAxiosResponse?.traceId?.toString();
+    printTraceIdIfPresent(traceId);
     throw new HttpError(message, title, statusCode);
   } else if (error instanceof Error) {
     const message = error.message || defaultErrorMessage;

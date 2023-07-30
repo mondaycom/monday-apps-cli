@@ -19,4 +19,7 @@ const stream = pretty({
   },
 });
 
-export const pinoLogger = pino(stream);
+const logger = pino(stream);
+logger.level = 'debug';
+
+export const pinoLogger = logger;
