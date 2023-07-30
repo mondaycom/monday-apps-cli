@@ -169,6 +169,7 @@ export const PromptService = {
   async promptSelectionWithAutoComplete<T>(message: string, choices: string[]): Promise<T> {
     const search = (_answers: string[], input = '') => {
       return new Promise(resolve => {
+        // eslint-disable-next-line import/no-named-as-default-member
         const results = fuzzy.filter(input, choices).map(element => element.original);
         resolve(results);
       });

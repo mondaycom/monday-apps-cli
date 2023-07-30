@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios';
-import pino from 'pino';
+import { pino } from 'pino';
 import pretty from 'pino-pretty';
 
 const responseSerializer = (res: unknown) => {
