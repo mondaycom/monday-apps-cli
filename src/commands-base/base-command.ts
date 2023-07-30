@@ -1,5 +1,7 @@
 import { Command, Flags } from '@oclif/core';
 
+import logger from 'utils/logger';
+
 export abstract class BaseCommand extends Command {
   public static serializeFlags<T>(flags: T): T & typeof this.sharedFlags {
     return {
@@ -16,10 +18,10 @@ export abstract class BaseCommand extends Command {
     }),
   };
 
-  protected async catch(err: Error & { exitCode?: number }): Promise<any> {
-    // add any custom logic to handle errors from the command
-    // or simply return the parent class error handling
-    return super.catch(err);
+  protected catch(err: Error & { exitCode?: number }): any {
+    err?.message && logger.error((err as Error).message);
+    logger.debug(err);
+    return this.exit(1);
   }
 
   protected async finally(_: Error | undefined): Promise<any> {

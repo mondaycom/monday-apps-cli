@@ -206,9 +206,6 @@ export default class Logs extends AuthenticatedCommand {
 
     const eventSource = (flags.eventSource || (await eventSourcePrompt())) as EventSource;
     const logsType = await this.getLogType(eventSource, flags.logsType);
-
-    logger.info('Starting to stream logs');
-
     const logsFilterCriteria = await this.getLogsFilterCriteria(
       eventSource,
       flags.logsStartDate,

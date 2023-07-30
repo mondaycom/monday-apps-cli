@@ -1,3 +1,5 @@
+import { StatusCodes } from 'http-status-codes';
+
 import { getLogsStreamForAppVersionIdUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
 import { clientChannelSchema } from 'services/schemas/notification-schema';
@@ -13,7 +15,6 @@ export const logsStream = async (
   logsType: LogType,
   logsFilterCriteria?: LogsFilterCriteriaArguments | null,
 ): Promise<ClientChannel> => {
-  const DEBUG_TAG = 'logs_stream';
   try {
     const logsStreamForUrl = getLogsStreamForAppVersionIdUrl(appVersionId, logsType, logsFilterCriteria);
     const url = appsUrlBuilder(logsStreamForUrl);
@@ -28,9 +29,12 @@ export const logsStream = async (
     );
     return response;
   } catch (error: any) {
-    logger.debug(error, DEBUG_TAG);
     if (error instanceof HttpError) {
-      throw error;
+      const finalHttpError =
+        error.code === StatusCodes.NOT_FOUND
+          ? new Error('monday-code deployment not found for the requested app-version')
+          : error;
+      throw finalHttpError;
     }
 
     throw new Error('Failed to open logs channel.');

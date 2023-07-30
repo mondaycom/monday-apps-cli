@@ -1,3 +1,5 @@
+import { StatusCodes } from 'http-status-codes';
+
 import { APP_ENV_MANAGEMENT_MODES } from 'consts/manage-app-env';
 import { appEnvironmentKeysUrl, appEnvironmentUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
@@ -9,8 +11,23 @@ import { ListAppEnvironmentKeysResponse } from 'types/services/manage-app-env-se
 import logger from 'utils/logger';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
+const handleHttpErrors = (error: HttpError) => {
+  switch (error.code) {
+    case StatusCodes.NOT_FOUND: {
+      throw new Error('monday-code deployment not found for the requested app');
+    }
+
+    case StatusCodes.FORBIDDEN: {
+      throw new Error('You are not authorized to access the requested app');
+    }
+
+    default: {
+      throw error;
+    }
+  }
+};
+
 export const listAppEnvKeys = async (appId: AppId): Promise<Array<string>> => {
-  const DEBUG_TAG = 'list_app_environment_keys';
   try {
     const path = appEnvironmentKeysUrl(appId);
     const url = appsUrlBuilder(path);
@@ -25,9 +42,8 @@ export const listAppEnvKeys = async (appId: AppId): Promise<Array<string>> => {
 
     return response.keys;
   } catch (error: any) {
-    logger.debug(error, DEBUG_TAG);
     if (error instanceof HttpError) {
-      throw error;
+      handleHttpErrors(error);
     }
 
     throw new Error('failed to list app environment keys');
@@ -35,7 +51,6 @@ export const listAppEnvKeys = async (appId: AppId): Promise<Array<string>> => {
 };
 
 export const setEnv = async (appId: AppId, key: string, value: string) => {
-  const DEBUG_TAG = 'set_environment';
   try {
     const path = appEnvironmentUrl(appId, key);
     const url = appsUrlBuilder(path);
@@ -46,9 +61,8 @@ export const setEnv = async (appId: AppId, key: string, value: string) => {
       body: { value },
     });
   } catch (error: any) {
-    logger.debug(error, DEBUG_TAG);
     if (error instanceof HttpError) {
-      throw error;
+      handleHttpErrors(error);
     }
 
     throw new Error('failed to set environment variable');
@@ -56,7 +70,6 @@ export const setEnv = async (appId: AppId, key: string, value: string) => {
 };
 
 export const deleteEnv = async (appId: AppId, key: string) => {
-  const DEBUG_TAG = 'delete_environment';
   try {
     const path = appEnvironmentUrl(appId, key);
     const url = appsUrlBuilder(path);
@@ -68,9 +81,8 @@ export const deleteEnv = async (appId: AppId, key: string) => {
 
     return true;
   } catch (error: any) {
-    logger.debug(error, DEBUG_TAG);
     if (error instanceof HttpError) {
-      throw error;
+      handleHttpErrors(error);
     }
 
     throw new Error('failed to delete environment variable');

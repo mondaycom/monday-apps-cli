@@ -14,6 +14,37 @@ import logger from 'utils/logger';
 
 const DEFAULT_TIMEOUT = 10 * 1000;
 
+const validateResponseIfError = (response: object, schemaValidator?: ZodObject<any>): object => {
+  if (schemaValidator) {
+    const parsedResponse = schemaValidator.safeParse(response);
+    if (parsedResponse.success) {
+      return parsedResponse.data;
+    }
+
+    const { error } = parsedResponse;
+    logger.debug(error, 'Invalid response');
+    throw new Error(`An unknown error occurred. Please contact support.`);
+  }
+
+  return response;
+};
+
+const handleErrors = (error: any | Error | AxiosError): never => {
+  const defaultErrorMessage = `Unexpected error occurred while communicating with the remote server`;
+  if (error instanceof AxiosError) {
+    const errorAxiosResponse = error.response?.data as BaseErrorResponse;
+    const statusCode = error.response?.status;
+    const title = errorAxiosResponse?.title;
+    const message = errorAxiosResponse?.message || defaultErrorMessage;
+    throw new HttpError(message, title, statusCode);
+  } else if (error instanceof Error) {
+    const message = error.message || defaultErrorMessage;
+    throw new HttpError(message);
+  } else {
+    throw new HttpError('An unknown error occurred.');
+  }
+};
+
 export async function execute<T extends BaseResponseHttpMetaData>(
   params: ExecuteParams,
   schemaValidator?: ZodObject<any>,
@@ -33,6 +64,7 @@ export async function execute<T extends BaseResponseHttpMetaData>(
       secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
       rejectUnauthorized: false,
     });
+
     const response = await axios.request<T>({
       httpsAgent,
       method,
@@ -43,23 +75,12 @@ export async function execute<T extends BaseResponseHttpMetaData>(
       params: query,
       timeout: timeout || DEFAULT_TIMEOUT,
     });
+
     logger.debug({ res: response }, DEBUG_TAG);
     const result = { ...response.data, statusCode: 200, headers: response.headers };
-    return (schemaValidator && (schemaValidator.parse(result) as T)) || result;
+    const validatedResult = validateResponseIfError(result, schemaValidator);
+    return (validatedResult as T) || result;
   } catch (error: any | Error | AxiosError) {
-    logger.debug(error, DEBUG_TAG);
-    const defaultErrorMessage = `Couldn't connect to the remote server "${baseURL}"`;
-    if (error instanceof AxiosError) {
-      const errorAxiosResponse = error.response?.data as BaseErrorResponse;
-      const statusCode = error.response?.status;
-      const title = errorAxiosResponse?.title;
-      const message = errorAxiosResponse?.message || defaultErrorMessage;
-      throw new HttpError(message, title, statusCode);
-    } else if (error instanceof Error) {
-      const message = error.message || defaultErrorMessage;
-      throw new HttpError(message);
-    } else {
-      throw new HttpError('An un known error occurred.');
-    }
+    return handleErrors(error);
   }
 }

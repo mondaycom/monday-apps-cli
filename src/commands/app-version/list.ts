@@ -33,18 +33,12 @@ export default class AppVersionList extends AuthenticatedCommand {
       appId = Number(await DynamicChoicesService.chooseApp());
     }
 
-    try {
-      const appVersions = await listAppVersionsByAppId(appId);
-      if (appVersions.length === 0) {
-        logger.error(`No app versions found for provided app id - "${appId}"`);
-        return this.exit(1);
-      }
-
-      printAppVersions(appVersions);
-    } catch (error: unknown) {
-      logger.debug(error, this.DEBUG_TAG);
-      logger.error(`An unknown error happened while fetching app version for app id - "${appId}"`);
-      this.exit(0);
+    const appVersions = await listAppVersionsByAppId(appId);
+    if (appVersions.length === 0) {
+      logger.error(`No app versions found for provided app id - "${appId}"`);
+      return this.exit(0);
     }
+
+    printAppVersions(appVersions);
   }
 }

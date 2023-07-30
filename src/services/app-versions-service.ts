@@ -5,11 +5,9 @@ import { HttpError } from 'types/errors';
 import { AppId } from 'types/general';
 import { HttpMethodTypes } from 'types/services/api-service';
 import { AppVersion, ListAppVersionsResponse } from 'types/services/app-versions-service';
-import logger from 'utils/logger';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
 export const listAppVersionsByAppId = async (appId: AppId): Promise<Array<AppVersion>> => {
-  const DEBUG_TAG = 'app_version_list';
   try {
     const path = listAppVersionsByAppIdUrl(appId);
     const url = appsUrlBuilder(path);
@@ -23,7 +21,6 @@ export const listAppVersionsByAppId = async (appId: AppId): Promise<Array<AppVer
     );
     return response.appVersions;
   } catch (error: any) {
-    logger.debug(error, DEBUG_TAG);
     if (error instanceof HttpError) {
       throw error;
     }

@@ -100,11 +100,6 @@ export default class Env extends AuthenticatedCommand {
     key = await promptForKeyIfNotProvided(mode, key);
     value = await promptForValueIfNotProvided(mode, value);
 
-    try {
-      await handleEnvironmentRequest(appId, mode, key, value);
-    } catch (error: any) {
-      logger.error((error as Error).message);
-      this.exit(1);
-    }
+    await handleEnvironmentRequest(appId, mode, key, value);
   }
 }
