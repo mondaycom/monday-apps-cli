@@ -21,7 +21,7 @@ export abstract class AuthenticatedCommand extends BaseCommand {
   protected catch(err: Error & { exitCode?: number }): any {
     if (err instanceof AuthenticationError) {
       logger.error(err);
-      return this.exit(1);
+      return process.exit(1);
     }
 
     return super.catch(err);

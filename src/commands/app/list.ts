@@ -18,7 +18,7 @@ export default class AppList extends AuthenticatedCommand {
     const apps = await listApps();
     if (apps.length === 0) {
       logger.error('No apps found');
-      return this.exit(0);
+      return process.exit(0);
     }
 
     printApps(apps);

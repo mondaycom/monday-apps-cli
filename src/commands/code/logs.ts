@@ -120,7 +120,7 @@ export default class Logs extends AuthenticatedCommand {
     const dayDiff = getDayDiff(fromDate, toDate);
     if (!isDefined(dayDiff)) {
       console.error('Something went wrong in logs date calculations.');
-      this.exit(1);
+      process.exit(1);
     }
 
     if (dayDiff! < 0) {
@@ -220,6 +220,6 @@ export default class Logs extends AuthenticatedCommand {
     };
     const clientChannel = await logsStream(args.appVersionId, args.logsType, logsFilterCriteria);
     await streamMessages(clientChannel);
-    this.exit(0);
+    process.exit(0);
   }
 }

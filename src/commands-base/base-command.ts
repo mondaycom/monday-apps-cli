@@ -21,7 +21,7 @@ export abstract class BaseCommand extends Command {
   protected catch(err: Error & { exitCode?: number }): any {
     err?.message && logger.error((err as Error).message);
     logger.debug(err);
-    return this.exit(1);
+    return process.exit(1);
   }
 
   protected async finally(_: Error | undefined): Promise<any> {

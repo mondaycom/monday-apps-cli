@@ -57,7 +57,7 @@ export default class Status extends AuthenticatedCommand {
         );
       }
 
-      this.exit(0);
+      process.exit(0);
     }
   }
 }

@@ -36,7 +36,7 @@ export default class AppVersionList extends AuthenticatedCommand {
     const appVersions = await listAppVersionsByAppId(appId);
     if (appVersions.length === 0) {
       logger.error(`No app versions found for provided app id - "${appId}"`);
-      return this.exit(0);
+      return process.exit(0);
     }
 
     printAppVersions(appVersions);
