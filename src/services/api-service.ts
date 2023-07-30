@@ -29,12 +29,12 @@ const validateResponseIfError = (response: object, schemaValidator?: ZodObject<a
   return response;
 };
 
-const printTraceIdIfPresent = (traceId: string | undefined): void => {
+const printTraceIdIfPresent = (traceId: string | undefined, statusCode: number | undefined): void => {
   if (traceId) {
     const traceErrorMessage = `ErrorTraceId: ${traceId}`;
     const line = '─'.repeat(traceErrorMessage.length + 2);
     const traceIdBox = `\n┌${line}┐\n│ ${traceErrorMessage} │\n└${line}┘`;
-    logger.debug(traceIdBox);
+    statusCode && statusCode >= 500 ? logger.error(traceIdBox) : logger.debug(traceIdBox);
   }
 };
 
@@ -46,7 +46,7 @@ const handleErrors = (error: any | Error | AxiosError): never => {
     const title = errorAxiosResponse?.title;
     const message = errorAxiosResponse?.message || defaultErrorMessage;
     const traceId = errorAxiosResponse?.traceId?.toString();
-    printTraceIdIfPresent(traceId);
+    printTraceIdIfPresent(traceId, statusCode);
     throw new HttpError(message, title, statusCode);
   } else if (error instanceof Error) {
     const message = error.message || defaultErrorMessage;
