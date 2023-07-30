@@ -123,12 +123,12 @@ export default class Logs extends AuthenticatedCommand {
       process.exit(1);
     }
 
-    if (dayDiff! < 0) {
+    if (dayDiff < 0) {
       logger.error('Logs end date is earlier the start date.');
       return PromptService.promptDateTimePicker(LOGS_PROMPT_END_DATE, fromDatePlus1Day, options);
     }
 
-    if (dayDiff! > LOGS_MAX_RANGE_BETWEEN_DATES) {
+    if (dayDiff > LOGS_MAX_RANGE_BETWEEN_DATES) {
       logger.error(`Logs dates range is greater then ${LOGS_MAX_RANGE_BETWEEN_DATES} days.`);
       return PromptService.promptDateTimePicker(LOGS_PROMPT_END_DATE, fromDatePlus1Day, options);
     }
