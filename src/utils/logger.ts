@@ -24,7 +24,7 @@ class Logger {
     if (isError) {
       this.error(...args);
     } else {
-      this.info(...args);
+      (pinoLogger.debug as MethodConsole)(...args);
     }
   }
 

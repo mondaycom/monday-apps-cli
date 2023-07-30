@@ -8,7 +8,6 @@ const printApps = (apps: Array<App>) => {
 };
 
 export default class AppList extends AuthenticatedCommand {
-  DEBUG_TAG = 'app_list';
   static description = 'List all apps for a specific user.';
 
   static examples = ['<%= config.bin %> <%= command.id %>'];
@@ -16,18 +15,12 @@ export default class AppList extends AuthenticatedCommand {
   static flags = AppList.serializeFlags({});
 
   public async run(): Promise<void> {
-    try {
-      const apps = await listApps();
-      if (apps.length === 0) {
-        logger.error('No apps found');
-        return this.exit(1);
-      }
-
-      printApps(apps);
-    } catch (error: unknown) {
-      logger.debug(error, this.DEBUG_TAG);
-      logger.error('An unknown error happened while fetching apps');
-      this.exit(0);
+    const apps = await listApps();
+    if (apps.length === 0) {
+      logger.error('No apps found');
+      return process.exit(0);
     }
+
+    printApps(apps);
   }
 }

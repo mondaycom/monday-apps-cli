@@ -8,4 +8,5 @@ export const baseResponseHttpMetaDataSchema = z.object({
 export const baseErrorResponseSchema = z.object({
   title: z.string().optional(),
   message: z.string().optional(),
+  traceId: z.string().optional(),
 });

@@ -7,7 +7,6 @@ import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { handleEnvironmentRequest } from 'services/manage-app-env-service';
 import { PromptService } from 'services/prompt-service';
 import { ManageAppEnvFlags } from 'types/commands/manage-app-env';
-import logger from 'utils/logger';
 
 const MODES_WITH_KEYS: Array<APP_ENV_MANAGEMENT_MODES> = [
   APP_ENV_MANAGEMENT_MODES.SET,
@@ -100,11 +99,6 @@ export default class Env extends AuthenticatedCommand {
     key = await promptForKeyIfNotProvided(mode, key);
     value = await promptForValueIfNotProvided(mode, value);
 
-    try {
-      await handleEnvironmentRequest(appId, mode, key, value);
-    } catch (error: any) {
-      logger.error((error as Error).message);
-      this.exit(1);
-    }
+    await handleEnvironmentRequest(appId, mode, key, value);
   }
 }

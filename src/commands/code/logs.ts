@@ -120,15 +120,15 @@ export default class Logs extends AuthenticatedCommand {
     const dayDiff = getDayDiff(fromDate, toDate);
     if (!isDefined(dayDiff)) {
       console.error('Something went wrong in logs date calculations.');
-      this.exit(1);
+      process.exit(1);
     }
 
-    if (dayDiff! < 0) {
+    if (dayDiff < 0) {
       logger.error('Logs end date is earlier the start date.');
       return PromptService.promptDateTimePicker(LOGS_PROMPT_END_DATE, fromDatePlus1Day, options);
     }
 
-    if (dayDiff! > LOGS_MAX_RANGE_BETWEEN_DATES) {
+    if (dayDiff > LOGS_MAX_RANGE_BETWEEN_DATES) {
       logger.error(`Logs dates range is greater then ${LOGS_MAX_RANGE_BETWEEN_DATES} days.`);
       return PromptService.promptDateTimePicker(LOGS_PROMPT_END_DATE, fromDatePlus1Day, options);
     }
@@ -206,9 +206,6 @@ export default class Logs extends AuthenticatedCommand {
 
     const eventSource = (flags.eventSource || (await eventSourcePrompt())) as EventSource;
     const logsType = await this.getLogType(eventSource, flags.logsType);
-
-    logger.info('Starting to stream logs');
-
     const logsFilterCriteria = await this.getLogsFilterCriteria(
       eventSource,
       flags.logsStartDate,
@@ -223,6 +220,6 @@ export default class Logs extends AuthenticatedCommand {
     };
     const clientChannel = await logsStream(args.appVersionId, args.logsType, logsFilterCriteria);
     await streamMessages(clientChannel);
-    this.exit(0);
+    process.exit(0);
   }
 }

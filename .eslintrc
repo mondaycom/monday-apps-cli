@@ -36,6 +36,10 @@
     "plugin:prettier/recommended"
   ],
   "rules": {
+    "eslint-disable-next-line": "off",
+    "no-process-exit": "off",
+    "n/no-process-exit": "off",
+    "unicorn/no-process-exit": "off",
     "@typescript-eslint/consistent-type-definitions": ["error", "type"],
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-var-requires": "off",

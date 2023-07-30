@@ -57,7 +57,8 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
         }
 
         resolve();
-        logger.log('Closed connection');
+        logger.log(`------------------
+                     Closed connection.`);
       };
 
       Pusher.logToConsole = true;
@@ -84,17 +85,16 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
           }
         }
       });
-      logger.log('Opening communication channel...');
       logger.debug(`Trying to listen to channel: ${clientChannel.channelName}`, DEBUG_TAG);
       pusher.connection.bind('connected', () => {
-        logger.log('Started logs listing...');
+        logger.log(`Fetching logs:
+                     ------------------`);
         setTimeout(() => {
           disconnect(channel);
         }, clientChannel.ttl * 1000);
       });
     } catch (error: any) {
       logger.debug(error, DEBUG_TAG);
-
       throw new Error(`Failed to stream messages to channel "${clientChannel.channelName}"`);
     }
   });
