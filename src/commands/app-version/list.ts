@@ -33,6 +33,7 @@ export default class AppVersionList extends AuthenticatedCommand {
       appId = Number(await DynamicChoicesService.chooseApp());
     }
 
+    this.preparePrintCommand(this, { appId });
     const appVersions = await listAppVersionsByAppId(appId);
     if (appVersions.length === 0) {
       logger.error(`No app versions found for provided app id - "${appId}"`);

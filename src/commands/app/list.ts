@@ -10,6 +10,8 @@ const printApps = (apps: Array<App>) => {
 export default class AppList extends AuthenticatedCommand {
   static description = 'List all apps for a specific user.';
 
+  static withPrintCommand = false;
+
   static examples = ['<%= config.bin %> <%= command.id %>'];
 
   static flags = AppList.serializeFlags({});

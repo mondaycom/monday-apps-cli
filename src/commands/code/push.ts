@@ -49,6 +49,7 @@ export default class Push extends AuthenticatedCommand {
       appVersionId = appAndAppVersion.appVersionId;
     }
 
+    this.preparePrintCommand(this, { appVersionId, directoryPath: flags.directoryPath });
     const tasks = new Listr<PushCommandTasksContext>(
       [
         { title: 'Build asset to deploy', task: buildAssetToDeployTask },

@@ -10,6 +10,7 @@ import { ConfigService } from 'services/config-service.js';
 import { getAppsDomain } from 'services/env-service.js';
 import { HttpError } from 'types/errors';
 import { BaseErrorResponse, BaseResponseHttpMetaData, ExecuteParams } from 'types/services/api-service';
+import { wrapInBox } from 'utils/cli-utils';
 import logger from 'utils/logger';
 
 const DEFAULT_TIMEOUT = 10 * 1000;
@@ -32,8 +33,7 @@ const validateResponseIfError = (response: object, schemaValidator?: ZodObject<a
 const printTraceIdIfPresent = (traceId: string | undefined, statusCode: number | undefined): void => {
   if (traceId) {
     const traceErrorMessage = `ErrorTraceId: ${traceId}`;
-    const line = '─'.repeat(traceErrorMessage.length + 2);
-    const traceIdBox = `\n┌${line}┐\n│ ${traceErrorMessage} │\n└${line}┘`;
+    const traceIdBox = wrapInBox(traceErrorMessage);
     statusCode && statusCode >= 500 ? logger.error(traceIdBox) : logger.debug(traceIdBox);
   }
 };

@@ -56,9 +56,9 @@ export const streamMessages = (clientChannel: ClientChannel): Promise<void> => {
           channel.unbind_all();
         }
 
-        resolve();
         logger.log(`------------------
                      Closed connection.`);
+        resolve();
       };
 
       Pusher.logToConsole = true;

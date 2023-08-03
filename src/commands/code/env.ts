@@ -4,9 +4,10 @@ import { Relationship } from '@oclif/core/lib/interfaces/parser';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ENV_MANAGEMENT_MODES } from 'consts/manage-app-env';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
-import { handleEnvironmentRequest } from 'services/manage-app-env-service';
+import { handleEnvironmentRequest, listAppEnvKeys } from 'services/manage-app-env-service';
 import { PromptService } from 'services/prompt-service';
 import { ManageAppEnvFlags } from 'types/commands/manage-app-env';
+import { AppId } from 'types/general';
 
 const MODES_WITH_KEYS: Array<APP_ENV_MANAGEMENT_MODES> = [
   APP_ENV_MANAGEMENT_MODES.SET,
@@ -27,9 +28,12 @@ const promptForModeIfNotProvided = async (mode?: APP_ENV_MANAGEMENT_MODES) => {
   return mode;
 };
 
-const promptForKeyIfNotProvided = async (mode: APP_ENV_MANAGEMENT_MODES, key?: string) => {
+const promptForKeyIfNotProvided = async (mode: APP_ENV_MANAGEMENT_MODES, appId: AppId, key?: string) => {
   if (!key && isKeyRequired(mode)) {
-    key = await PromptService.promptInput('Enter key for environment variable');
+    const existingKeys = await listAppEnvKeys(appId);
+    key = await PromptService.promptSelectionWithAutoComplete('Enter key for environment variable', existingKeys, {
+      includeInputInSelection: true,
+    });
   }
 
   return key;
@@ -96,8 +100,9 @@ export default class Env extends AuthenticatedCommand {
     }
 
     mode = await promptForModeIfNotProvided(mode);
-    key = await promptForKeyIfNotProvided(mode, key);
+    key = await promptForKeyIfNotProvided(mode, appId, key);
     value = await promptForValueIfNotProvided(mode, value);
+    this.preparePrintCommand(this, { appId, mode, key, value });
 
     await handleEnvironmentRequest(appId, mode, key, value);
   }

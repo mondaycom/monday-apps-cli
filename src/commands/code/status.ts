@@ -46,6 +46,7 @@ export default class Status extends AuthenticatedCommand {
     }
 
     try {
+      this.preparePrintCommand(this, { appVersionId });
       const deploymentStatus = await getAppVersionDeploymentStatus(appVersionId);
       printDeploymentStatus(appVersionId, deploymentStatus);
     } catch (error: unknown) {
