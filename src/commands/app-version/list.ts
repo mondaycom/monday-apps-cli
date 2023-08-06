@@ -21,6 +21,7 @@ export default class AppVersionList extends AuthenticatedCommand {
   static flags = AppVersionList.serializeFlags({
     appId: Flags.integer({
       char: 'i',
+      aliases: ['a'],
       description: APP_ID_TO_ENTER,
     }),
   });
@@ -33,6 +34,7 @@ export default class AppVersionList extends AuthenticatedCommand {
       appId = Number(await DynamicChoicesService.chooseApp());
     }
 
+    this.preparePrintCommand(this, { appId });
     const appVersions = await listAppVersionsByAppId(appId);
     if (appVersions.length === 0) {
       logger.error(`No app versions found for provided app id - "${appId}"`);

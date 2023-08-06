@@ -44,12 +44,12 @@ const relationships: Relationship[] = [
 export default class Logs extends AuthenticatedCommand {
   static description = 'Stream logs';
 
-  /// / Preparation when we expose HTTP events
   static examples = ['<%= config.bin %> <%= command.id %> -i APP_VERSION_ID -t LOGS_TYPE'];
 
   static flags = Logs.serializeFlags({
     appVersionId: Flags.integer({
       char: 'i',
+      aliases: ['v'],
       description: APP_VERSION_ID_TO_ENTER,
     }),
     logsType: Flags.string({
@@ -218,8 +218,17 @@ export default class Logs extends AuthenticatedCommand {
       logsType,
       logsFilterCriteria,
     };
+
+    this.preparePrintCommand(this, {
+      appVersionId,
+      logsType,
+      eventSource,
+      logsStartDate: logsFilterCriteria?.fromDate && `"${logsFilterCriteria.fromDate.toString()}"`,
+      logsEndDate: logsFilterCriteria?.toDate && `"${logsFilterCriteria.toDate.toString()}"`,
+      logSearchFromText: logsFilterCriteria?.text,
+    });
+
     const clientChannel = await logsStream(args.appVersionId, args.logsType, logsFilterCriteria);
     await streamMessages(clientChannel);
-    process.exit(0);
   }
 }

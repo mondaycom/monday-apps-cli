@@ -33,6 +33,7 @@ export default class Status extends AuthenticatedCommand {
   static flags = Status.serializeFlags({
     appVersionId: Flags.integer({
       char: 'i',
+      aliases: ['v'],
       description: APP_VERSION_ID_TO_ENTER,
     }),
   });
@@ -46,6 +47,7 @@ export default class Status extends AuthenticatedCommand {
     }
 
     try {
+      this.preparePrintCommand(this, { appVersionId });
       const deploymentStatus = await getAppVersionDeploymentStatus(appVersionId);
       printDeploymentStatus(appVersionId, deploymentStatus);
     } catch (error: unknown) {

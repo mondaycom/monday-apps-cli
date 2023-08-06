@@ -6,6 +6,7 @@ import isEmail from 'isemail';
 
 import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { checkIfFileExists, getFileExtension } from 'services/files-service.js';
+import { SelectionWithAutoCompleteOptions } from 'types/services/prompt-service';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -166,11 +167,16 @@ export const PromptService = {
     return res.filePath;
   },
 
-  async promptSelectionWithAutoComplete<T>(message: string, choices: string[]): Promise<T> {
-    const search = (_answers: string[], input = '') => {
+  async promptSelectionWithAutoComplete<T>(
+    message: string,
+    choices: string[],
+    options: SelectionWithAutoCompleteOptions = {},
+  ): Promise<T> {
+    const fuzzySearch = (_answers: string[], input = '') => {
       return new Promise(resolve => {
+        const finalChoices = options.includeInputInSelection && input ? [...new Set([...choices, input])] : choices;
         // eslint-disable-next-line import/no-named-as-default-member
-        const results = fuzzy.filter(input, choices).map(element => element.original);
+        const results = fuzzy.filter(input, finalChoices).map(element => element.original);
         resolve(results);
       });
     };
@@ -180,7 +186,8 @@ export const PromptService = {
         name: 'selection',
         message: message || 'Please choose one of the values',
         type: 'autocomplete',
-        source: search,
+        source: fuzzySearch,
+        ...options,
       },
     ]);
 

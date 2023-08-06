@@ -18,7 +18,7 @@ $ npm install -g @mondaycom/apps-cli
 $ mapps COMMAND
 running command...
 $ mapps (--version)
-@mondaycom/apps-cli/0.1.14 darwin-arm64 node-v18.12.1
+@mondaycom/apps-cli/0.1.15 darwin-arm64 node-v18.12.1
 $ mapps --help [COMMAND]
 USAGE
   $ mapps COMMAND
@@ -43,13 +43,14 @@ List all versions for a specific app.
 
 ```
 USAGE
-  $ mapps app-version:list [--verbose] [-i <value>]
+  $ mapps app-version:list [--verbose] [--print-command] [-i <value>]
 
 FLAGS
   -i, --appId=<value>  Please enter app id:
 
 GLOBAL FLAGS
-  --verbose  Print advanced logs (optional).
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
 
 DESCRIPTION
   List all versions for a specific app.
@@ -58,7 +59,7 @@ EXAMPLES
   $ mapps app-version:list
 ```
 
-_See code: [dist/commands/app-version/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.14/dist/commands/app-version/list.ts)_
+_See code: [dist/commands/app-version/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.15/dist/commands/app-version/list.ts)_
 
 ## `mapps app:list`
 
@@ -66,10 +67,11 @@ List all apps for a specific user.
 
 ```
 USAGE
-  $ mapps app:list [--verbose]
+  $ mapps app:list [--verbose] [--print-command]
 
 GLOBAL FLAGS
-  --verbose  Print advanced logs (optional).
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
 
 DESCRIPTION
   List all apps for a specific user.
@@ -78,7 +80,7 @@ EXAMPLES
   $ mapps app:list
 ```
 
-_See code: [dist/commands/app/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.14/dist/commands/app/list.ts)_
+_See code: [dist/commands/app/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.15/dist/commands/app/list.ts)_
 
 ## `mapps autocomplete [SHELL]`
 
@@ -117,7 +119,8 @@ Manage environment variables for your app hosted on monday-code.
 
 ```
 USAGE
-  $ mapps code:env [--verbose] [-i <value>] [-m list-keys|set|delete] [-k <value>] [-v <value>]
+  $ mapps code:env [--verbose] [--print-command] [-i <value>] [-m list-keys|set|delete] [-k <value>] [-v
+    <value>]
 
 FLAGS
   -i, --appId=<value>  The id of the app to manage environment variables for
@@ -127,7 +130,8 @@ FLAGS
   -v, --value=<value>  variable value [required for set]
 
 GLOBAL FLAGS
-  --verbose  Print advanced logs (optional).
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
 
 DESCRIPTION
   Manage environment variables for your app hosted on monday-code.
@@ -136,7 +140,7 @@ EXAMPLES
   $ mapps code:env
 ```
 
-_See code: [dist/commands/code/env.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.14/dist/commands/code/env.ts)_
+_See code: [dist/commands/code/env.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.15/dist/commands/code/env.ts)_
 
 ## `mapps code:logs`
 
@@ -144,7 +148,8 @@ Stream logs
 
 ```
 USAGE
-  $ mapps code:logs [--verbose] [-i <value>] [-t <value>] [-s <value>] [-f <value>] [-e <value>] [-r <value>]
+  $ mapps code:logs [--verbose] [--print-command] [-i <value>] [-t <value>] [-s <value>] [-f <value>] [-e
+    <value>] [-r <value>]
 
 FLAGS
   -e, --logsEndDate=<value>        End date (MM/DD/YYYY HH:mm) e.g. "03/25/1983 16:45" [supported only if
@@ -158,7 +163,8 @@ FLAGS
   -t, --logsType=<value>           Logs type: "http" for http events, "console" for stdout
 
 GLOBAL FLAGS
-  --verbose  Print advanced logs (optional).
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
 
 DESCRIPTION
   Stream logs
@@ -167,7 +173,7 @@ EXAMPLES
   $ mapps code:logs -i APP_VERSION_ID -t LOGS_TYPE
 ```
 
-_See code: [dist/commands/code/logs.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.14/dist/commands/code/logs.ts)_
+_See code: [dist/commands/code/logs.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.15/dist/commands/code/logs.ts)_
 
 ## `mapps code:push`
 
@@ -175,7 +181,7 @@ Push your project to get hosted on monday-code.
 
 ```
 USAGE
-  $ mapps code:push [--verbose] [-d <value>] [-i <value>]
+  $ mapps code:push [--verbose] [--print-command] [-d <value>] [-i <value>]
 
 FLAGS
   -d, --directoryPath=<value>  Directory path of you project in your machine. If not included will use the current
@@ -183,7 +189,8 @@ FLAGS
   -i, --appVersionId=<value>   Please enter the app version id of your app:
 
 GLOBAL FLAGS
-  --verbose  Print advanced logs (optional).
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
 
 DESCRIPTION
   Push your project to get hosted on monday-code.
@@ -194,7 +201,7 @@ EXAMPLES
   $ mapps code:push -i APP_VERSION_ID_TO_PUSH
 ```
 
-_See code: [dist/commands/code/push.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.14/dist/commands/code/push.ts)_
+_See code: [dist/commands/code/push.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.15/dist/commands/code/push.ts)_
 
 ## `mapps code:status`
 
@@ -202,13 +209,14 @@ Status of a specific project hosted on monday-code.
 
 ```
 USAGE
-  $ mapps code:status [--verbose] [-i <value>]
+  $ mapps code:status [--verbose] [--print-command] [-i <value>]
 
 FLAGS
   -i, --appVersionId=<value>  Please enter the app version id of your app:
 
 GLOBAL FLAGS
-  --verbose  Print advanced logs (optional).
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
 
 DESCRIPTION
   Status of a specific project hosted on monday-code.
@@ -217,7 +225,7 @@ EXAMPLES
   $ mapps code:status -i APP_VERSION_ID
 ```
 
-_See code: [dist/commands/code/status.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.14/dist/commands/code/status.ts)_
+_See code: [dist/commands/code/status.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.15/dist/commands/code/status.ts)_
 
 ## `mapps help [COMMANDS]`
 
@@ -245,13 +253,14 @@ Initialize mapps config file - ".mappsrc".
 
 ```
 USAGE
-  $ mapps init [--verbose] [-t <value>]
+  $ mapps init [--verbose] [--print-command] [-t <value>]
 
 FLAGS
   -t, --token=<value>  monday.com api access token (https://developer.monday.com/api-reference/docs/authentication)
 
 GLOBAL FLAGS
-  --verbose  Print advanced logs (optional).
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
 
 DESCRIPTION
   Initialize mapps config file - ".mappsrc".
@@ -260,5 +269,5 @@ EXAMPLES
   $ mapps init -t SECRET_TOKEN
 ```
 
-_See code: [dist/commands/init/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.14/dist/commands/init/index.ts)_
+_See code: [dist/commands/init/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v0.1.15/dist/commands/init/index.ts)_
 <!-- commandsstop -->
