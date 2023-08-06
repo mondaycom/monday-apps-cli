@@ -49,6 +49,7 @@ export default class Logs extends AuthenticatedCommand {
   static flags = Logs.serializeFlags({
     appVersionId: Flags.integer({
       char: 'i',
+      aliases: ['v'],
       description: APP_VERSION_ID_TO_ENTER,
     }),
     logsType: Flags.string({

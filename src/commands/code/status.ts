@@ -33,6 +33,7 @@ export default class Status extends AuthenticatedCommand {
   static flags = Status.serializeFlags({
     appVersionId: Flags.integer({
       char: 'i',
+      aliases: ['v'],
       description: APP_VERSION_ID_TO_ENTER,
     }),
   });

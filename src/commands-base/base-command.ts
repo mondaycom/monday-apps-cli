@@ -1,7 +1,7 @@
 import { Command, Flags } from '@oclif/core';
 
 import { PrintCommandContext } from 'types/commands/base-command';
-import { printCommand } from 'utils/command-printer';
+import { printGeneratedCommand } from 'utils/command-printer';
 import logger from 'utils/logger';
 
 export abstract class BaseCommand extends Command {
@@ -66,12 +66,7 @@ export abstract class BaseCommand extends Command {
     if (withPrintCommand && !this._printCommandCalled) {
       throw new Error('Print command was not called and withPrintCommand is true');
     } else if (withPrintCommand && this._printCommandCalled) {
-      printCommand(
-        this._printContext.command,
-        this._printContext.command.constructor,
-        this._printContext.flags,
-        this._printContext.args,
-      );
+      printGeneratedCommand(this._printContext.command, this._printContext.flags, this._printContext.args);
     }
 
     process.exit(0);

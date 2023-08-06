@@ -21,6 +21,7 @@ export default class AppVersionList extends AuthenticatedCommand {
   static flags = AppVersionList.serializeFlags({
     appId: Flags.integer({
       char: 'i',
+      aliases: ['a'],
       description: APP_ID_TO_ENTER,
     }),
   });

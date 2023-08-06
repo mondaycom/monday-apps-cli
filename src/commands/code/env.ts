@@ -70,6 +70,7 @@ export default class Env extends AuthenticatedCommand {
   static flags = Env.serializeFlags({
     appId: Flags.integer({
       char: 'i',
+      aliases: ['a'],
       description: 'The id of the app to manage environment variables for',
     }),
     mode: Flags.string({

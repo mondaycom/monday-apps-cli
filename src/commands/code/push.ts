@@ -34,6 +34,7 @@ export default class Push extends AuthenticatedCommand {
     }),
     appVersionId: Flags.integer({
       char: 'i',
+      aliases: ['v'],
       description: MESSAGES.appVersionId,
     }),
   });
