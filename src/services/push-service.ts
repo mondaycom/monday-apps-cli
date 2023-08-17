@@ -162,6 +162,7 @@ const STATUS_TO_PROGRESS_VALUE: Record<keyof typeof DeploymentStatusTypesSchema,
   [DeploymentStatusTypesSchema.started]: 0,
   [DeploymentStatusTypesSchema.pending]: PROGRESS_STEP * 5,
   [DeploymentStatusTypesSchema.building]: PROGRESS_STEP * 10,
+  [DeploymentStatusTypesSchema['building-infra']]: PROGRESS_STEP * 33, // to be deleted...
   [DeploymentStatusTypesSchema['building-app']]: PROGRESS_STEP * 33,
   [DeploymentStatusTypesSchema['deploying-app']]: PROGRESS_STEP * 66,
   [DeploymentStatusTypesSchema.successful]: PROGRESS_STEP * 100,
