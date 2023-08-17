@@ -16,6 +16,7 @@ export const deploymentStatusTypesArray = [
   'failed',
   'building-infra',
   'building-app',
+  'deploying-app',
 ] as const;
 
 export const deploymentStatusTypesSchema = z.enum(deploymentStatusTypesArray);
