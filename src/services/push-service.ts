@@ -77,7 +77,7 @@ export const pollForDeploymentStatus = async (
         DeploymentStatusTypesSchema['deploying-app'],
       ];
       const statusesToIgnore: string[] = [
-        DeploymentStatusTypesSchema['building-infra'],
+        DeploymentStatusTypesSchema['building-infra']
       ];
       const response = await getAppVersionDeploymentStatus(appVersionId);
       if (statusesToKeepPolling.includes(response.status)) {
