@@ -165,7 +165,6 @@ const STATUS_TO_PROGRESS_VALUE: Record<keyof typeof DeploymentStatusTypesSchema,
   [DeploymentStatusTypesSchema.successful]: PROGRESS_STEP * 100,
 };
 
-
 const finalizeDeployment = (
   deploymentStatus: AppVersionDeploymentStatus,
   task: ListrTaskWrapper<PushCommandTasksContext, any>,
