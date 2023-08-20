@@ -1,1 +1,1 @@
-export default { name: "@mondaycom/apps-cli", version: "0.1.16" };
+export default { name: "@mondaycom/apps-cli", version: "0.2.1" };
