@@ -74,6 +74,7 @@ export const pollForDeploymentStatus = async (
         DeploymentStatusTypesSchema.building,
         DeploymentStatusTypesSchema['building-infra'],
         DeploymentStatusTypesSchema['building-app'],
+        DeploymentStatusTypesSchema['deploying-app'],
       ];
       const response = await getAppVersionDeploymentStatus(appVersionId);
       if (statusesToKeepPolling.includes(response.status)) {
@@ -158,8 +159,9 @@ const STATUS_TO_PROGRESS_VALUE: Record<keyof typeof DeploymentStatusTypesSchema,
   [DeploymentStatusTypesSchema.started]: 0,
   [DeploymentStatusTypesSchema.pending]: PROGRESS_STEP * 5,
   [DeploymentStatusTypesSchema.building]: PROGRESS_STEP * 10,
-  [DeploymentStatusTypesSchema['building-infra']]: PROGRESS_STEP * 33,
-  [DeploymentStatusTypesSchema['building-app']]: PROGRESS_STEP * 66,
+  [DeploymentStatusTypesSchema['building-infra']]: PROGRESS_STEP * 25,
+  [DeploymentStatusTypesSchema['building-app']]: PROGRESS_STEP * 50,
+  [DeploymentStatusTypesSchema['deploying-app']]: PROGRESS_STEP * 75,
   [DeploymentStatusTypesSchema.successful]: PROGRESS_STEP * 100,
 };
 
