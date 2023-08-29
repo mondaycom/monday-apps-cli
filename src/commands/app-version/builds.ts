@@ -13,13 +13,10 @@ import logger from 'utils/logger';
 const printBuilds = (appBuilds: Array<AppRelease>) => {
   const appBuildsTable = appBuilds.map(appBuild => {
     return {
-      id: appBuild.id,
-      kind: appBuild.kind,
       category: appBuild.category,
       ...(appBuild.data?.liveUrl && { 'live url': appBuild.data?.liveUrl }),
       ...(appBuild.data?.url && { url: appBuild.data?.url }),
       ...(appBuild.data?.latestUrl && { 'static url (latest deployment)': appBuild.data?.latestUrl }),
-      ...(appBuild.data?.deploymentState && { 'deployment state': appBuild.data?.deploymentState }),
       ...(appBuild.data?.sourceUrl && { 'source url (download)': appBuild.data?.sourceUrl }),
       ...(appBuild.data?.microFrontendName && { 'micro frontend name': appBuild.data?.microFrontendName }),
     };
