@@ -12,13 +12,11 @@ import logger from 'utils/logger';
 const printDeploymentStatus = (appVersionId: number, deploymentStatus: AppVersionDeploymentStatus) => {
   const { deployment, status, error } = deploymentStatus;
   const url = deployment?.url || 'none';
-  const latestUrl = deployment?.latestUrl || 'none';
   const errorMessage: string | undefined = error?.message;
   const tableData = {
     id: appVersionId,
     status,
     url,
-    'static url (latest deployment)': latestUrl,
     ...(errorMessage && { errorMessage }),
   };
 

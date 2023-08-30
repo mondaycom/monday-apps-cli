@@ -43,3 +43,7 @@ export const appEnvironmentUrl = (appId: AppId, key: string): string => {
 export const appEnvironmentKeysUrl = (appId: AppId): string => {
   return `/api/code/${appId}/env-keys`;
 };
+
+export const appReleasesUrl = (appVersionId: AppId): string => {
+  return `/apps_ms/app-versions/${appVersionId}/releases`;
+};

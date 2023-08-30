@@ -1,4 +1,5 @@
-<h3 style="color:red"><b>Public access to this CLI is currently restricted but will become available in the next few months</b></h3>
+<h3 style="color:red"><b>Public access to this CLI is currently restricted but will become available in the next few
+months</b></h3>
 
 ---
 monday-code-cli
@@ -7,12 +8,16 @@ monday-code-cli
 monday.com cli tool for `<monday-code />` apps management.
 
 <!-- toc -->
+
 * [Usage](#usage)
 * [Commands](#commands)
+
 <!-- tocstop -->
 
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @mondaycom/apps-cli
 $ mapps COMMAND
@@ -24,9 +29,13 @@ USAGE
   $ mapps COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
+
 * [`mapps app-version:list`](#mapps-app-versionlist)
 * [`mapps app:list`](#mapps-applist)
 * [`mapps autocomplete [SHELL]`](#mapps-autocomplete-shell)
@@ -59,7 +68,33 @@ EXAMPLES
   $ mapps app-version:list
 ```
 
-_See code: [dist/commands/app-version/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/app-version/list.ts)_
+_See
+code: [dist/commands/app-version/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/app-version/list.ts)_
+
+## `mapps app-version:builds`
+
+List all builds for a specific app-version.
+
+```
+USAGE
+  $ mapps app-version:builds [--verbose] [--print-command] [-i <value>]
+
+FLAGS
+  -i, --appVersionId=<value>  Please enter the app version id of your app:
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+   List all builds for a specific app-version.
+
+EXAMPLES
+  $ mapps app-version:builds
+```
+
+_See
+code: [dist/commands/app-version/builds.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/app-version/builds.ts)_
 
 ## `mapps app:list`
 
@@ -80,7 +115,8 @@ EXAMPLES
   $ mapps app:list
 ```
 
-_See code: [dist/commands/app/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/app/list.ts)_
+_See
+code: [dist/commands/app/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/app/list.ts)_
 
 ## `mapps autocomplete [SHELL]`
 
@@ -111,7 +147,8 @@ EXAMPLES
   $ mapps autocomplete --refresh-cache
 ```
 
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v2.2.0/src/commands/autocomplete/index.ts)_
+_See
+code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v2.2.0/src/commands/autocomplete/index.ts)_
 
 ## `mapps code:env`
 
@@ -140,7 +177,8 @@ EXAMPLES
   $ mapps code:env
 ```
 
-_See code: [dist/commands/code/env.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/code/env.ts)_
+_See
+code: [dist/commands/code/env.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/code/env.ts)_
 
 ## `mapps code:logs`
 
@@ -173,7 +211,8 @@ EXAMPLES
   $ mapps code:logs -i APP_VERSION_ID -t LOGS_TYPE
 ```
 
-_See code: [dist/commands/code/logs.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/code/logs.ts)_
+_See
+code: [dist/commands/code/logs.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/code/logs.ts)_
 
 ## `mapps code:push`
 
@@ -201,7 +240,8 @@ EXAMPLES
   $ mapps code:push -i APP_VERSION_ID_TO_PUSH
 ```
 
-_See code: [dist/commands/code/push.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/code/push.ts)_
+_See
+code: [dist/commands/code/push.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/code/push.ts)_
 
 ## `mapps code:status`
 
@@ -225,7 +265,8 @@ EXAMPLES
   $ mapps code:status -i APP_VERSION_ID
 ```
 
-_See code: [dist/commands/code/status.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/code/status.ts)_
+_See
+code: [dist/commands/code/status.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/code/status.ts)_
 
 ## `mapps help [COMMANDS]`
 
@@ -269,5 +310,6 @@ EXAMPLES
   $ mapps init -t SECRET_TOKEN
 ```
 
-_See code: [dist/commands/init/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/init/index.ts)_
+_See
+code: [dist/commands/init/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/init/index.ts)_
 <!-- commandsstop -->
