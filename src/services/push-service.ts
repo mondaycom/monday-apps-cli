@@ -203,7 +203,7 @@ export const handleDeploymentTask = async (
     progressLogger: (message: keyof typeof DeploymentStatusTypesSchema, tip?: string) => {
       const deltaInSeconds = (Date.now() - now) / TimeInMs.second;
       task.title = `Deployment in progress: ${message}`;
-      const customTip = tip ? `\n ${chalk.bold(chalk.green('Tip:'))} ${chalk.italic(chalk.green(tip))}` : '';
+      const customTip = tip ? `\n ${chalk.italic(chalk.green(tip))}` : '';
       task.output = createProgressBarString(MAX_PROGRESS_VALUE, STATUS_TO_PROGRESS_VALUE[message], deltaInSeconds) + customTip;
     },
   });
