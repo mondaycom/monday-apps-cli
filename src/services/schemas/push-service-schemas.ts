@@ -24,6 +24,7 @@ export const deploymentStatusTypesSchema = z.enum(deploymentStatusTypesArray);
 export const appVersionDeploymentStatusSchema = z
   .object({
     status: deploymentStatusTypesSchema,
+    tip: z.string().optional(),
     deployment: z
       .object({
         url: z.string(),
