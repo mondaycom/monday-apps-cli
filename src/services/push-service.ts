@@ -63,7 +63,10 @@ export const getAppVersionDeploymentStatus = async (appVersionId: number) => {
 export const pollForDeploymentStatus = async (
   appVersionId: number,
   retryAfter: number,
-  options: { ttl?: number; progressLogger?: (message: keyof typeof DeploymentStatusTypesSchema, tip?: string) => void } = {},
+  options: {
+    ttl?: number;
+    progressLogger?: (message: keyof typeof DeploymentStatusTypesSchema, tip?: string) => void;
+  } = {},
 ): Promise<AppVersionDeploymentStatus> => {
   const { ttl, progressLogger } = options;
 
@@ -204,7 +207,8 @@ export const handleDeploymentTask = async (
       const deltaInSeconds = (Date.now() - now) / TimeInMs.second;
       task.title = `Deployment in progress: ${message}`;
       const customTip = tip ? `\n ${chalk.italic(chalk.green(tip))}` : '';
-      task.output = createProgressBarString(MAX_PROGRESS_VALUE, STATUS_TO_PROGRESS_VALUE[message], deltaInSeconds) + customTip;
+      task.output =
+        createProgressBarString(MAX_PROGRESS_VALUE, STATUS_TO_PROGRESS_VALUE[message], deltaInSeconds) + customTip;
     },
   });
 
