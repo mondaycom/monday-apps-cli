@@ -1,4 +1,5 @@
 import axios from 'axios';
+import chalk from 'chalk';
 import { ListrTaskWrapper } from 'listr2';
 
 import { getAppVersionDeploymentStatusUrl, getDeploymentSignedUrl } from 'consts/urls';
@@ -201,9 +202,9 @@ export const handleDeploymentTask = async (
     ttl,
     progressLogger: (message: keyof typeof DeploymentStatusTypesSchema, tip?: string) => {
       const deltaInSeconds = (Date.now() - now) / TimeInMs.second;
-      const customTip = tip ? `, tip: ${tip}` : '';
-      task.title = `Deployment in progress: ${message}${customTip}`;
-      task.output = createProgressBarString(MAX_PROGRESS_VALUE, STATUS_TO_PROGRESS_VALUE[message], deltaInSeconds);
+      task.title = `Deployment in progress: ${message}`;
+      const customTip = tip ? `\n ${chalk.bold(chalk.green('Tip:'))} ${chalk.italic(chalk.green(tip))}` : '';
+      task.output = createProgressBarString(MAX_PROGRESS_VALUE, STATUS_TO_PROGRESS_VALUE[message], deltaInSeconds) + customTip;
     },
   });
 
