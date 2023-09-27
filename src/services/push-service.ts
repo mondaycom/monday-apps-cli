@@ -1,4 +1,5 @@
 import axios from 'axios';
+import chalk from 'chalk';
 import { ListrTaskWrapper } from 'listr2';
 
 import { getAppVersionDeploymentStatusUrl, getDeploymentSignedUrl } from 'consts/urls';
@@ -62,7 +63,10 @@ export const getAppVersionDeploymentStatus = async (appVersionId: number) => {
 export const pollForDeploymentStatus = async (
   appVersionId: number,
   retryAfter: number,
-  options: { ttl?: number; progressLogger?: (message: keyof typeof DeploymentStatusTypesSchema) => void } = {},
+  options: {
+    ttl?: number;
+    progressLogger?: (message: keyof typeof DeploymentStatusTypesSchema, tip?: string) => void;
+  } = {},
 ): Promise<AppVersionDeploymentStatus> => {
   const { ttl, progressLogger } = options;
 
@@ -79,7 +83,7 @@ export const pollForDeploymentStatus = async (
       const response = await getAppVersionDeploymentStatus(appVersionId);
       if (statusesToKeepPolling.includes(response.status)) {
         if (progressLogger) {
-          progressLogger(response.status);
+          progressLogger(response.status, response.tip);
         }
 
         return false;
@@ -199,10 +203,12 @@ export const handleDeploymentTask = async (
   const ttl = TimeInMs.minute * 30;
   const deploymentStatus = await pollForDeploymentStatus(ctx.appVersionId, retryAfter, {
     ttl,
-    progressLogger: (message: keyof typeof DeploymentStatusTypesSchema) => {
+    progressLogger: (message: keyof typeof DeploymentStatusTypesSchema, tip?: string) => {
       const deltaInSeconds = (Date.now() - now) / TimeInMs.second;
       task.title = `Deployment in progress: ${message}`;
-      task.output = createProgressBarString(MAX_PROGRESS_VALUE, STATUS_TO_PROGRESS_VALUE[message], deltaInSeconds);
+      const customTip = tip ? `\n ${chalk.italic(chalk.green(tip))}` : '';
+      task.output =
+        createProgressBarString(MAX_PROGRESS_VALUE, STATUS_TO_PROGRESS_VALUE[message], deltaInSeconds) + customTip;
     },
   });
 
