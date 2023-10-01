@@ -169,13 +169,26 @@ const STATUS_TO_PROGRESS_VALUE: Record<keyof typeof DeploymentStatusTypesSchema,
   [DeploymentStatusTypesSchema.successful]: PROGRESS_STEP * 100,
 };
 
+const setCustomTip = (tip?: string, color = 'green') => {
+  let chalkColor = chalk.green;
+  switch (color) {
+    case 'yellow': {
+      chalkColor = chalk.yellow;
+      break;
+    }
+  }
+
+  return tip ? `\n ${chalk.italic(chalkColor(tip))}` : '';
+};
+
 const finalizeDeployment = (
   deploymentStatus: AppVersionDeploymentStatus,
   task: ListrTaskWrapper<PushCommandTasksContext, any>,
 ) => {
   switch (deploymentStatus.status) {
     case DeploymentStatusTypesSchema.failed: {
-      task.title = deploymentStatus.error?.message || 'Deployment process has failed';
+      const customTip = setCustomTip(deploymentStatus.tip, 'yellow');
+      task.title = (deploymentStatus.error?.message.trimStart() || 'Deployment process has failed') + customTip;
       throw new Error(task.title);
     }
 
@@ -206,7 +219,7 @@ export const handleDeploymentTask = async (
     progressLogger: (message: keyof typeof DeploymentStatusTypesSchema, tip?: string) => {
       const deltaInSeconds = (Date.now() - now) / TimeInMs.second;
       task.title = `Deployment in progress: ${message}`;
-      const customTip = tip ? `\n ${chalk.italic(chalk.green(tip))}` : '';
+      const customTip = setCustomTip(tip);
       task.output =
         createProgressBarString(MAX_PROGRESS_VALUE, STATUS_TO_PROGRESS_VALUE[message], deltaInSeconds) + customTip;
     },
