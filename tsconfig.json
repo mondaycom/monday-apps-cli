@@ -13,17 +13,33 @@
     "target": "ES2022",
     "lib": [
       "ES2022",
-      "DOM" /*Added it to support PUSHER-JS lib*/
+      "DOM"
     ],
     "paths": {
-      "src/*": ["./src/*"],
-      "consts/*": ["./src/consts/*"],
-      "services/*": ["./src/services/*"],
-      "types/*": ["./src/types/*"],
-      "errors/*": ["./src/errors/*"],
-      "utils/*": ["./src/utils/*"],
-      "commands/*": ["./src/commands/*"],
-      "commands-base/*": ["./src/commands-base/*"]
+      "src/*": [
+        "./src/*"
+      ],
+      "consts/*": [
+        "./src/consts/*"
+      ],
+      "services/*": [
+        "./src/services/*"
+      ],
+      "types/*": [
+        "./src/types/*"
+      ],
+      "errors/*": [
+        "./src/errors/*"
+      ],
+      "utils/*": [
+        "./src/utils/*"
+      ],
+      "commands/*": [
+        "./src/commands/*"
+      ],
+      "commands-base/*": [
+        "./src/commands-base/*"
+      ]
     }
   },
   "include": [
@@ -33,7 +49,6 @@
     "node_modules",
     "bin",
     "dist",
-    "__tests__",
-    "**/*.test.ts"
+    "__tests__"
   ]
 }
