@@ -43,7 +43,7 @@ describe('AppVersionsService', () => {
       expect(defaultVersion?.id).toEqual(2);
     });
 
-    it('should return the latest draft version for the app', async () => {
+    it('should return undefined for app with no  draft version', async () => {
       mockedListAppVersionsByAppId.mockResolvedValue(appWithLiveVersion);
       const defaultVersion = await appVersionService.defaultVersionByAppId(appId);
       expect(defaultVersion?.id).not.toBeDefined();
