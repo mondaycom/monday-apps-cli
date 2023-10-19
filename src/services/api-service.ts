@@ -6,8 +6,8 @@ import { ZodObject } from 'zod/lib/types';
 
 import { CONFIG_KEYS } from 'consts/config';
 import { ACCESS_TOKEN_NOT_FOUND } from 'consts/messages';
-import { ConfigService } from 'services/config-service.js';
-import { getAppsDomain } from 'services/env-service.js';
+import { ConfigService } from 'services/config-service';
+import { getAppsDomain } from 'services/env-service';
 import { HttpError } from 'types/errors';
 import { BaseErrorResponse, BaseResponseHttpMetaData, ExecuteParams } from 'types/services/api-service';
 import { wrapInBox } from 'utils/cli-utils';
