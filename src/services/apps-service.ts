@@ -18,7 +18,8 @@ export const listApps = async (): Promise<Array<App>> => {
       },
       listAppSchema,
     );
-    return response.apps;
+    const sortedApps = response.apps?.sort((a, b) => a.id - b.id);
+    return sortedApps;
   } catch (error: any) {
     if (error instanceof HttpError) {
       throw error;

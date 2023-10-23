@@ -20,7 +20,8 @@ export const listAppVersionsByAppId = async (appId: AppId): Promise<Array<AppVer
       },
       listAppVersionsSchema,
     );
-    return response.appVersions;
+    const sortedAppVersions = response.appVersions?.sort((a, b) => a.id - b.id);
+    return sortedAppVersions;
   } catch (error: any) {
     if (error instanceof HttpError) {
       throw error;
