@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import https from 'node:https';
 
 import axios, { AxiosError } from 'axios';
+import { default as axiosRetry, isIdempotentRequestError, isNetworkError } from 'axios-retry';
 import { ZodObject } from 'zod/lib/types';
 
 import { CONFIG_KEYS } from 'consts/config';
@@ -14,6 +15,16 @@ import { wrapInBox } from 'utils/cli-utils';
 import logger from 'utils/logger';
 
 const DEFAULT_TIMEOUT = 10 * 1000;
+
+axiosRetry(axios, {
+  retries: 5, // number of retries
+  retryDelay: retryCount => retryCount * 1000,
+  retryCondition: error => {
+    const retriableStatusCodes = [500, 502, 503, 504];
+    const isRetriableStatusCode = error.response && retriableStatusCodes.includes(error.response.status);
+    return isRetriableStatusCode || isNetworkError(error) || isIdempotentRequestError(error);
+  },
+});
 
 const validateResponseIfError = (response: object, schemaValidator?: ZodObject<any>): object => {
   if (schemaValidator) {
