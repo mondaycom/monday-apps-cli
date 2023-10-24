@@ -1,3 +1,4 @@
+import { APP_VERSION_STATUS } from 'consts/app-versions';
 import { listAppVersionsByAppId } from 'services/app-versions-service';
 import { listApps } from 'services/apps-service';
 import { PromptService } from 'services/prompt-service';
@@ -19,8 +20,12 @@ export const DynamicChoicesService = {
     return selectedAppId;
   },
 
-  async chooseAppVersion(appId: number) {
-    const appVersions = await listAppVersionsByAppId(appId);
+  async chooseAppVersion(appId: number, filterByStatus?: [APP_VERSION_STATUS]) {
+    let appVersions = await listAppVersionsByAppId(appId);
+    if (filterByStatus) {
+      appVersions = appVersions.filter(appVersion => filterByStatus.includes(appVersion.status));
+    }
+
     const appVersionChoicesMap: Record<string, number> = {};
     for (const appVersion of appVersions) {
       appVersionChoicesMap[
@@ -37,9 +42,9 @@ export const DynamicChoicesService = {
     return selectedAppVersionId;
   },
 
-  async chooseAppAndAppVersion() {
+  async chooseAppAndAppVersion(filterByStatus?: [APP_VERSION_STATUS]) {
     const appId = await this.chooseApp();
-    const appVersionId = await this.chooseAppVersion(appId);
+    const appVersionId = await this.chooseAppVersion(appId, filterByStatus);
     return { appId, appVersionId };
   },
 };
