@@ -123,7 +123,7 @@ export const buildAssetToDeployTask = async (
   try {
     if (!ctx.directoryPath) {
       const currentDirectoryPath = getCurrentWorkingDirectory();
-      logger.debug(`Directory path not provided using current directory: ${currentDirectoryPath}`);
+      logger.debug(`Directory path not provided. using current directory: ${currentDirectoryPath}`);
       ctx.directoryPath = currentDirectoryPath;
     }
 
