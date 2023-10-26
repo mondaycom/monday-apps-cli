@@ -7,7 +7,11 @@ import logger, { enableDebugMode } from 'utils/logger';
 
 export default function init(opts: Command) {
   initCurrentWorkingDirectory();
-  if (ConfigService.checkLocalConfigExists()) opts.config.configDir = getCurrentWorkingDirectory();
+
+  if (ConfigService.checkLocalConfigExists()) {
+    opts.config.configDir = getCurrentWorkingDirectory();
+  }
+
   ConfigService.loadConfigToProcessEnv(opts.config.configDir);
   if (opts.argv.includes('--verbose')) {
     enableDebugMode();
