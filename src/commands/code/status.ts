@@ -5,18 +5,24 @@ import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getAppVersionDeploymentStatus } from 'services/push-service';
+import { getMondayCodeBuild } from 'src/services/app-builds-service';
 import { HttpError } from 'types/errors';
 import { AppVersionDeploymentStatus } from 'types/services/push-service';
 import logger from 'utils/logger';
 
-const printDeploymentStatus = (appVersionId: number, deploymentStatus: AppVersionDeploymentStatus) => {
+const printDeploymentStatus = (
+  appVersionId: number,
+  deploymentStatus: Pick<AppVersionDeploymentStatus, 'deployment' | 'status' | 'error'>,
+) => {
   const { deployment, status, error } = deploymentStatus;
   const url = deployment?.url || 'none';
+  const liveUrl = deployment?.liveUrl || 'none';
   const errorMessage: string | undefined = error?.message;
   const tableData = {
     id: appVersionId,
     status,
     url,
+    liveUrl,
     ...(errorMessage && { errorMessage }),
   };
 
@@ -47,6 +53,12 @@ export default class Status extends AuthenticatedCommand {
     try {
       this.preparePrintCommand(this, { appVersionId });
       const deploymentStatus = await getAppVersionDeploymentStatus(appVersionId);
+      const mondayCodeRelease = await getMondayCodeBuild(appVersionId);
+
+      if (deploymentStatus.deployment) {
+        deploymentStatus.deployment.liveUrl = mondayCodeRelease?.data?.liveUrl;
+      }
+
       printDeploymentStatus(appVersionId, deploymentStatus);
     } catch (error: unknown) {
       if (error instanceof HttpError && error.code === StatusCodes.NOT_FOUND) {
