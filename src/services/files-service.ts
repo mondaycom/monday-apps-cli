@@ -5,6 +5,8 @@ import archiver from 'archiver';
 import glob from 'glob';
 import parseGitIgnore from 'parse-gitignore';
 
+import { CONFIG_NAME } from 'services/config-service';
+
 import logger from '../utils/logger.js';
 
 export const readFileData = (filePath: string): Buffer => {
@@ -43,6 +45,18 @@ export const createTarGzArchive = async (directoryPath: string, fileName = 'code
   } catch (error) {
     logger.debug(error, DEBUG_TAG);
     throw new Error('Failed in creating archive');
+  }
+};
+
+export const createGitignoreAndAppendConfigFileIfNeeded = (directoryPath: string, fileName = CONFIG_NAME) => {
+  const filePath = path.join(directoryPath, '.gitignore');
+  if (!checkIfFileExists(filePath)) {
+    fs.writeFileSync(filePath, '', 'utf8');
+  }
+
+  const gitignoreContent = fs.readFileSync(filePath, 'utf8');
+  if (!gitignoreContent.includes(fileName)) {
+    fs.appendFileSync(filePath, `\n${fileName}`, 'utf8');
   }
 };
 
