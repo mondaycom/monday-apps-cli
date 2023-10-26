@@ -7,9 +7,7 @@ import logger, { enableDebugMode } from 'utils/logger';
 
 export default function init(opts: Command) {
   initCurrentWorkingDirectory();
-  console.log('Hello from init hook'); // fixme: remove
   if (ConfigService.checkLocalConfigExists()) opts.config.configDir = getCurrentWorkingDirectory();
-  console.log('opts', opts); // fixme: remove
   ConfigService.loadConfigToProcessEnv(opts.config.configDir);
   if (opts.argv.includes('--verbose')) {
     enableDebugMode();
