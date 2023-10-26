@@ -29,6 +29,7 @@ export const appVersionDeploymentStatusSchema = z
       .object({
         url: z.string(),
         latestUrl: z.string(),
+        liveUrl: z.string().optional(),
       })
       .optional(),
     error: z
