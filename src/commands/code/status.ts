@@ -16,13 +16,13 @@ const printDeploymentStatus = (
 ) => {
   const { deployment, status, error } = deploymentStatus;
   const url = deployment?.url || 'none';
-  const liveUrl = deployment?.liveUrl || 'none';
+  const liveUrl = deployment?.liveUrl;
   const errorMessage: string | undefined = error?.message;
   const tableData = {
     id: appVersionId,
     status,
     url,
-    liveUrl,
+    ...(liveUrl && { liveUrl }),
     ...(errorMessage && { errorMessage }),
   };
 
