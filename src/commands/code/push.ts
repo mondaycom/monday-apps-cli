@@ -94,6 +94,9 @@ export default class Push extends AuthenticatedCommand {
       await tasks.run();
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
+
+      // need to signal to the parent process that the command failed
+      process.exit(1);
     }
   }
 }
