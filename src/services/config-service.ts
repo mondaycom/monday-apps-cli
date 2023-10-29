@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from '
 import { join } from 'node:path';
 
 import { BadConfigError } from 'errors/bad-config-error';
+import { getCurrentWorkingDirectory } from 'services/env-service';
 import { ConfigData, InitConfigOptions } from 'types/services/config-service';
 import logger from 'utils/logger';
 
@@ -17,6 +18,14 @@ const checkConfigExists = (directoryPath: string, fileName = CONFIG_NAME) => {
   configExists = existsSync(filePath);
 
   return configExists;
+};
+
+const checkLocalConfigExists = (fileName = CONFIG_NAME) => {
+  const filePath = join(getCurrentWorkingDirectory(), fileName);
+  const localConfigExists = existsSync(filePath);
+  if (!configExists) configExists = localConfigExists;
+
+  return localConfigExists;
 };
 
 const camelToUpperSnakeCase = (str: string) => str.replaceAll(/[A-Z]/g, letter => `_${letter}`).toUpperCase();
@@ -56,6 +65,8 @@ const writeConfig = (data: ConfigData, directoryPath: string, fileName = CONFIG_
 
 export const ConfigService = {
   checkConfigExists,
+
+  checkLocalConfigExists,
 
   getConfigDataByKey(key: keyof ConfigData): string {
     const configKeyInProcessEnv = generateConfigKeyInProcessEnv(key);

@@ -3,6 +3,8 @@ import { Flags } from '@oclif/core';
 import { BaseCommand } from 'commands-base/base-command';
 import { CONFIG_KEYS } from 'consts/config';
 import { CONFIG_NAME, ConfigService } from 'services/config-service';
+import { getCurrentWorkingDirectory } from 'services/env-service';
+import { createGitignoreAndAppendConfigFileIfNeeded } from 'services/files-service';
 import { PromptService } from 'services/prompt-service';
 import { InitCommandArguments } from 'types/commands/init';
 import logger from 'utils/logger';
@@ -27,6 +29,12 @@ export default class Init extends BaseCommand {
       char: 't',
       description: 'monday.com api access token (https://developer.monday.com/api-reference/docs/authentication)',
     }),
+    local: Flags.boolean({
+      char: 'l',
+      description: 'create the configuration file locally, in the current project working directory',
+      default: false,
+      required: false,
+    }),
   });
 
   static args = {};
@@ -39,6 +47,11 @@ export default class Init extends BaseCommand {
     };
 
     try {
+      if (flags.local) {
+        this.config.configDir = getCurrentWorkingDirectory();
+        createGitignoreAndAppendConfigFileIfNeeded(this.config.configDir);
+      }
+
       ConfigService.init(args, this.config.configDir, { override: true, setInProcessEnv: true });
       logger.info(`'${CONFIG_NAME}' created`);
     } catch (error) {
