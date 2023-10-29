@@ -37,8 +37,11 @@ export const createTarGzArchive = async (directoryPath: string, fileName = 'code
 
     const archivePath = `${directoryPath}/${fileName}.tar.gz`;
     const fullFileName = `**/${fileName}.tar.gz`;
+
+    // a special list of files to ignore that are not in .gitignore that is may or may not be in the project
+    const additionalFilesToIgnore = ['.git/**', '.env', 'local-secure-storage.db.json', '.mappsrc'];
     const pathsToIgnoreFromGitIgnore = getFilesToExcludeForArchive(directoryPath);
-    const pathsToIgnore = [...pathsToIgnoreFromGitIgnore, archivePath, fullFileName];
+    const pathsToIgnore = [...pathsToIgnoreFromGitIgnore, archivePath, fullFileName, ...additionalFilesToIgnore];
 
     await compressDirectoryToTarGz(directoryPath, archivePath, pathsToIgnore);
     return archivePath;
