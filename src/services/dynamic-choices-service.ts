@@ -20,7 +20,7 @@ export const DynamicChoicesService = {
     return selectedAppId;
   },
 
-  async chooseAppVersion(appId: number, filterByStatus?: [APP_VERSION_STATUS]) {
+  async chooseAppVersion(appId: number, filterByStatus?: APP_VERSION_STATUS[]) {
     let appVersions = await listAppVersionsByAppId(appId);
     if (filterByStatus) {
       appVersions = appVersions.filter(appVersion => filterByStatus.includes(appVersion.status));
@@ -42,7 +42,7 @@ export const DynamicChoicesService = {
     return selectedAppVersionId;
   },
 
-  async chooseAppAndAppVersion(filterByStatus?: [APP_VERSION_STATUS]) {
+  async chooseAppAndAppVersion(filterByStatus?: APP_VERSION_STATUS[]) {
     const appId = await this.chooseApp();
     const appVersionId = await this.chooseAppVersion(appId, filterByStatus);
     return { appId, appVersionId };
