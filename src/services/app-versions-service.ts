@@ -31,8 +31,11 @@ export const listAppVersionsByAppId = async (appId: AppId): Promise<Array<AppVer
   }
 };
 
-export const defaultVersionByAppId = async (appId: AppId): Promise<AppVersion | undefined> => {
+export const defaultVersionByAppId = async (appId: AppId, useLiveVersion = false): Promise<AppVersion | undefined> => {
   const appVersions = await listAppVersionsByAppId(appId);
   const latestVersion = appVersions.sort((a, b) => b.id - a.id)[0];
-  return latestVersion.status === APP_VERSION_STATUS.DRAFT ? latestVersion : undefined;
+  const allowedStatuses = useLiveVersion
+    ? [APP_VERSION_STATUS.LIVE, APP_VERSION_STATUS.DRAFT]
+    : [APP_VERSION_STATUS.DRAFT];
+  return allowedStatuses.includes(latestVersion.status) ? latestVersion : undefined;
 };
