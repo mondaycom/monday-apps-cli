@@ -1,5 +1,5 @@
 import { Flags } from '@oclif/core';
-import { StatusCodes } from 'http-status-codes';
+import chalk from 'chalk';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
@@ -51,18 +51,23 @@ export default class Storage extends AuthenticatedCommand {
       clientAccountId = await PromptService.promptInputNumber(`${clientAccountNumberMessage}:`, true);
     }
 
-    if (!term) {
+    while (!term) {
+      // eslint-disable-next-line no-await-in-loop
       term = await PromptService.promptInput(`${termMessage}:`, true);
+      if (!/^[\w:-]+$/.test(term)) {
+        logger.warn('Key name can only contain alphanumeric chars and the symbols -_:');
+        term = '';
+      }
     }
 
     await fetchAndPrintStorageKeyValuesResults(appId, clientAccountId, term);
     try {
       this.preparePrintCommand(this, { appId, clientAccountId, term });
     } catch (error: unknown) {
-      if (error instanceof HttpError && error.code === StatusCodes.NOT_FOUND) {
-        logger.error(`No deployment found for provided app version id - "${appId}"`);
+      if (error instanceof HttpError) {
+        logger.error(`\n ${chalk.italic(chalk.red(error.message))}`);
       } else {
-        logger.error(`An unknown error happened while fetching deployment status for app version id - "${appId}"`);
+        logger.error(`An unknown error happened while fetching storage items status for app id - "${appId}"`);
       }
 
       process.exit(0);
