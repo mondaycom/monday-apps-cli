@@ -68,12 +68,15 @@ export const createGitignoreAndAppendConfigFileIfNeeded = (directoryPath: string
  * if so, we will need to abort the build process as
  * gcloud buildpacks does not support it yet
  * @param directoryPath the path where the project is located
+ * @throws Error if the project is yarn project with a build step
+ * @returns void
  **/
 export const validateIfCanBuild = (directoryPath: string): void => {
   const filePath = path.join(directoryPath, 'yarn.lock');
   if (!checkIfFileExists(filePath)) {
     return;
   }
+
   const packageJsonPath = path.join(directoryPath, 'package.json');
   const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf8');
   const packageJson = JSON.parse(packageJsonContent) as { scripts?: { build?: string } };
