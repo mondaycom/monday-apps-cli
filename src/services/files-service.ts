@@ -64,7 +64,7 @@ export const createGitignoreAndAppendConfigFileIfNeeded = (directoryPath: string
 };
 
 /**
- * Detect if the project is a typescript yarn project
+ * Detect if the project is yarn project with a build step
  * if so, we will need to abort the build process as
  * gcloud buildpacks does not support it yet
  * @param directoryPath the path where the project is located
@@ -74,7 +74,6 @@ export const validateIfCanBuild = (directoryPath: string): void => {
   if (!checkIfFileExists(filePath)) {
     return;
   }
-  // detect if it has a build command in package.json that builds typescript
   const packageJsonPath = path.join(directoryPath, 'package.json');
   const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf8');
   const packageJson = JSON.parse(packageJsonContent) as { scripts?: { build?: string } };
