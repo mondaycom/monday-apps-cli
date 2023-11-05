@@ -83,7 +83,6 @@ export const validateIfCanBuild = (directoryPath: string): void => {
       'monday-code does not support yarn projects with a build command. If you need a build step, use npm instead',
     );
   }
-
 };
 
 //* ** PRIVATE METHODS ** *//
