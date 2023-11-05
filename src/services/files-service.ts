@@ -63,6 +63,32 @@ export const createGitignoreAndAppendConfigFileIfNeeded = (directoryPath: string
   }
 };
 
+/**
+ * Detect if the project is a typescript yarn project
+ * if so, we will need to abort the build process as
+ * gcloud buildpacks does not support it yet
+ * @param directoryPath the path where the project is located
+ **/
+export const validateIfCanBuild = (directoryPath: string): void => {
+  const filePath = path.join(directoryPath, 'yarn.lock');
+  if (!checkIfFileExists(filePath)) {
+    return;
+  }
+  // detect if it has a build command in package.json that builds typescript
+  const packageJsonPath = path.join(directoryPath, 'package.json');
+  const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf8');
+  const packageJson = JSON.parse(packageJsonContent) as { scripts?: { build?: string } };
+  const hasBuildCommand = packageJson?.scripts?.build;
+  if (hasBuildCommand) {
+    throw new Error(
+      'monday-code does not support yarn projects with a build command. If you need a build step, use npm instead',
+    );
+  }
+
+};
+
+//* ** PRIVATE METHODS ** *//
+
 const getFilesToExcludeForArchive = (directoryPath: string): string[] => {
   const DEBUG_TAG = 'ignore_files_for_archive';
   const mappsIgnorePath = getIgnorePath(directoryPath, '.mappsignore');

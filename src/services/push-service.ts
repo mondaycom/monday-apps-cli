@@ -5,7 +5,7 @@ import { ListrTaskWrapper } from 'listr2';
 import { getAppVersionDeploymentStatusUrl, getDeploymentSignedUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
-import { createTarGzArchive, readFileData } from 'services/files-service';
+import {createTarGzArchive, readFileData, validateIfCanBuild} from 'services/files-service';
 import { pollPromise } from 'services/polling-service';
 import { appVersionDeploymentStatusSchema, signedUrlSchema } from 'services/schemas/push-service-schemas';
 import { PushCommandTasksContext } from 'types/commands/push';
@@ -128,6 +128,7 @@ export const buildAssetToDeployTask = async (
     }
 
     task.output = `Building asset to deploy from "${ctx.directoryPath}" directory`;
+    validateIfCanBuild(ctx.directoryPath);
     const archivePath = await createTarGzArchive(ctx.directoryPath, 'code');
     ctx.archivePath = archivePath;
     ctx.showPrepareEnvironmentTask = true;
