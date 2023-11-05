@@ -31,6 +31,6 @@ export const getStorageItemsSearch = async (
       throw error;
     }
 
-    throw new Error('Failed to build remote location for upload.');
+    throw new Error('Failed to fetch storage items.');
   }
 };

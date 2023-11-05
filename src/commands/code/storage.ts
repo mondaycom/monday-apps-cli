@@ -22,7 +22,7 @@ const fetchAndPrintStorageKeyValuesResults = async (appId: number, clientAccount
 export default class Storage extends AuthenticatedCommand {
   static description = 'Get keys and values stored on monday for a specific customer.';
 
-  static examples = ['<%= config.bin %> <%= command.id %> -i APP_VERSION_ID'];
+  static examples = ['<%= config.bin %> <%= command.id %> -a APP_ID -c CLIENT_ACCOUNT_ID -t TERM'];
 
   static flags = Storage.serializeFlags({
     appId: Flags.integer({
