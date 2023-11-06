@@ -8,6 +8,7 @@ import { handleEnvironmentRequest, listAppEnvKeys } from 'services/manage-app-en
 import { PromptService } from 'services/prompt-service';
 import { ManageAppEnvFlags } from 'types/commands/manage-app-env';
 import { AppId } from 'types/general';
+import logger from 'utils/logger';
 
 const MODES_WITH_KEYS: Array<APP_ENV_MANAGEMENT_MODES> = [
   APP_ENV_MANAGEMENT_MODES.SET,
@@ -91,20 +92,27 @@ export default class Env extends AuthenticatedCommand {
   });
 
   static args = {};
-
+  DEBUG_TAG = 'env';
   public async run(): Promise<void> {
-    const { flags } = await this.parse(Env);
-    let { mode, key, value, appId } = flags as ManageAppEnvFlags;
+    try {
+      const { flags } = await this.parse(Env);
+      let { mode, key, value, appId } = flags as ManageAppEnvFlags;
 
-    if (!appId) {
-      appId = Number(await DynamicChoicesService.chooseApp());
+      if (!appId) {
+        appId = Number(await DynamicChoicesService.chooseApp());
+      }
+
+      mode = await promptForModeIfNotProvided(mode);
+      key = await promptForKeyIfNotProvided(mode, appId, key);
+      value = await promptForValueIfNotProvided(mode, value);
+      this.preparePrintCommand(this, { appId, mode, key, value });
+
+      await handleEnvironmentRequest(appId, mode, key, value);
+    } catch (error: any) {
+      logger.debug(error, this.DEBUG_TAG);
+
+      // need to signal to the parent process that the command failed
+      process.exit(1);
     }
-
-    mode = await promptForModeIfNotProvided(mode);
-    key = await promptForKeyIfNotProvided(mode, appId, key);
-    value = await promptForValueIfNotProvided(mode, value);
-    this.preparePrintCommand(this, { appId, mode, key, value });
-
-    await handleEnvironmentRequest(appId, mode, key, value);
   }
 }

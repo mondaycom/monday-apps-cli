@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core';
 import { StatusCodes } from 'http-status-codes';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
-import { APP_VERSION_ID_TO_ENTER } from 'consts/messages';
+import { APP_VERSION_ID_TO_ENTER, VAR_UNKNOWN } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getAppVersionDeploymentStatus } from 'services/push-service';
 import { getMondayCodeBuild } from 'src/services/app-builds-service';
@@ -45,12 +45,12 @@ export default class Status extends AuthenticatedCommand {
   public async run(): Promise<void> {
     const { flags } = await this.parse(Status);
     let appVersionId = flags.appVersionId;
-    if (!appVersionId) {
-      const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion();
-      appVersionId = appAndAppVersion.appVersionId;
-    }
-
     try {
+      if (!appVersionId) {
+        const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion();
+        appVersionId = appAndAppVersion.appVersionId;
+      }
+
       this.preparePrintCommand(this, { appVersionId });
       const deploymentStatus = await getAppVersionDeploymentStatus(appVersionId);
       const mondayCodeRelease = await getMondayCodeBuild(appVersionId);
@@ -62,10 +62,12 @@ export default class Status extends AuthenticatedCommand {
       printDeploymentStatus(appVersionId, deploymentStatus);
     } catch (error: unknown) {
       if (error instanceof HttpError && error.code === StatusCodes.NOT_FOUND) {
-        logger.error(`No deployment found for provided app version id - "${appVersionId}"`);
+        logger.error(`No deployment found for provided app version id - "${appVersionId || VAR_UNKNOWN}"`);
       } else {
         logger.error(
-          `An unknown error happened while fetching deployment status for app version id - "${appVersionId}"`,
+          `An unknown error happened while fetching deployment status for app version id - "${
+            appVersionId || VAR_UNKNOWN
+          }"`,
         );
       }
 

@@ -2,6 +2,7 @@ import { Flags } from '@oclif/core';
 import chalk from 'chalk';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
+import { VAR_UNKNOWN } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { PromptService } from 'services/prompt-service';
 import { getStorageItemsSearch } from 'services/storage-service';
@@ -43,31 +44,33 @@ export default class Storage extends AuthenticatedCommand {
   public async run(): Promise<void> {
     const { flags } = await this.parse(Storage);
     let { appId, clientAccountId, term } = flags;
-    if (!appId) {
-      appId = await DynamicChoicesService.chooseApp();
-    }
-
-    if (!clientAccountId) {
-      clientAccountId = await PromptService.promptInputNumber(`${clientAccountNumberMessage}:`, true);
-    }
-
-    while (!term) {
-      // eslint-disable-next-line no-await-in-loop
-      term = await PromptService.promptInput(`${termMessage}:`, true);
-      if (!/^[\w:-]+$/.test(term)) {
-        logger.warn('Key name can only contain alphanumeric chars and the symbols -_:');
-        term = '';
-      }
-    }
-
-    await fetchAndPrintStorageKeyValuesResults(appId, clientAccountId, term);
     try {
+      if (!appId) {
+        appId = await DynamicChoicesService.chooseApp();
+      }
+
+      if (!clientAccountId) {
+        clientAccountId = await PromptService.promptInputNumber(`${clientAccountNumberMessage}:`, true);
+      }
+
+      while (!term) {
+        // eslint-disable-next-line no-await-in-loop
+        term = await PromptService.promptInput(`${termMessage}:`, true);
+        if (!/^[\w:-]+$/.test(term)) {
+          logger.warn('Key name can only contain alphanumeric chars and the symbols -_:');
+          term = '';
+        }
+      }
+
+      await fetchAndPrintStorageKeyValuesResults(appId, clientAccountId, term);
       this.preparePrintCommand(this, { appId, clientAccountId, term });
     } catch (error: unknown) {
       if (error instanceof HttpError) {
         logger.error(`\n ${chalk.italic(chalk.red(error.message))}`);
       } else {
-        logger.error(`An unknown error happened while fetching storage items status for app id - "${appId}"`);
+        logger.error(
+          `An unknown error happened while fetching storage items status for app id - "${appId || VAR_UNKNOWN}"`,
+        );
       }
 
       process.exit(1);
