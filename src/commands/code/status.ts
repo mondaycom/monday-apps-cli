@@ -71,7 +71,7 @@ export default class Status extends AuthenticatedCommand {
         );
       }
 
-      process.exit(0);
+      process.exit(1);
     }
   }
 }
