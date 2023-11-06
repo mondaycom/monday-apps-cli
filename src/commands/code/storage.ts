@@ -70,7 +70,7 @@ export default class Storage extends AuthenticatedCommand {
         logger.error(`An unknown error happened while fetching storage items status for app id - "${appId}"`);
       }
 
-      process.exit(0);
+      process.exit(1);
     }
   }
 }
