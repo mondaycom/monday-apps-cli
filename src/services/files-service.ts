@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
-
+import os from 'os';
 import archiver from 'archiver';
-import glob from 'glob';
-import parseGitIgnore from 'parse-gitignore';
+import { glob, sync } from 'glob-gitignore';
+import ignore, { Ignore } from 'ignore';
 
 import { CONFIG_NAME } from 'services/config-service';
 
@@ -39,11 +39,13 @@ export const createTarGzArchive = async (directoryPath: string, fileName = 'code
     const fullFileName = `**/${fileName}.tar.gz`;
 
     // a special list of files to ignore that are not in .gitignore that is may or may not be in the project
-    const additionalFilesToIgnore = ['.git/**', '.env', 'local-secure-storage.db.json', '.mappsrc'];
-    const pathsToIgnoreFromGitIgnore = getFilesToExcludeForArchive(directoryPath);
-    const pathsToIgnore = [...pathsToIgnoreFromGitIgnore, archivePath, fullFileName, ...additionalFilesToIgnore];
+    const additionalFilesToIgnore = ['.git/**', '.env', 'local-secure-storage.db.json', '.mappsrc', 'node_modules'];
+    const ignoreInstance = getFilesToExcludeForArchive(directoryPath);
+    ignoreInstance.add(archivePath);
+    ignoreInstance.add(fullFileName);
+    ignoreInstance.add(additionalFilesToIgnore)
 
-    await compressDirectoryToTarGz(directoryPath, archivePath, pathsToIgnore);
+    await compressDirectoryToTarGz(directoryPath, archivePath, ignoreInstance);
     return archivePath;
   } catch (error) {
     logger.debug(error, DEBUG_TAG);
@@ -90,68 +92,54 @@ export const validateIfCanBuild = (directoryPath: string): void => {
 
 //* ** PRIVATE METHODS ** *//
 
-const getFilesToExcludeForArchive = (directoryPath: string): string[] => {
+const getFilesToExcludeForArchive = (directoryPath: string): Ignore => {
+  const ignoreInstance = ignore();
   const DEBUG_TAG = 'ignore_files_for_archive';
   const mappsIgnorePath = getIgnorePath(directoryPath, '.mappsignore');
   if (mappsIgnorePath) {
-    return findIgnoredFiles(directoryPath, mappsIgnorePath);
+    ignoreInstance.add(fs.readFileSync(mappsIgnorePath).toString());
+    logger.debug(`${DEBUG_TAG} - Found ${mappsIgnorePath} using it for ignoring files`);
   }
-
+  
   const gitIgnorePath = getIgnorePath(directoryPath, '.gitignore');
   if (gitIgnorePath) {
-    return findIgnoredFiles(directoryPath, gitIgnorePath);
+    ignoreInstance.add(fs.readFileSync(gitIgnorePath).toString());
+    logger.debug(`${DEBUG_TAG} - Found ${gitIgnorePath} using it for ignoring files`);
   }
 
-  logger.debug(`${DEBUG_TAG} - No ignore files found, you can use .gitignore or
-    .mappsignore to exclude some of the folders and files in your project`);
-
-  return [];
+  
+  return ignoreInstance;
 };
+
 
 const getIgnorePath = (directoryPath: string, ignoreFile: string): string | undefined => {
   const DEBUG_TAG = 'ignore_files_for_archive';
   logger.debug(`${DEBUG_TAG} - Searching for ${ignoreFile} file`);
-  const ignoreSearchPattern = `${directoryPath}/**/${ignoreFile}`;
-  const [ignorePath] = glob.sync(ignoreSearchPattern);
+  const slashIfNeeded = directoryPath.at(-1) === '\\' ? '' : '/';
+  let ignoreSearchPattern = `${directoryPath}${slashIfNeeded}**/${ignoreFile}`;
+  if (os.platform() === 'win32') {
+    ignoreSearchPattern = ignoreSearchPattern.replaceAll('\\', '/');
+  }
+  logger.debug(`${DEBUG_TAG} - Ignroe search pattern: ${ignoreSearchPattern}`);
+  const [ignorePath] = sync(ignoreSearchPattern);
   return ignorePath;
 };
 
-const findIgnoredFiles = (directoryPath: string, ignorePath: string): string[] => {
-  const DEBUG_TAG = 'ignore_files_for_archive';
-  logger.debug(`${DEBUG_TAG} - Found ${ignorePath}`);
-  logger.debug(`${DEBUG_TAG} - Creating exclude files list`);
-  const parsedIgnore = parseGitIgnore.parse(ignorePath);
-  logger.debug(`${DEBUG_TAG} - validating and aligning exclude files list`);
-  const filesToExclude = alignPatternsForArchive(parsedIgnore?.patterns, directoryPath);
-  return filesToExclude;
-};
-
-const alignPatternsForArchive = (patterns: string[], directoryPath: string): string[] => {
-  const alignedPatterns = patterns?.reduce<string[]>((realPatterns, pattern) => {
-    const slashCharIfNeeded = pattern[0] === '/' ? '' : '/';
-    const fullPath = `${directoryPath}${slashCharIfNeeded}${pattern}`;
-    if (!fs.existsSync(fullPath)) return realPatterns;
-    if (fs.statSync(fullPath).isDirectory()) {
-      const addGlobPattern = pattern.at(-1) === '/' ? '**' : '/**';
-      const patternWithoutBeginningSlash = pattern[0] === '/' ? pattern.slice(1, pattern.length) : pattern;
-      realPatterns.push(`${patternWithoutBeginningSlash}${addGlobPattern}`);
-    } else {
-      realPatterns.push(fullPath);
-    }
-
-    return realPatterns;
-  }, []);
-
-  return alignedPatterns;
-};
 
 const compressDirectoryToTarGz = async (
   directoryPath: string,
   archivePath: string,
-  pathsToIgnore?: string[],
+  ignoreInstance: Ignore,
 ): Promise<string> => {
   const DEBUG_TAG = 'archive';
   logger.debug({ directoryPath, archivePath }, `${DEBUG_TAG} - Starting`);
+
+  const files: string[] = await glob('**/*', {
+    cwd: directoryPath,
+    nodir: true,
+    dot: true,
+    ignore: ignoreInstance
+  })
 
   const outputStream = fs.createWriteStream(archivePath);
   const archive = archiver('tar', {
@@ -164,14 +152,12 @@ const compressDirectoryToTarGz = async (
   logger.debug(`${DEBUG_TAG} - Initialized`);
   await new Promise((resolve, reject) => {
     archive.pipe(outputStream);
-    logger.debug(pathsToIgnore, `${DEBUG_TAG} - Added paths to ignore`);
-    archive.glob('**/*', {
-      cwd: directoryPath,
-      ignore: pathsToIgnore,
-      nodir: true,
-      dot: true,
-    });
-    logger.debug(`${DEBUG_TAG} - Added directory`);
+    logger.debug(`${DEBUG_TAG} - files to archive ${JSON.stringify(files)}`);
+    files.forEach(file => {
+      logger.debug(`${DEBUG_TAG} - Adding file ${file}`);
+      archive.file(directoryPath + file, {name: file});
+      logger.debug(`${DEBUG_TAG} - Added file ${file}`);
+    })
 
     outputStream.on('close', resolve);
     archive.on('error', reject);

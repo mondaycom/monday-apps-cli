@@ -83,16 +83,16 @@ export default class Push extends AuthenticatedCommand {
           task: prepareEnvironmentTask,
           enabled: ctx => Boolean(ctx.showPrepareEnvironmentTask),
         },
-        {
-          title: 'Uploading built asset',
-          task: uploadAssetTask,
-          enabled: ctx => Boolean(ctx.showUploadAssetTask),
-        },
-        {
-          title: 'Deployment in progress',
-          task: handleDeploymentTask,
-          enabled: ctx => Boolean(ctx.showHandleDeploymentTask),
-        },
+        // {
+        //   title: 'Uploading built asset',
+        //   task: uploadAssetTask,
+        //   enabled: ctx => Boolean(ctx.showUploadAssetTask),
+        // },
+        // {
+        //   title: 'Deployment in progress',
+        //   task: handleDeploymentTask,
+        //   enabled: ctx => Boolean(ctx.showHandleDeploymentTask),
+        // },
       ],
       { ctx: { appVersionId, directoryPath: flags.directoryPath } },
     );
