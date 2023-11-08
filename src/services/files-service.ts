@@ -1,6 +1,7 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
-import os from 'os';
+
 import archiver from 'archiver';
 import glob from 'glob';
 import parseGitIgnore from 'parse-gitignore';
@@ -114,7 +115,8 @@ const getIgnorePath = (directoryPath: string, ignoreFile: string): string | unde
   let ignoreSearchPattern = `${directoryPath}/**/${ignoreFile}`;
   if (os.platform() === 'win32') {
     ignoreSearchPattern = ignoreSearchPattern.replaceAll('\\', '/');
-  }  
+  }
+
   const [ignorePath] = glob.sync(ignoreSearchPattern);
   return ignorePath;
 };
