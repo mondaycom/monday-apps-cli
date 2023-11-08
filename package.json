@@ -66,8 +66,10 @@
     "listr2": "^6.6.0",
     "nanospinner": "^1.1.0",
     "parse-gitignore": "^2.0.0",
+    "patch-package": "^8.0.0",
     "pino": "^8.14.1",
     "pino-pretty": "^10.0.1",
+    "postinstall-postinstall": "^2.1.0",
     "pusher-js": "^8.0.1",
     "update-notifier": "^6.0.2",
     "zod": "^3.20.2"

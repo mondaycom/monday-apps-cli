@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-
+import os from 'os';
 import archiver from 'archiver';
 import glob from 'glob';
 import parseGitIgnore from 'parse-gitignore';
@@ -111,7 +111,11 @@ const getFilesToExcludeForArchive = (directoryPath: string): string[] => {
 const getIgnorePath = (directoryPath: string, ignoreFile: string): string | undefined => {
   const DEBUG_TAG = 'ignore_files_for_archive';
   logger.debug(`${DEBUG_TAG} - Searching for ${ignoreFile} file`);
-  const ignoreSearchPattern = `${directoryPath}/**/${ignoreFile}`;
+  const slashIfNeeded = directoryPath.at(-1) === '\\' ? '' : '/';
+  let ignoreSearchPattern = `${directoryPath}${slashIfNeeded}**/${ignoreFile}`;
+  if (os.platform() === 'win32') {
+    ignoreSearchPattern = ignoreSearchPattern.replaceAll('\\', '/');
+  }  
   const [ignorePath] = glob.sync(ignoreSearchPattern);
   return ignorePath;
 };
