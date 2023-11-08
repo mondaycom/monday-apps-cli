@@ -24,6 +24,7 @@
     "lint": "eslint . --ext .ts --config .eslintrc",
     "lint:fix": "npm run lint -- --fix",
     "postpack": "shx rm -f oclif.manifest.json",
+    "postinstall": "patch-package",
     "posttest": "yarn lint",
     "test": "jest",
     "prepack": "yarn build && oclif manifest && oclif readme",

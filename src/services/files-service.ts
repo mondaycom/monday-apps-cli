@@ -140,7 +140,7 @@ const alignPatternsForArchive = (patterns: string[], directoryPath: string): str
       const patternWithoutBeginningSlash = pattern[0] === '/' ? pattern.slice(1, pattern.length) : pattern;
       realPatterns.push(`${patternWithoutBeginningSlash}${addGlobPattern}`);
     } else {
-      realPatterns.push(fullPath);
+      realPatterns.push(pattern);
     }
 
     return realPatterns;
