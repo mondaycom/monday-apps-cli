@@ -1,0 +1,13 @@
+diff --git a/node_modules/parse-gitignore/index.js b/node_modules/parse-gitignore/index.js
+index 1aa4fd7..3b92390 100644
+--- a/node_modules/parse-gitignore/index.js
++++ b/node_modules/parse-gitignore/index.js
+@@ -10,7 +10,7 @@ const fs = require('fs');
+ const isObject = v => v !== null && typeof v === 'object' && !Array.isArray(v);
+ 
+ // eslint-disable-next-line no-control-regex
+-const INVALID_PATH_CHARS_REGEX = /[<>:"|?*\n\r\t\f\x00-\x1F]/;
++const INVALID_PATH_CHARS_REGEX = /[<>"|?*\n\r\t\f\x00-\x1F]/;
+ const GLOBSTAR_REGEX = /(?:^|\/)[*]{2}($|\/)/;
+ const MAX_PATH_LENGTH = 260 - 12;
+ 
