@@ -1,3 +1,4 @@
+import { Parser } from '@json2csv/plainjs';
 import { Flags } from '@oclif/core';
 import chalk from 'chalk';
 
@@ -7,15 +8,53 @@ import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { PromptService } from 'services/prompt-service';
 import { getStorageItemsSearch } from 'services/storage-service';
 import { HttpError } from 'types/errors';
+import { AppStorageApiRecordsSearchResponseSchema } from 'types/services/storage-service';
+import { HttpFS, saveToFile } from 'utils/file-system';
 import logger from 'utils/logger';
 
 const clientAccountNumberMessage = 'Client account number';
 const termMessage = 'Term to search for';
+const csvFilePath =
+  'Optional, Directory path and file name in your machine to save as CSV. If not included CSV file will not be saved.';
+const jsonFilePath =
+  'Optional, Directory path and file name in your machine to save as JSON. If not included JSON file will not be saved.';
 
-const fetchAndPrintStorageKeyValuesResults = async (appId: number, clientAccountId: number, term: string) => {
-  const itemsFound = await getStorageItemsSearch(appId, clientAccountId, term);
+const saveToCSV = async (itemsFound: AppStorageApiRecordsSearchResponseSchema, csvPath: string) => {
+  const parser = new Parser({
+    fields: [
+      {
+        value: 'key',
+        label: 'Key name',
+      },
+      {
+        value: 'backendOnly',
+        label: 'can be used only for backend',
+      },
+      {
+        value: 'value',
+        label: 'Value',
+      },
+    ],
+  });
+  const result: string = parser.parse(itemsFound.records);
+  await saveToFile(csvPath, result);
+};
+
+const saveToJSON = async (itemsFound: AppStorageApiRecordsSearchResponseSchema, jsonPath: string) => {
+  await saveToFile(jsonPath, JSON.stringify(itemsFound.records));
+};
+
+const fetchAndPrintStorageKeyValuesResults = (itemsFound: AppStorageApiRecordsSearchResponseSchema) => {
+  const maxValueLengthToPrint = 35;
+  for (const record of itemsFound.records) {
+    record.valueLength = record?.value?.length;
+    if (record?.value?.length > maxValueLengthToPrint) {
+      record.value = `${record.value.slice(0, maxValueLengthToPrint - 1)}`;
+    }
+  }
+
   logger.table(itemsFound.records);
-  if (itemsFound.hasMoreRecords) {
+  if (itemsFound.cursor) {
     console.log('There more records, please search for a more specific term.');
   }
 };
@@ -39,11 +78,20 @@ export default class Storage extends AuthenticatedCommand {
       char: 't',
       description: `${termMessage}.`,
     }),
+    csvPath: Flags.string({
+      char: 's',
+      description: `${csvFilePath}.`,
+    }),
+    jsonPath: Flags.string({
+      char: 'j',
+      description: `${jsonFilePath}.`,
+    }),
   });
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Storage);
     let { appId, clientAccountId, term } = flags;
+    const { csvPath, jsonPath } = flags;
     try {
       if (!appId) {
         appId = await DynamicChoicesService.chooseApp();
@@ -62,10 +110,19 @@ export default class Storage extends AuthenticatedCommand {
         }
       }
 
-      await fetchAndPrintStorageKeyValuesResults(appId, clientAccountId, term);
+      const itemsFound = await getStorageItemsSearch(appId, clientAccountId, term);
+      if (csvPath) {
+        await saveToCSV(itemsFound, csvPath);
+      }
+
+      if (jsonPath) {
+        await saveToJSON(itemsFound, jsonPath);
+      }
+
+      fetchAndPrintStorageKeyValuesResults(itemsFound);
       this.preparePrintCommand(this, { appId, clientAccountId, term });
     } catch (error: unknown) {
-      if (error instanceof HttpError) {
+      if (error instanceof HttpError || error instanceof HttpFS) {
         logger.error(`\n ${chalk.italic(chalk.red(error.message))}`);
       } else {
         logger.error(
