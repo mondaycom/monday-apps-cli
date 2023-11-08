@@ -39,7 +39,7 @@ export const createTarGzArchive = async (directoryPath: string, fileName = 'code
     const fullFileName = `**/${fileName}.tar.gz`;
 
     // a special list of files to ignore that are not in .gitignore that is may or may not be in the project
-    const additionalFilesToIgnore = ['.git/**', '.env', 'local-secure-storage.db.json', '.mappsrc'];
+    const additionalFilesToIgnore = ['.git/**', '.env', 'local-secure-storage.db.json', '.mappsrc', 'node_modules/**'];
     const pathsToIgnoreFromGitIgnore = getFilesToExcludeForArchive(directoryPath);
     const pathsToIgnore = [...pathsToIgnoreFromGitIgnore, archivePath, fullFileName, ...additionalFilesToIgnore];
 
@@ -111,8 +111,7 @@ const getFilesToExcludeForArchive = (directoryPath: string): string[] => {
 const getIgnorePath = (directoryPath: string, ignoreFile: string): string | undefined => {
   const DEBUG_TAG = 'ignore_files_for_archive';
   logger.debug(`${DEBUG_TAG} - Searching for ${ignoreFile} file`);
-  const slashIfNeeded = directoryPath.at(-1) === '\\' ? '' : '/';
-  let ignoreSearchPattern = `${directoryPath}${slashIfNeeded}**/${ignoreFile}`;
+  let ignoreSearchPattern = `${directoryPath}/**/${ignoreFile}`;
   if (os.platform() === 'win32') {
     ignoreSearchPattern = ignoreSearchPattern.replaceAll('\\', '/');
   }  
