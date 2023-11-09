@@ -30,7 +30,7 @@ function withAutoUpdateFlag() {
 
 function autoInstallGlobalPackage(packageName) {
   return new Promise((resolve, reject) => {
-    const child = spawn('npm', ['install', '-g', packageName], {
+    const child = spawn(/^win/.test(process.platform) ? 'npm.cmd' : 'npm', ['install', '-g', packageName], {
       stdio: 'inherit',
     });
     child.on('error', err => {
