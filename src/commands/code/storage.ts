@@ -9,15 +9,13 @@ import { PromptService } from 'services/prompt-service';
 import { getStorageItemsSearch } from 'services/storage-service';
 import { HttpError } from 'types/errors';
 import { AppStorageApiRecordsSearchResponseSchema } from 'types/services/storage-service';
-import { HttpFS, saveToFile } from 'utils/file-system';
+import { FSError, saveToFile } from 'utils/file-system';
 import logger from 'utils/logger';
 
 const clientAccountNumberMessage = 'Client account number';
 const termMessage = 'Term to search for';
-const csvFilePath =
-  'Optional, Directory path and file name in your machine to save as CSV. If not included CSV file will not be saved.';
-const jsonFilePath =
-  'Optional, Directory path and file name in your machine to save as JSON. If not included JSON file will not be saved.';
+const exportDescription = 'Optional, export to "CSV" or "JSON"';
+const filePath = 'Optional, Directory path and file name in your machine to save.';
 
 const saveToCSV = async (itemsFound: AppStorageApiRecordsSearchResponseSchema, csvPath: string) => {
   const parser = new Parser({
@@ -78,20 +76,20 @@ export default class Storage extends AuthenticatedCommand {
       char: 't',
       description: `${termMessage}.`,
     }),
-    csvPath: Flags.string({
-      char: 's',
-      description: `${csvFilePath}.`,
+    exportToFile: Flags.string({
+      char: 'e',
+      description: `${exportDescription}.`,
     }),
-    jsonPath: Flags.string({
-      char: 'j',
-      description: `${jsonFilePath}.`,
+    filePath: Flags.string({
+      char: 'f',
+      description: `${filePath}.`,
     }),
   });
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Storage);
     let { appId, clientAccountId, term } = flags;
-    const { csvPath, jsonPath } = flags;
+    const { exportToFile, filePath } = flags;
     try {
       if (!appId) {
         appId = await DynamicChoicesService.chooseApp();
@@ -111,18 +109,24 @@ export default class Storage extends AuthenticatedCommand {
       }
 
       const itemsFound = await getStorageItemsSearch(appId, clientAccountId, term);
-      if (csvPath) {
-        await saveToCSV(itemsFound, csvPath);
-      }
+      if (exportToFile) {
+        if (!filePath) {
+          throw new FSError(`file path is missing.`);
+        }
 
-      if (jsonPath) {
-        await saveToJSON(itemsFound, jsonPath);
+        if (exportToFile.toLowerCase() === 'csv') {
+          await saveToCSV(itemsFound, filePath);
+        }
+
+        if (exportToFile.toLowerCase() === 'json') {
+          await saveToJSON(itemsFound, filePath);
+        }
       }
 
       fetchAndPrintStorageKeyValuesResults(itemsFound);
       this.preparePrintCommand(this, { appId, clientAccountId, term });
     } catch (error: unknown) {
-      if (error instanceof HttpError || error instanceof HttpFS) {
+      if (error instanceof HttpError || error instanceof FSError) {
         logger.error(`\n ${chalk.italic(chalk.red(error.message))}`);
       } else {
         logger.error(
