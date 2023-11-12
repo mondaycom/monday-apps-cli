@@ -14,8 +14,9 @@ import logger from 'utils/logger';
 
 const clientAccountNumberMessage = 'Client account number';
 const termMessage = 'Term to search for';
-const exportDescription = 'Optional, export to "CSV" or "JSON"';
-const filePath = 'Optional, Directory path and file name in your machine to save.';
+const exportDescription = 'Optional, export';
+const fileFormatDescription = 'Optional, file format "CSV" or "JSON"';
+const fileDirectoryDescription = 'Optional, file path';
 
 const saveToCSV = async (itemsFound: AppStorageApiRecordsSearchResponseSchema, csvPath: string) => {
   const parser = new Parser({
@@ -76,20 +77,25 @@ export default class Storage extends AuthenticatedCommand {
       char: 't',
       description: `${termMessage}.`,
     }),
-    exportToFile: Flags.string({
+    exportToFile: Flags.boolean({
       char: 'e',
       description: `${exportDescription}.`,
+      required: false,
     }),
-    filePath: Flags.string({
+    fileFormat: Flags.string({
       char: 'f',
-      description: `${filePath}.`,
+      description: `${fileFormatDescription}.`,
+    }),
+    fileDirectory: Flags.string({
+      char: 'd',
+      description: `${fileDirectoryDescription}.`,
     }),
   });
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Storage);
     let { appId, clientAccountId, term } = flags;
-    const { exportToFile, filePath } = flags;
+    const { exportToFile, fileFormat, fileDirectory } = flags;
     try {
       if (!appId) {
         appId = await DynamicChoicesService.chooseApp();
@@ -110,16 +116,20 @@ export default class Storage extends AuthenticatedCommand {
 
       const itemsFound = await getStorageItemsSearch(appId, clientAccountId, term);
       if (exportToFile) {
-        if (!filePath) {
+        if (!fileFormat || !['csv', 'json'].includes(fileFormat.toLowerCase())) {
+          throw new FSError(`file format must be "CSV" or "JSON".`);
+        }
+
+        if (!fileDirectory) {
           throw new FSError(`file path is missing.`);
         }
 
-        if (exportToFile.toLowerCase() === 'csv') {
-          await saveToCSV(itemsFound, filePath);
+        if (fileFormat.toLowerCase() === 'csv') {
+          await saveToCSV(itemsFound, fileDirectory);
         }
 
-        if (exportToFile.toLowerCase() === 'json') {
-          await saveToJSON(itemsFound, filePath);
+        if (fileFormat.toLowerCase() === 'json') {
+          await saveToJSON(itemsFound, fileDirectory);
         }
       }
 
