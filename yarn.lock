@@ -2955,6 +2955,13 @@ date-fns@^2.29.1:
   dependencies:
     "@babel/runtime" "^7.21.0"
 
+date-fns@^2.30.0:
+  version "2.30.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.30.0.tgz#f367e644839ff57894ec6ac480de40cae4b0f4d0"
+  integrity sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+
 dateformat@^4.5.0, dateformat@^4.6.3:
   version "4.6.3"
   resolved "https://registry.npmjs.org/dateformat/-/dateformat-4.6.3.tgz#556fa6497e5217fedb78821424f8a1c22fa3f4b5"
@@ -6119,11 +6126,6 @@ mock-stdin@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/mock-stdin/-/mock-stdin-1.0.0.tgz#efcfaf4b18077e14541742fd758b9cae4e5365ea"
   integrity sha512-tukRdb9Beu27t6dN+XztSRHq9J0B/CoAOySGzHfn8UTfmqipA5yNT/sDUEyYdAV3Hpka6Wx6kOMxuObdOex60Q==
-
-moment@^2.29.4:
-  version "2.29.4"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
-  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
 
 ms@2.1.2:
   version "2.1.2"

@@ -1,7 +1,7 @@
 import { Parser } from '@json2csv/plainjs';
 import { Flags } from '@oclif/core';
 import chalk from 'chalk';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { VAR_UNKNOWN } from 'consts/messages';
@@ -116,7 +116,7 @@ export default class Storage extends AuthenticatedCommand {
       }
 
       const itemsFound = await getStorageItemsSearch(appId, clientAccountId, term);
-      if (exportToFile) {
+      if (itemsFound && exportToFile) {
         if (!fileFormat) {
           fileFormat = 'json';
         }
@@ -126,21 +126,35 @@ export default class Storage extends AuthenticatedCommand {
         }
 
         if (!fileDirectory) {
-          fileDirectory = `${process.cwd()}/${moment(new Date()).format('YYYYMMDDHHmmss')}.${fileFormat.toLowerCase()}`;
+          fileDirectory = `${process.cwd()}/${format(new Date(), 'yyyyMMddHHmmss')}.${fileFormat.toLowerCase()}`;
         }
 
+        let fileWasExportedSuccessfully = false;
         if (fileFormat.toLowerCase() === 'csv') {
           await saveToCSV(itemsFound, fileDirectory);
+          fileWasExportedSuccessfully = true;
         }
 
         if (fileFormat.toLowerCase() === 'json') {
           await saveToJSON(itemsFound, fileDirectory);
+          fileWasExportedSuccessfully = true;
+        }
+
+        if (fileWasExportedSuccessfully) {
+          logger.log(
+            chalk.blue(
+              `Exported ${itemsFound.records.length} record(s) to file "${chalk.bold(
+                fileDirectory,
+              )}" in the format of "${chalk.bold(fileFormat.toUpperCase())}".`,
+            ),
+          );
         }
       }
 
       fetchAndPrintStorageKeyValuesResults(itemsFound);
       this.preparePrintCommand(this, { appId, clientAccountId, term });
     } catch (error: unknown) {
+      logger.debug(error);
       if (error instanceof HttpError || error instanceof FSError) {
         logger.error(`\n ${chalk.italic(chalk.red(error.message))}`);
       } else {
