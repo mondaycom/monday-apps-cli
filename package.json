@@ -65,6 +65,7 @@
     "inquirer-date-prompt": "^3.0.0",
     "isemail": "^3.2.0",
     "listr2": "^6.6.0",
+    "moment": "^2.29.4",
     "nanospinner": "^1.1.0",
     "parse-gitignore": "^2.0.0",
     "pino": "^8.14.1",

@@ -1,6 +1,7 @@
 import { Parser } from '@json2csv/plainjs';
 import { Flags } from '@oclif/core';
 import chalk from 'chalk';
+import moment from 'moment';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { VAR_UNKNOWN } from 'consts/messages';
@@ -94,8 +95,8 @@ export default class Storage extends AuthenticatedCommand {
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Storage);
-    let { appId, clientAccountId, term } = flags;
-    const { exportToFile, fileFormat, fileDirectory } = flags;
+    let { appId, clientAccountId, term, fileFormat, fileDirectory } = flags;
+    const { exportToFile } = flags;
     try {
       if (!appId) {
         appId = await DynamicChoicesService.chooseApp();
@@ -116,12 +117,16 @@ export default class Storage extends AuthenticatedCommand {
 
       const itemsFound = await getStorageItemsSearch(appId, clientAccountId, term);
       if (exportToFile) {
-        if (!fileFormat || !['csv', 'json'].includes(fileFormat.toLowerCase())) {
+        if (!fileFormat) {
+          fileFormat = 'json';
+        }
+
+        if (!['csv', 'json'].includes(fileFormat.toLowerCase())) {
           throw new FSError(`file format must be "CSV" or "JSON".`);
         }
 
         if (!fileDirectory) {
-          throw new FSError(`file path is missing.`);
+          fileDirectory = `${process.cwd()}/${moment(new Date()).format('YYYYMMDDHHmmss')}.${fileFormat.toLowerCase()}`;
         }
 
         if (fileFormat.toLowerCase() === 'csv') {
