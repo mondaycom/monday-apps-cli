@@ -142,7 +142,7 @@ export const PromptService = {
       },
     ]);
 
-    return res.input;
+    return Number(res.input);
   },
 
   async promptFile(message: string, extensions: string[]) {

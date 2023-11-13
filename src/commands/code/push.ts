@@ -59,45 +59,47 @@ export default class Push extends AuthenticatedCommand {
 
     const appId = flags.appId;
     const force = flags.force;
-    if (appId) {
-      const latestDraftVersion = await defaultVersionByAppId(Number(appId), force);
-      if (!latestDraftVersion) throw new Error('No editable version found for the given app id.');
-      appVersionId = latestDraftVersion.id;
-    } else {
-      appVersionId = flags.appVersionId;
-    }
-
-    if (!appVersionId) {
-      const allowedStatuses = force ? [APP_VERSION_STATUS.DRAFT, APP_VERSION_STATUS.LIVE] : [APP_VERSION_STATUS.DRAFT];
-      const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion(allowedStatuses);
-      appVersionId = appAndAppVersion.appVersionId;
-    }
-
-    logger.debug(`push code to appVersionId: ${appVersionId}`, this.DEBUG_TAG);
-    this.preparePrintCommand(this, { appVersionId, directoryPath: flags.directoryPath });
-    const tasks = new Listr<PushCommandTasksContext>(
-      [
-        { title: 'Build asset to deploy', task: buildAssetToDeployTask },
-        {
-          title: 'Preparing environment',
-          task: prepareEnvironmentTask,
-          enabled: ctx => Boolean(ctx.showPrepareEnvironmentTask),
-        },
-        {
-          title: 'Uploading built asset',
-          task: uploadAssetTask,
-          enabled: ctx => Boolean(ctx.showUploadAssetTask),
-        },
-        {
-          title: 'Deployment in progress',
-          task: handleDeploymentTask,
-          enabled: ctx => Boolean(ctx.showHandleDeploymentTask),
-        },
-      ],
-      { ctx: { appVersionId, directoryPath: flags.directoryPath } },
-    );
-
     try {
+      if (appId) {
+        const latestDraftVersion = await defaultVersionByAppId(Number(appId), force);
+        if (!latestDraftVersion) throw new Error('No editable version found for the given app id.');
+        appVersionId = latestDraftVersion.id;
+      } else {
+        appVersionId = flags.appVersionId;
+      }
+
+      if (!appVersionId) {
+        const allowedStatuses = force
+          ? [APP_VERSION_STATUS.DRAFT, APP_VERSION_STATUS.LIVE]
+          : [APP_VERSION_STATUS.DRAFT];
+        const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion(allowedStatuses);
+        appVersionId = appAndAppVersion.appVersionId;
+      }
+
+      logger.debug(`push code to appVersionId: ${appVersionId}`, this.DEBUG_TAG);
+      this.preparePrintCommand(this, { appVersionId, directoryPath: flags.directoryPath });
+      const tasks = new Listr<PushCommandTasksContext>(
+        [
+          { title: 'Build asset to deploy', task: buildAssetToDeployTask },
+          {
+            title: 'Preparing environment',
+            task: prepareEnvironmentTask,
+            enabled: ctx => Boolean(ctx.showPrepareEnvironmentTask),
+          },
+          {
+            title: 'Uploading built asset',
+            task: uploadAssetTask,
+            enabled: ctx => Boolean(ctx.showUploadAssetTask),
+          },
+          {
+            title: 'Deployment in progress',
+            task: handleDeploymentTask,
+            enabled: ctx => Boolean(ctx.showHandleDeploymentTask),
+          },
+        ],
+        { ctx: { appVersionId, directoryPath: flags.directoryPath } },
+      );
+
       await tasks.run();
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);

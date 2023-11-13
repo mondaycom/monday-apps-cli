@@ -15,6 +15,10 @@ export const getDeploymentSignedUrl = (appVersionId: number): string => {
   return `${appVersionIdBaseUrl(appVersionId)}/deployments/signed-url`;
 };
 
+export const getStorageItemsSearchUrl = (appId: number, clientAccountId: number, term: string): string => {
+  return `/api/storage/app/${appId}/account/${clientAccountId}/records?term=${encodeURI(term)}`;
+};
+
 export const getLogsStreamForAppVersionIdUrl = (
   appVersionId: number,
   logsType: LogType,
