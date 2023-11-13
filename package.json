@@ -1,6 +1,6 @@
 {
   "name": "@mondaycom/apps-cli",
-  "version": "1.4.3",
+  "version": "1.5.5",
   "description": "A cli tool to manage apps (and monday-code projects) in monday.com",
   "author": "monday.com Apps Team",
   "type": "module",
@@ -14,6 +14,7 @@
   "files": [
     "/bin",
     "/dist",
+    "/patches",
     "/oclif.manifest.json",
     "README.md"
   ],
@@ -24,6 +25,7 @@
     "lint": "eslint . --ext .ts --config .eslintrc",
     "lint:fix": "npm run lint -- --fix",
     "postpack": "shx rm -f oclif.manifest.json",
+    "postinstall": "patch-package",
     "posttest": "yarn lint",
     "test": "jest",
     "prepack": "yarn build && oclif manifest && oclif readme",
@@ -68,8 +70,10 @@
     "listr2": "^6.6.0",
     "nanospinner": "^1.1.0",
     "parse-gitignore": "^2.0.0",
+    "patch-package": "^8.0.0",
     "pino": "^8.14.1",
     "pino-pretty": "^10.0.1",
+    "postinstall-postinstall": "^2.1.0",
     "pusher-js": "^8.0.1",
     "update-notifier": "^6.0.2",
     "zod": "^3.20.2"
