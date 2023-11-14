@@ -54,9 +54,6 @@ const fetchAndPrintStorageKeyValuesResults = (itemsFound: AppStorageApiRecordsSe
   }
 
   logger.table(itemsFound.records);
-  if (itemsFound.cursor) {
-    console.log('There more records, please search for a more specific term.');
-  }
 };
 
 export default class Storage extends AuthenticatedCommand {
@@ -149,9 +146,14 @@ export default class Storage extends AuthenticatedCommand {
             ),
           );
         }
+      } else {
+        fetchAndPrintStorageKeyValuesResults(itemsFound);
       }
 
-      fetchAndPrintStorageKeyValuesResults(itemsFound);
+      if (itemsFound.cursor) {
+        logger.log('There more records, please search for a more specific term.');
+      }
+
       this.preparePrintCommand(this, { appId, clientAccountId, term });
     } catch (error: unknown) {
       logger.debug(error);
