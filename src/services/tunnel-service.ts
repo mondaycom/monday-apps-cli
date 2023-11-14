@@ -1,3 +1,4 @@
+import * as ngrok from '@ngrok/ngrok';
 import { ListrTaskWrapper } from 'listr2';
 
 import { generateTunnelingTokenUrl } from 'consts/urls';
@@ -60,8 +61,23 @@ export const createTunnelConnection = async (
   task: ListrTaskWrapper<TunnelCommandTasksContext, any>,
 ) => {
   // FIXME: maor: remove all logs and redundant code
+  // FIXME: maor: add logger
   const DEBUG_TAG = 'create_tunnel_connection';
-  console.log('createTunnelConnection');
-  console.log(ctx);
-  // TODO: Maor: surround with try catch
+
+  try {
+    const forwardingAddress = `http://localhost:${ctx.tunnelPort}`;
+    const session = await new ngrok.SessionBuilder().authtoken(String(ctx.authToken)).connect();
+    const tunnel = await session.httpEndpoint().domain(String(ctx.tunnelDomain)).forwardsTo(forwardingAddress).listen();
+    const logs = [
+      `Ingress established at: ${String(tunnel.url())}`,
+      `forwarding traffic to: ${forwardingAddress}`,
+      `Terminate this process to close the tunnel connection`,
+    ];
+    task.output = logs.join('\n');
+    await tunnel.forward(forwardingAddress);
+  } catch (error) {
+    // TODO: what to expose to the user? the error comes from ngrok
+    console.log('Error setting up tunnel:', error);
+    // TODO: maor: handle error, proccess.exit?
+  }
 };
