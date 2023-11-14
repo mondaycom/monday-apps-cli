@@ -2,6 +2,7 @@ import { LogType, LogsFilterCriteriaArguments } from 'types/commands/logs';
 import { AppId } from 'types/general';
 
 const BASE_APPS_URL = '/api/apps';
+const BASE_MONDAY_CODE_URL = '/api/code';
 
 export const appVersionIdBaseUrl = (appVersionId: number): string => {
   return `/api/code/${appVersionId}`;
@@ -50,4 +51,8 @@ export const appEnvironmentKeysUrl = (appId: AppId): string => {
 
 export const appReleasesUrl = (appVersionId: AppId): string => {
   return `/apps_ms/app-versions/${appVersionId}/releases`;
+};
+
+export const generateTunnelingTokenUrl = (): string => {
+  return `${BASE_MONDAY_CODE_URL}/tunnel-token`;
 };

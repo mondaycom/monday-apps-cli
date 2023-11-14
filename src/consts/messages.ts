@@ -4,4 +4,6 @@ export const APP_VERSION_ID_TO_ENTER = 'Please enter the app version id of your 
 
 export const APP_ID_TO_ENTER = 'Please enter app id:';
 
+export const PORT_TO_ENTER = 'Please enter port:';
+
 export const VAR_UNKNOWN = 'unknown';

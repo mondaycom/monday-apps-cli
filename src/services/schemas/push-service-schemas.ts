@@ -8,6 +8,13 @@ export const signedUrlSchema = z
   })
   .merge(baseResponseHttpMetaDataSchema);
 
+export const tunnelAuthTokenSchema = z
+  .object({
+    token: z.string(),
+    domain: z.string(),
+  })
+  .merge(baseResponseHttpMetaDataSchema);
+
 export const deploymentStatusTypesArray = [
   'started',
   'pending',
