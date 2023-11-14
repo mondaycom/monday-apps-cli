@@ -15,10 +15,7 @@ export const generateTunnelingAuthToken = async (
   ctx: TunnelCommandTasksContext,
   task: ListrTaskWrapper<TunnelCommandTasksContext, any>,
 ) => {
-  // FIXME: maor: remove all logs and redundant code
   const DEBUG_TAG = 'generate_tunneling_auth_token';
-  console.log('generateTunnelingAuthToken');
-  console.log(ctx);
   try {
     const baseUrl = generateTunnelingTokenUrl();
     const url = appsUrlBuilder(baseUrl);
@@ -39,7 +36,6 @@ export const generateTunnelingAuthToken = async (
 
     task.output = `Creating a tunnel from "${ctx.tunnelDomain}" to "http://localhost:${ctx.tunnelPort}"`; // FIXME: not working
 
-    console.log(ctx);
     return {
       token: response.token,
       domain: response.domain,
