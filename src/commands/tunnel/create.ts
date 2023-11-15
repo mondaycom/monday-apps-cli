@@ -2,8 +2,6 @@ import { Flags } from '@oclif/core';
 import { Listr } from 'listr2';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
-import { APP_ID_TO_ENTER } from 'consts/messages';
-import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { createTunnelConnection, generateTunnelingAuthToken } from 'services/tunnel-service';
 import { TunnelCommandTasksContext } from 'types/commands/tunnel';
 import { validateStringAsSafeInt } from 'types/utils/validation';
@@ -23,15 +21,13 @@ export default class TunnelCreate extends AuthenticatedCommand {
 
   static flags = TunnelCreate.serializeFlags({
     port: Flags.integer({
-      char: 'i',
-      aliases: ['p'],
+      char: 'p',
       description: 'Port to forward tunnel traffic to.',
       default: 8080,
     }),
     appId: Flags.integer({
-      char: 'i',
-      aliases: ['a'],
-      description: APP_ID_TO_ENTER,
+      char: 'a',
+      description: 'Specify an app id to get a unique tunnel domain.',
     }),
   });
 
@@ -40,15 +36,10 @@ export default class TunnelCreate extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(TunnelCreate);
-      let { appId } = flags;
-      const { port } = flags;
-
-      if (!appId) {
-        appId = await DynamicChoicesService.chooseApp(true);
-      }
+      const { port, appId } = flags;
 
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      logger.debug(`generating tunnel for appId: ${appId}`, this.DEBUG_TAG);
+      logger.debug(`creating tunnel: port=${port}, appId=${appId}`, this.DEBUG_TAG);
       const tasks = new Listr<TunnelCommandTasksContext>(
         [
           {

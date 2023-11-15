@@ -4,14 +4,9 @@ import { listApps } from 'services/apps-service';
 import { PromptService } from 'services/prompt-service';
 
 export const DynamicChoicesService = {
-  async chooseApp(includeBlank = false) {
+  async chooseApp() {
     const apps = await listApps();
-    const appChoicesMap: Record<string, number | undefined> = {};
-
-    if (includeBlank) {
-      appChoicesMap.None = undefined;
-    }
-
+    const appChoicesMap: Record<string, number> = {};
     for (const app of apps) {
       appChoicesMap[`${app.id} | ${app.name}`] = app.id;
     }
@@ -48,7 +43,7 @@ export const DynamicChoicesService = {
   },
 
   async chooseAppAndAppVersion(filterByStatus?: APP_VERSION_STATUS[]) {
-    const appId = Number(await this.chooseApp());
+    const appId = await this.chooseApp();
     const appVersionId = await this.chooseAppVersion(appId, filterByStatus);
     return { appId, appVersionId };
   },

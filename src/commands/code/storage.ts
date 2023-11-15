@@ -96,7 +96,7 @@ export default class Storage extends AuthenticatedCommand {
     const { exportToFile } = flags;
     try {
       if (!appId) {
-        appId = Number(await DynamicChoicesService.chooseApp());
+        appId = await DynamicChoicesService.chooseApp();
       }
 
       if (!clientAccountId) {

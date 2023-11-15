@@ -7,7 +7,7 @@ import { tunnelAuthTokenSchema } from 'services/schemas/push-service-schemas';
 import { TunnelCommandTasksContext } from 'types/commands/tunnel';
 import { HttpError } from 'types/errors';
 import { HttpMethodTypes } from 'types/services/api-service';
-import { TunnelAuthToken } from 'types/services/push-service';
+import { TunnelAuthToken } from 'types/services/tunnel-service';
 import logger from 'utils/logger';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
