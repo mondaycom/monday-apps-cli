@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core';
 import { Listr } from 'listr2';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
-import { createTunnelConnection, generateTunnelingAuthToken } from 'services/tunnel-service';
+import { connectTunnel, createTunnelConnection, generateTunnelingAuthToken } from 'services/tunnel-service';
 import { TunnelCommandTasksContext } from 'types/commands/tunnel';
 import { validateStringAsSafeInt } from 'types/utils/validation';
 import logger from 'utils/logger';
@@ -28,6 +28,7 @@ export default class TunnelCreate extends AuthenticatedCommand {
     appId: Flags.integer({
       char: 'a',
       description: 'Specify an app id to get a unique tunnel domain.',
+      required: false,
     }),
   });
 
@@ -51,6 +52,11 @@ export default class TunnelCreate extends AuthenticatedCommand {
             title: 'Creating tunnel connection',
             task: createTunnelConnection,
             enabled: ctx => Boolean(ctx.authToken) && Boolean(ctx.tunnelDomain),
+          },
+          {
+            title: 'Tunnel is open and functional',
+            task: connectTunnel,
+            enabled: ctx => Boolean(ctx.forwardingAddress) && Boolean(ctx.tunnel),
           },
         ],
         { ctx: { appId, tunnelPort: port } },

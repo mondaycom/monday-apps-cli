@@ -45,10 +45,7 @@ export const generateTunnelingAuthToken = async (ctx: TunnelCommandTasksContext)
   }
 };
 
-export const createTunnelConnection = async (
-  ctx: TunnelCommandTasksContext,
-  task: ListrTaskWrapper<TunnelCommandTasksContext, any>,
-) => {
+export const createTunnelConnection = async (ctx: TunnelCommandTasksContext) => {
   const DEBUG_TAG = 'create_tunnel_connection';
 
   try {
@@ -59,13 +56,30 @@ export const createTunnelConnection = async (
     const tunnel = await session.httpEndpoint().domain(String(ctx.tunnelDomain)).forwardsTo(forwardingAddress).listen();
     logger.debug(`tunnel created`, DEBUG_TAG);
 
-    task.output = `Ingress established at: ${String(tunnel.url())} --> forwarding traffic to: ${forwardingAddress}
-      \nTerminate this process to close the tunnel connection`;
+    ctx.forwardingAddress = forwardingAddress;
+    ctx.tunnel = tunnel;
+  } catch (error) {
+    logger.debug(error, DEBUG_TAG);
+    logger.error('Failed to create tunnel connection', DEBUG_TAG);
+    process.exit(0);
+  }
+};
 
+export const connectTunnel = async (
+  ctx: TunnelCommandTasksContext,
+  task: ListrTaskWrapper<TunnelCommandTasksContext, any>,
+) => {
+  const DEBUG_TAG = 'connect_tunnel';
+  const forwardingAddress = ctx.forwardingAddress!;
+  const tunnel = ctx.tunnel!;
+
+  try {
+    task.output = `Connection established at: ${String(tunnel.url())} --> forwarding traffic to: ${forwardingAddress}
+      \nTerminate this process to close the tunnel connection`;
     await tunnel.forward(forwardingAddress); // actually opens the tunnel, and will "hang" open until terminated
   } catch (error) {
     logger.debug(error, DEBUG_TAG);
     logger.error('Failed to establish tunnel connection', DEBUG_TAG);
-    process.exit(1);
+    process.exit(0);
   }
 };
