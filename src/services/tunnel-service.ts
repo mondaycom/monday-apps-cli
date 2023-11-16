@@ -11,6 +11,15 @@ import { TunnelAuthToken } from 'types/services/tunnel-service';
 import logger from 'utils/logger';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
+function handleError(error: any, DEBUG_TAG: string, message: string) {
+  logger.debug(error, DEBUG_TAG);
+  if (error instanceof HttpError) {
+    throw error;
+  }
+
+  throw new Error(message);
+}
+
 export const generateTunnelingAuthToken = async (ctx: TunnelCommandTasksContext) => {
   const DEBUG_TAG = 'generate_tunneling_auth_token';
   try {
@@ -36,12 +45,7 @@ export const generateTunnelingAuthToken = async (ctx: TunnelCommandTasksContext)
       domain: response.domain,
     };
   } catch (error: any | HttpError) {
-    logger.debug(error, DEBUG_TAG);
-    if (error instanceof HttpError) {
-      throw error;
-    }
-
-    throw new Error('Failed to generate tunneling auth token.');
+    handleError(error, DEBUG_TAG, 'Failed to generate tunneling auth token.');
   }
 };
 
@@ -58,10 +62,8 @@ export const createTunnelConnection = async (ctx: TunnelCommandTasksContext) => 
 
     ctx.forwardingAddress = forwardingAddress;
     ctx.tunnel = tunnel;
-  } catch (error) {
-    logger.debug(error, DEBUG_TAG);
-    logger.error('Failed to create tunnel connection', DEBUG_TAG);
-    process.exit(0);
+  } catch (error: any | HttpError) {
+    handleError(error, DEBUG_TAG, 'Failed to create tunnel connection.');
   }
 };
 
@@ -77,9 +79,7 @@ export const connectTunnel = async (
     task.output = `Connection established at: ${String(tunnel.url())} --> forwarding traffic to: ${forwardingAddress}
       \nTerminate this process to close the tunnel connection`;
     await tunnel.forward(forwardingAddress); // actually opens the tunnel, and will "hang" open until terminated
-  } catch (error) {
-    logger.debug(error, DEBUG_TAG);
-    logger.error('Failed to establish tunnel connection', DEBUG_TAG);
-    process.exit(0);
+  } catch (error: any | HttpError) {
+    handleError(error, DEBUG_TAG, 'Failed to establish tunnel connection.');
   }
 };

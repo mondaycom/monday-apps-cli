@@ -54,7 +54,7 @@ export default class TunnelCreate extends AuthenticatedCommand {
             enabled: ctx => Boolean(ctx.authToken) && Boolean(ctx.tunnelDomain),
           },
           {
-            title: 'Tunnel is open and functional',
+            title: 'Tunnel is up and running',
             task: connectTunnel,
             enabled: ctx => Boolean(ctx.forwardingAddress) && Boolean(ctx.tunnel),
           },
