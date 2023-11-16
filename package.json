@@ -1,6 +1,6 @@
 {
   "name": "@mondaycom/apps-cli",
-  "version": "1.5.6",
+  "version": "1.6.0",
   "description": "A cli tool to manage apps (and monday-code projects) in monday.com",
   "author": "monday.com Apps Team",
   "type": "module",
@@ -48,6 +48,7 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "@json2csv/plainjs": "^7.0.3",
+    "@ngrok/ngrok": "^0.9.0",
     "@oclif/core": "^2.8.5",
     "@oclif/plugin-autocomplete": "^2.2.0",
     "@oclif/plugin-help": "^5.2.9",
