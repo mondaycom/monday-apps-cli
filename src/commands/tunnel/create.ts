@@ -27,7 +27,7 @@ export default class TunnelCreate extends AuthenticatedCommand {
     }),
     appId: Flags.integer({
       char: 'a',
-      description: 'Specify an app id to get a unique tunnel domain.',
+      description: 'Specify an app id to get a unique tunnel domain for this app.',
       required: false,
     }),
   });
