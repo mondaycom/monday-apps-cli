@@ -20,6 +20,10 @@ export const getStorageItemsSearchUrl = (appId: number, clientAccountId: number,
   return `/api/storage/app/${appId}/account/${clientAccountId}/records?term=${encodeURI(term)}`;
 };
 
+export const getStorageItemsExportUrl = (appId: number, clientAccountId: number): string => {
+  return `/api/storage/app/${appId}/account/${clientAccountId}/records/export`;
+};
+
 export const getLogsStreamForAppVersionIdUrl = (
   appVersionId: number,
   logsType: LogType,
