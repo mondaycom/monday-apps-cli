@@ -2,17 +2,29 @@ import axios from 'axios';
 import chalk from 'chalk';
 import { ListrTaskWrapper } from 'listr2';
 
-import { getAppVersionDeploymentStatusUrl, getDeploymentSignedUrl } from 'consts/urls';
+import { getAppVersionDeploymentStatusUrl, getDeploymentClientUpload, getDeploymentSignedUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
-import { createTarGzArchive, readFileData, validateIfCanBuild } from 'services/files-service';
+import {
+  compressBuildToZip,
+  createTarGzArchive,
+  readFileData,
+  readZipFileAsBuffer,
+  validateIfCanBuild,
+  verifyClientDirectory,
+} from 'services/files-service';
 import { pollPromise } from 'services/polling-service';
 import { appVersionDeploymentStatusSchema, signedUrlSchema } from 'services/schemas/push-service-schemas';
 import { PushCommandTasksContext } from 'types/commands/push';
 import { HttpError } from 'types/errors';
 import { TimeInMs } from 'types/general/time';
 import { HttpMethodTypes } from 'types/services/api-service';
-import { AppVersionDeploymentStatus, DeploymentStatusTypesSchema, SignedUrl } from 'types/services/push-service';
+import {
+  AppVersionDeploymentStatus,
+  DeploymentStatusTypesSchema,
+  SignedUrl,
+  uploadClient,
+} from 'types/services/push-service';
 import logger from 'utils/logger';
 import { createProgressBarString } from 'utils/progress-bar';
 import { appsUrlBuilder } from 'utils/urls-builder';
@@ -39,6 +51,23 @@ export const getSignedStorageUrl = async (appVersionId: number): Promise<string>
 
     throw new Error('Failed to build remote location for upload.');
   }
+};
+
+export const uploadClientZipFile = async (appVersionId: number, buffer: Buffer, fileName: string) => {
+  const baseUrl = getDeploymentClientUpload(appVersionId);
+  const url = appsUrlBuilder(baseUrl);
+  const response = await execute<uploadClient>({
+    url,
+    headers: { Accept: 'application/json' },
+    method: HttpMethodTypes.POST,
+    body: {
+      file: {
+        filename: fileName,
+        buffer: buffer.toString('base64'),
+      },
+    },
+  });
+  return response.data;
 };
 
 export const getAppVersionDeploymentStatus = async (appVersionId: number) => {
@@ -113,6 +142,31 @@ export const uploadFileToStorage = async (
     logger.debug(error, DEBUG_TAG);
     throw new Error('Failed in uploading the project.');
   }
+};
+
+export const buildClientZip = async (
+  ctx: PushCommandTasksContext,
+  task: ListrTaskWrapper<PushCommandTasksContext, any>,
+) => {
+  if (!ctx.directoryPath) {
+    const currentDirectoryPath = getCurrentWorkingDirectory();
+    logger.debug(`Directory path not provided. using current directory: ${currentDirectoryPath}`);
+    ctx.directoryPath = currentDirectoryPath;
+  }
+
+  task.output = `Building client zip from "${ctx.directoryPath}" directory`;
+  verifyClientDirectory(ctx.directoryPath);
+  ctx.archivePath = await compressBuildToZip(ctx.directoryPath);
+};
+
+export const deployClientZip = async (
+  ctx: PushCommandTasksContext,
+  task: ListrTaskWrapper<PushCommandTasksContext, any>,
+) => {
+  task.output = `Deploying client zip (${ctx.archivePath!}) to cdn`;
+  const buffer = readZipFileAsBuffer(ctx.archivePath!);
+  const data = await uploadClientZipFile(ctx.appVersionId, buffer, 'client.zip');
+  task.title = `your project is live at: ${data.url}, use ${data.sourceUrl} for download your source`;
 };
 
 export const buildAssetToDeployTask = async (

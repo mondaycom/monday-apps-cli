@@ -19,6 +19,38 @@ export const readFileData = (filePath: string): Buffer => {
   return fileData;
 };
 
+export const readZipFileAsBuffer = (filePath: string): Buffer => {
+  return fs.readFileSync(filePath);
+};
+
+export const compressBuildToZip = async (dirPath: string) => {
+  const fileName = `${dirPath}.zip`;
+
+  const output = fs.createWriteStream(fileName);
+  const archive = archiver('zip', {
+    zlib: { level: 9 },
+  });
+
+  archive.pipe(output);
+  archive.directory(dirPath, false);
+
+  await archive.finalize();
+  await new Promise<void>(resolve => {
+    output.on('close', () => resolve());
+  });
+  return fileName;
+};
+
+export const verifyClientDirectory = (directoryPath: string): void => {
+  if (!checkIfFileExists(directoryPath)) {
+    throw new Error(`Directory not found: ${directoryPath}`);
+  }
+
+  if (!checkIfFileExists(`${directoryPath}/index.html`)) {
+    throw new Error(`index.html file not found in ${directoryPath}`);
+  }
+};
+
 export const checkIfFileExists = (filePath: string): boolean => {
   return fs.existsSync(filePath);
 };

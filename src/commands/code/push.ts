@@ -8,6 +8,8 @@ import { defaultVersionByAppId } from 'services/app-versions-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import {
   buildAssetToDeployTask,
+  buildClientZip,
+  deployClientZip,
   handleDeploymentTask,
   prepareEnvironmentTask,
   uploadAssetTask,
@@ -20,6 +22,46 @@ const MESSAGES = {
   appVersionId: APP_VERSION_ID_TO_ENTER,
   appId: APP_ID_TO_ENTER,
   force: 'Force push to live version',
+  clientSide: 'Client side files',
+};
+
+const getTasksForClientSide = (appVersionId: number, directoryPath?: string) => {
+  return new Listr<PushCommandTasksContext>(
+    [
+      { title: 'Build asset to deploy', task: buildClientZip },
+      {
+        title: 'Deploying client side files',
+        task: deployClientZip,
+      },
+    ],
+    {
+      ctx: { appVersionId, directoryPath },
+    },
+  );
+};
+
+const getTasksForServerSide = (appVersionId: number, directoryPath?: string) => {
+  return new Listr<PushCommandTasksContext>(
+    [
+      { title: 'Build asset to deploy', task: buildAssetToDeployTask },
+      {
+        title: 'Preparing environment',
+        task: prepareEnvironmentTask,
+        enabled: ctx => Boolean(ctx.showPrepareEnvironmentTask),
+      },
+      {
+        title: 'Uploading built asset',
+        task: uploadAssetTask,
+        enabled: ctx => Boolean(ctx.showUploadAssetTask),
+      },
+      {
+        title: 'Deployment in progress',
+        task: handleDeploymentTask,
+        enabled: ctx => Boolean(ctx.showHandleDeploymentTask),
+      },
+    ],
+    { ctx: { appVersionId, directoryPath } },
+  );
 };
 
 export default class Push extends AuthenticatedCommand {
@@ -48,6 +90,10 @@ export default class Push extends AuthenticatedCommand {
       char: 'f',
       description: MESSAGES.force,
     }),
+    clientSide: Flags.boolean({
+      char: 'c',
+      description: MESSAGES.clientSide,
+    }),
   });
 
   static args = {};
@@ -59,6 +105,7 @@ export default class Push extends AuthenticatedCommand {
 
     const appId = flags.appId;
     const force = flags.force;
+    const clientSide = flags.clientSide;
     try {
       if (appId) {
         const latestDraftVersion = await defaultVersionByAppId(Number(appId), force);
@@ -78,27 +125,10 @@ export default class Push extends AuthenticatedCommand {
 
       logger.debug(`push code to appVersionId: ${appVersionId}`, this.DEBUG_TAG);
       this.preparePrintCommand(this, { appVersionId, directoryPath: flags.directoryPath });
-      const tasks = new Listr<PushCommandTasksContext>(
-        [
-          { title: 'Build asset to deploy', task: buildAssetToDeployTask },
-          {
-            title: 'Preparing environment',
-            task: prepareEnvironmentTask,
-            enabled: ctx => Boolean(ctx.showPrepareEnvironmentTask),
-          },
-          {
-            title: 'Uploading built asset',
-            task: uploadAssetTask,
-            enabled: ctx => Boolean(ctx.showUploadAssetTask),
-          },
-          {
-            title: 'Deployment in progress',
-            task: handleDeploymentTask,
-            enabled: ctx => Boolean(ctx.showHandleDeploymentTask),
-          },
-        ],
-        { ctx: { appVersionId, directoryPath: flags.directoryPath } },
-      );
+
+      const tasks = clientSide
+        ? getTasksForClientSide(appVersionId, flags.directoryPath)
+        : getTasksForServerSide(appVersionId, flags.directoryPath);
 
       await tasks.run();
     } catch (error: any) {
