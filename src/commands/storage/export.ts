@@ -7,19 +7,17 @@ import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { VAR_UNKNOWN } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { PromptService } from 'services/prompt-service';
-import { getStorageItemsSearch } from 'services/storage-service';
+import { getStorageItemsExport } from 'services/storage-service';
 import { HttpError } from 'types/errors';
-import { AppStorageApiRecordsSearchResponseSchema } from 'types/services/storage-service';
+import { AppStorageApiRecordsSearchResponseExportSchema } from 'types/services/storage-service';
 import { FSError, saveToFile } from 'utils/file-system';
 import logger from 'utils/logger';
 
 const clientAccountNumberMessage = 'Client account number';
-const termMessage = 'Term to search for';
-const exportDescription = 'Optional, export';
-const fileFormatDescription = 'Optional, file format "CSV" or "JSON"';
+const fileFormatDescription = 'Optional, file format "CSV" or "JSON" (the default value is "JSON")';
 const fileDirectoryDescription = 'Optional, file path';
 
-const saveToCSV = async (itemsFound: AppStorageApiRecordsSearchResponseSchema, csvPath: string) => {
+const saveToCSV = async (itemsFound: AppStorageApiRecordsSearchResponseExportSchema, csvPath: string) => {
   const parser = new Parser({
     fields: [
       {
@@ -40,45 +38,23 @@ const saveToCSV = async (itemsFound: AppStorageApiRecordsSearchResponseSchema, c
   await saveToFile(csvPath, result);
 };
 
-const saveToJSON = async (itemsFound: AppStorageApiRecordsSearchResponseSchema, jsonPath: string) => {
+const saveToJSON = async (itemsFound: AppStorageApiRecordsSearchResponseExportSchema, jsonPath: string) => {
   await saveToFile(jsonPath, JSON.stringify(itemsFound.records));
 };
 
-const fetchAndPrintStorageKeyValuesResults = (itemsFound: AppStorageApiRecordsSearchResponseSchema) => {
-  const maxValueLengthToPrint = 35;
-  for (const record of itemsFound.records) {
-    record.valueLength = record?.value?.length;
-    if (record?.value?.length > maxValueLengthToPrint) {
-      record.value = `${record.value.slice(0, maxValueLengthToPrint - 1)}`;
-    }
-  }
-
-  logger.table(itemsFound.records);
-};
-
-export default class Storage extends AuthenticatedCommand {
-  static description = 'Get keys and values stored on monday for a specific customer.';
+export default class Search extends AuthenticatedCommand {
+  static description = 'Export all keys and values stored on monday for a specific customer account.';
 
   static examples = ['<%= config.bin %> <%= command.id %> -a APP_ID -c CLIENT_ACCOUNT_ID -t TERM'];
 
-  static flags = Storage.serializeFlags({
+  static flags = Search.serializeFlags({
     appId: Flags.integer({
       char: 'a',
-      aliases: ['v'],
       description: 'Select the app that you wish to retrieve the key for',
     }),
     clientAccountId: Flags.integer({
       char: 'c',
       description: `${clientAccountNumberMessage}.`,
-    }),
-    term: Flags.string({
-      char: 't',
-      description: `${termMessage}.`,
-    }),
-    exportToFile: Flags.boolean({
-      char: 'e',
-      description: `${exportDescription}.`,
-      required: false,
     }),
     fileFormat: Flags.string({
       char: 'f',
@@ -91,9 +67,8 @@ export default class Storage extends AuthenticatedCommand {
   });
 
   public async run(): Promise<void> {
-    const { flags } = await this.parse(Storage);
-    let { appId, clientAccountId, term, fileFormat, fileDirectory } = flags;
-    const { exportToFile } = flags;
+    const { flags } = await this.parse(Search);
+    let { appId, clientAccountId, fileFormat, fileDirectory } = flags;
     try {
       if (!appId) {
         appId = await DynamicChoicesService.chooseApp();
@@ -103,17 +78,8 @@ export default class Storage extends AuthenticatedCommand {
         clientAccountId = await PromptService.promptInputNumber(`${clientAccountNumberMessage}:`, true);
       }
 
-      while (!term) {
-        // eslint-disable-next-line no-await-in-loop
-        term = await PromptService.promptInput(`${termMessage}:`, true);
-        if (!/^[\w:-]+$/.test(term)) {
-          logger.warn('Key name can only contain alphanumeric chars and the symbols -_:');
-          term = '';
-        }
-      }
-
-      const itemsFound = await getStorageItemsSearch(appId, clientAccountId, term);
-      if (itemsFound && exportToFile) {
+      const itemsFound = await getStorageItemsExport(appId, clientAccountId);
+      if (itemsFound && itemsFound.records) {
         if (!fileFormat) {
           fileFormat = 'json';
         }
@@ -147,14 +113,10 @@ export default class Storage extends AuthenticatedCommand {
           );
         }
       } else {
-        fetchAndPrintStorageKeyValuesResults(itemsFound);
+        throw new Error('Unexpected error occurred or retrieved data in a bad format.');
       }
 
-      if (itemsFound.cursor) {
-        logger.log('There more records, please search for a more specific term.');
-      }
-
-      this.preparePrintCommand(this, { appId, clientAccountId, term });
+      this.preparePrintCommand(this, { appId, clientAccountId });
     } catch (error: unknown) {
       logger.debug(error);
       if (error instanceof HttpError || error instanceof FSError) {

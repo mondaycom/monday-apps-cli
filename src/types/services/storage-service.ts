@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
-import { appStorageApiRecordsSearchResponseSchema } from 'services/schemas/storage-service-schemas';
+import {
+  appStorageApiRecordsSearchResponseExportSchema,
+  appStorageApiRecordsSearchResponseSearchSchema,
+} from 'services/schemas/storage-service-schemas';
 
-export type AppStorageApiRecordsSearchResponseSchema = z.infer<typeof appStorageApiRecordsSearchResponseSchema>;
+export type AppStorageApiRecordsSearchResponseSearchSchema = z.infer<
+  typeof appStorageApiRecordsSearchResponseSearchSchema
+>;
+export type AppStorageApiRecordsSearchResponseExportSchema = z.infer<
+  typeof appStorageApiRecordsSearchResponseExportSchema
+>;
