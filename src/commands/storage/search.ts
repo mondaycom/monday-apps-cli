@@ -33,7 +33,6 @@ export default class Search extends AuthenticatedCommand {
   static flags = Search.serializeFlags({
     appId: Flags.integer({
       char: 'a',
-      aliases: ['v'],
       description: 'Select the app that you wish to retrieve the key for',
     }),
     clientAccountId: Flags.integer({

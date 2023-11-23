@@ -50,7 +50,6 @@ export default class Search extends AuthenticatedCommand {
   static flags = Search.serializeFlags({
     appId: Flags.integer({
       char: 'a',
-      aliases: ['v'],
       description: 'Select the app that you wish to retrieve the key for',
     }),
     clientAccountId: Flags.integer({
@@ -89,7 +88,6 @@ export default class Search extends AuthenticatedCommand {
           throw new FSError(`file format must be "CSV" or "JSON".`);
         }
 
-        console.log({ fileDirectory, fileFormat });
         if (!fileDirectory) {
           fileDirectory = `${process.cwd()}/${format(new Date(), 'yyyyMMddHHmmss')}.${fileFormat.toLowerCase()}`;
         }
