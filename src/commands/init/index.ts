@@ -17,12 +17,12 @@ const accessTokenPrompt = async () =>
   );
 
 export default class Init extends BaseCommand {
-  DEBUG_TAG = 'init';
   static description = `Initialize mapps config file - "${CONFIG_NAME}".`;
-
   static withPrintCommand = false;
-
-  static examples = ['<%= config.bin %> <%= command.id %> -t SECRET_TOKEN'];
+  static examples = [
+    '<%= config.bin %> <%= command.id %> -t SECRET_TOKEN',
+    '<%= config.bin %> <%= command.id %> -t SECRET_TOKEN -l -s ./ -c ./build',
+  ];
 
   static flags = Init.serializeFlags({
     token: Flags.string({
@@ -35,16 +35,31 @@ export default class Init extends BaseCommand {
       default: false,
       required: false,
     }),
+    serverSidePath: Flags.string({
+      char: 's',
+      description: 'set a default path for your server side project (recommended in FullStack project)',
+    }),
+    clientSidePath: Flags.string({
+      char: 'c',
+      description: 'set a default path for your client side project (recommended in FullStack project)',
+    }),
   });
 
   static args = {};
+  DEBUG_TAG = 'init';
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Init);
 
     const args: InitCommandArguments = {
-      [CONFIG_KEYS.ACCESS_TOKEN]: flags.token || (await accessTokenPrompt()),
+      ...(flags.token ? { [CONFIG_KEYS.ACCESS_TOKEN]: flags.token } : {}),
+      ...(flags.serverSidePath ? { [CONFIG_KEYS.SERVER_SIDE_PATH]: flags.serverSidePath } : {}),
+      ...(flags.clientSidePath ? { [CONFIG_KEYS.CLIENT_SIDE_PATH]: flags.clientSidePath } : {}),
     };
+
+    if (Object.keys(args).length === 0) {
+      args[CONFIG_KEYS.ACCESS_TOKEN] = await accessTokenPrompt();
+    }
 
     try {
       if (flags.local) {

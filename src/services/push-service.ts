@@ -2,8 +2,10 @@ import axios from 'axios';
 import chalk from 'chalk';
 import { ListrTaskWrapper } from 'listr2';
 
+import { CONFIG_KEYS } from 'consts/config';
 import { getAppVersionDeploymentStatusUrl, getDeploymentClientUpload, getDeploymentSignedUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
+import { ConfigService } from 'services/config-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import {
   compressBuildToZip,
@@ -149,7 +151,8 @@ export const buildClientZip = async (
   task: ListrTaskWrapper<PushCommandTasksContext, any>,
 ) => {
   if (!ctx.directoryPath) {
-    const currentDirectoryPath = getCurrentWorkingDirectory();
+    const clientSidePath = ConfigService.getConfigDataByKey(CONFIG_KEYS.CLIENT_SIDE_PATH);
+    const currentDirectoryPath = clientSidePath || getCurrentWorkingDirectory();
     logger.debug(`Directory path not provided. using current directory: ${currentDirectoryPath}`);
     ctx.directoryPath = currentDirectoryPath;
   }
@@ -176,7 +179,8 @@ export const buildAssetToDeployTask = async (
   const DEBUG_TAG = 'build_asset_to_deploy_task';
   try {
     if (!ctx.directoryPath) {
-      const currentDirectoryPath = getCurrentWorkingDirectory();
+      const serverSidePath = ConfigService.getConfigDataByKey(CONFIG_KEYS.SERVER_SIDE_PATH);
+      const currentDirectoryPath = serverSidePath || getCurrentWorkingDirectory();
       logger.debug(`Directory path not provided. using current directory: ${currentDirectoryPath}`);
       ctx.directoryPath = currentDirectoryPath;
     }
