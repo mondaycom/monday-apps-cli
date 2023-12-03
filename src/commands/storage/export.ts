@@ -45,7 +45,9 @@ const saveToJSON = async (itemsFound: AppStorageApiRecordsSearchResponseExportSc
 export default class Search extends AuthenticatedCommand {
   static description = 'Export all keys and values stored on monday for a specific customer account.';
 
-  static examples = ['<%= config.bin %> <%= command.id %> -a APP_ID -c CLIENT_ACCOUNT_ID -d FOLDER_PATH -f FORMAT '];
+  static examples = [
+    '<%= config.bin %> <%= command.id %> -a APP_ID -c CLIENT_ACCOUNT_ID -d FILE_FULL_PATH -f FILE_FORMAT ',
+  ];
 
   static flags = Search.serializeFlags({
     appId: Flags.integer({
