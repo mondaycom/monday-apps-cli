@@ -1,4 +1,6 @@
 import { APP_VERSION_STATUS } from 'consts/app-versions';
+import { listAppBuilds } from 'services/app-builds-service';
+import { listAppFeaturesByAppVersionId } from 'services/app-features-service';
 import { listAppVersionsByAppId } from 'services/app-versions-service';
 import { listApps } from 'services/apps-service';
 import { PromptService } from 'services/prompt-service';
@@ -46,5 +48,39 @@ export const DynamicChoicesService = {
     const appId = await this.chooseApp();
     const appVersionId = await this.chooseAppVersion(appId, filterByStatus);
     return { appId, appVersionId };
+  },
+
+  async chooseBuild(appVersionId: number) {
+    const appReleases = await listAppBuilds(appVersionId);
+    const appReleaseChoicesMap: Record<string, number> = {};
+
+    for (const appRelease of appReleases) {
+      appReleaseChoicesMap[`${appRelease.id} | ${appRelease.category} | | ${appRelease.data?.url || ' '}`] =
+        appRelease.id;
+    }
+
+    const selectedAppReleaseKey = await PromptService.promptSelectionWithAutoComplete<string>(
+      'Select a build',
+      Object.keys(appReleaseChoicesMap),
+    );
+
+    const selectedAppReleaseId = appReleaseChoicesMap[selectedAppReleaseKey];
+    return selectedAppReleaseId;
+  },
+
+  async chooseAppFeature(appVersionId: number) {
+    const appFeatures = await listAppFeaturesByAppVersionId(appVersionId);
+    const appFeatureChoicesMap: Record<string, number> = {};
+
+    for (const appFeature of appFeatures) {
+      appFeatureChoicesMap[`${appFeature.id} | ${appFeature.name} | ${appFeature.type}`] = appFeature.id;
+    }
+
+    const selectedAppFeatureKey = await PromptService.promptSelectionWithAutoComplete<string>(
+      'Select an app feature',
+      Object.keys(appFeatureChoicesMap),
+    );
+
+    return appFeatureChoicesMap[selectedAppFeatureKey];
   },
 };

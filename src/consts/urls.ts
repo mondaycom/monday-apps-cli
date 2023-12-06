@@ -8,8 +8,20 @@ export const appVersionIdBaseUrl = (appVersionId: number): string => {
   return `/api/code/${appVersionId}`;
 };
 
+export const appAndAppVersionIdBaseUrl = (appId: number, appVersionId: number): string => {
+  return `/api/code/${appId}/appVersions/${appVersionId}`;
+};
+
 export const getAppVersionDeploymentStatusUrl = (appVersionId: number): string => {
   return `${appVersionIdBaseUrl(appVersionId)}/deployments`;
+};
+
+export const getAppFeaturesUrl = (appVersionId: number): string => {
+  return `${appVersionIdBaseUrl(appVersionId)}/app-features`;
+};
+
+export const getCreateAppFeatureReleaseUrl = (appId: number, appVersionId: number, appFeatureId: number): string => {
+  return `${appAndAppVersionIdBaseUrl(appId, appVersionId)}/appFeatures/${appFeatureId}/releases`;
 };
 
 export const getDeploymentSignedUrl = (appVersionId: number): string => {
