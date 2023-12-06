@@ -3,6 +3,7 @@ import { execute } from 'services/api-service';
 import { createAppFeatureReleaseSchema, listAppFeaturesSchema } from 'services/schemas/app-features-schemas';
 import {
   AppFeature,
+  AppFeatureType,
   BUILD_TYPES,
   CreateAppFeatureReleaseResponse,
   ListAppFeatureResponse,
@@ -13,7 +14,10 @@ import { AppId, AppVersionId } from 'types/general';
 import { HttpMethodTypes } from 'types/services/api-service';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
-export const listAppFeaturesByAppVersionId = async (appVersionId: AppVersionId): Promise<Array<AppFeature>> => {
+export const listAppFeaturesByAppVersionId = async (
+  appVersionId: AppVersionId,
+  options?: { excludeTypes?: AppFeatureType[]; includeTypes?: AppFeatureType[] },
+): Promise<Array<AppFeature>> => {
   try {
     const path = getAppFeaturesUrl(appVersionId);
     const url = appsUrlBuilder(path);
@@ -28,7 +32,14 @@ export const listAppFeaturesByAppVersionId = async (appVersionId: AppVersionId):
     );
 
     const sortedAppFeatures = response.appFeatures?.sort((a, b) => b.id - a.id);
-    return sortedAppFeatures;
+    const excludedFeatureTypes = new Set([AppFeatureType.AppFeatureOauth, ...(options?.excludeTypes || [])]);
+    const filteredAppFeatures = sortedAppFeatures.filter(appFeature => {
+      const appFeatureType = appFeature.type as AppFeatureType;
+      const shouldBeExcluded = excludedFeatureTypes.has(appFeatureType);
+      const shouldBeIncluded = options?.includeTypes ? options?.includeTypes?.includes(appFeatureType) : true;
+      return !shouldBeExcluded && shouldBeIncluded;
+    });
+    return filteredAppFeatures;
   } catch (error: any) {
     if (error instanceof HttpError) {
       logger.error(error.message);

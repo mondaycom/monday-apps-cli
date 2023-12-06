@@ -4,6 +4,7 @@ import { listAppFeaturesByAppVersionId } from 'services/app-features-service';
 import { listAppVersionsByAppId } from 'services/app-versions-service';
 import { listApps } from 'services/apps-service';
 import { PromptService } from 'services/prompt-service';
+import { AppFeature, AppFeatureType } from 'src/types/services/app-features-service';
 
 export const DynamicChoicesService = {
   async chooseApp() {
@@ -68,12 +69,15 @@ export const DynamicChoicesService = {
     return selectedAppReleaseId;
   },
 
-  async chooseAppFeature(appVersionId: number) {
-    const appFeatures = await listAppFeaturesByAppVersionId(appVersionId);
-    const appFeatureChoicesMap: Record<string, number> = {};
+  async chooseAppFeature(
+    appVersionId: number,
+    options?: { excludeTypes?: AppFeatureType[]; includeTypes?: AppFeatureType[] },
+  ) {
+    const appFeatures = await listAppFeaturesByAppVersionId(appVersionId, options);
+    const appFeatureChoicesMap: Record<string, AppFeature> = {};
 
     for (const appFeature of appFeatures) {
-      appFeatureChoicesMap[`${appFeature.id} | ${appFeature.name} | ${appFeature.type}`] = appFeature.id;
+      appFeatureChoicesMap[`${appFeature.id} | ${appFeature.name} | ${appFeature.type}`] = appFeature;
     }
 
     const selectedAppFeatureKey = await PromptService.promptSelectionWithAutoComplete<string>(

@@ -7,7 +7,7 @@ import { defaultVersionByAppId } from 'services/app-versions-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { createAppFeatureRelease } from 'src/services/app-features-service';
 import { PromptService } from 'src/services/prompt-service';
-import { BUILD_TYPES } from 'src/types/services/app-features-service';
+import { AppFeature, AppFeatureType, BUILD_TYPES } from 'src/types/services/app-features-service';
 import logger from 'utils/logger';
 
 const MESSAGES = {
@@ -48,10 +48,6 @@ export default class Build extends AuthenticatedCommand {
       char: 'u',
       description: 'Custom url',
     }),
-    force: Flags.boolean({
-      char: 'f',
-      description: MESSAGES.force,
-    }),
   });
 
   static args = {};
@@ -64,10 +60,11 @@ export default class Build extends AuthenticatedCommand {
     let buildType: string | undefined = flags.buildType;
     let customUrl: string | undefined = flags.customUrl;
     let appId = flags.appId;
-    const force = flags.force;
+    let appFeature: AppFeature;
+
     try {
       if (appId) {
-        const latestDraftVersion = await defaultVersionByAppId(Number(appId), force);
+        const latestDraftVersion = await defaultVersionByAppId(Number(appId));
         if (!latestDraftVersion) throw new Error('No editable version found for the given app id.');
         appVersionId = latestDraftVersion.id;
       } else {
@@ -75,16 +72,17 @@ export default class Build extends AuthenticatedCommand {
       }
 
       if (!appVersionId) {
-        const allowedStatuses = force
-          ? [APP_VERSION_STATUS.DRAFT, APP_VERSION_STATUS.LIVE]
-          : [APP_VERSION_STATUS.DRAFT];
+        const allowedStatuses = [APP_VERSION_STATUS.DRAFT];
         const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion(allowedStatuses);
         appVersionId = appAndAppVersion.appVersionId;
         appId = appAndAppVersion.appId;
       }
 
       if (!appFeatureId) {
-        appFeatureId = Number(await DynamicChoicesService.chooseAppFeature(appVersionId));
+        appFeature = await DynamicChoicesService.chooseAppFeature(appVersionId, {
+          excludeTypes: [AppFeatureType.AppFeatureSolution, AppFeatureType.AppFeatureColumnTemplate],
+        });
+        appFeatureId = appFeature.id;
       }
 
       if (!buildType) {
@@ -95,8 +93,8 @@ export default class Build extends AuthenticatedCommand {
         buildType = BUILD_TYPES[buildTypeKey];
       }
 
-      if (!appId) {
-        logger.error(`No app id provided`);
+      if (!appId || !appVersionId || !appFeatureId) {
+        logger.error(`missing required flags`);
         return process.exit(0);
       }
 
@@ -107,7 +105,7 @@ export default class Build extends AuthenticatedCommand {
       }
 
       this.preparePrintCommand(this, { appVersionId, appFeatureId, customUrl });
-      const appFeature = await createAppFeatureRelease({
+      const updatedAppFeature = await createAppFeatureRelease({
         appId,
         appFeatureId,
         appVersionId,
@@ -115,14 +113,15 @@ export default class Build extends AuthenticatedCommand {
         buildType: buildType as BUILD_TYPES,
       });
       logger.info(
-        `App feature ${appFeatureId} was updated successfully with url: ${appFeature.current_release?.data?.url || ''}`,
+        `App feature ${appFeatureId} was updated successfully with url: ${
+          updatedAppFeature.current_release?.data?.url || ''
+        }`,
         this.DEBUG_TAG,
       );
       process.exit(0);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
 
-      // need to signal to the parent process that the command failed
       process.exit(1);
     }
   }
