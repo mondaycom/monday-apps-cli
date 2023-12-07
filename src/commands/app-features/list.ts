@@ -57,6 +57,15 @@ export default class AppFeatureList extends AuthenticatedCommand {
       return process.exit(0);
     }
 
-    printAppFeatures(appFeatures);
+    const printableAppFeatures = appFeatures.map(appFeature => {
+      return {
+        id: appFeature.id,
+        name: appFeature.name,
+        type: appFeature.type,
+        status: appFeature.status || 'active',
+      };
+    });
+
+    printAppFeatures(printableAppFeatures);
   }
 }
