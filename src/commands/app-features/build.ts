@@ -68,7 +68,7 @@ export default class Build extends AuthenticatedCommand {
 
     try {
       if (appId) {
-        const latestDraftVersion = await defaultVersionByAppId(Number(appId));
+        const latestDraftVersion = appVersionId ? { id: appVersionId } : await defaultVersionByAppId(Number(appId));
         if (!latestDraftVersion) throw new Error('No editable version found for the given app id.');
         appVersionId = latestDraftVersion.id;
       } else {
