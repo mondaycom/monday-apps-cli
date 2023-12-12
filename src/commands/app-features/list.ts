@@ -50,12 +50,18 @@ export default class AppFeatureList extends AuthenticatedCommand {
     }
 
     const printableAppFeatures = appFeatures.map(appFeature => {
+      const build =
+        appFeature.current_release?.data?.url ||
+        appFeature.data?.microFrontendName ||
+        appFeature.current_release?.data?.microFrontendName ||
+        'N/A';
+
       return {
         id: appFeature.id,
         name: appFeature.name,
         type: appFeature.type,
         status: appFeature.status || 'active',
-        build: appFeature.current_release?.data?.url || appFeature.data?.mircrofrontendName || 'N/A',
+        build,
       };
     });
 

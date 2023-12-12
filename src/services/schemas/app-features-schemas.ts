@@ -4,7 +4,11 @@ import { baseResponseHttpMetaDataSchema } from 'services/schemas/api-service-sch
 
 export const appFeatureSchema = z.object({
   id: z.number(),
-  data: z.any().optional(),
+  data: z
+    .object({
+      microFrontendName: z.string().optional(),
+    })
+    .optional(),
   type: z.string(),
   name: z.string(),
   region: z.string().optional(),
