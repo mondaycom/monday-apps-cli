@@ -45,10 +45,10 @@ export const DynamicChoicesService = {
     return selectedAppVersionId;
   },
 
-  async chooseAppAndAppVersion(filterByStatus?: APP_VERSION_STATUS[]) {
-    const appId = await this.chooseApp();
-    const appVersionId = await this.chooseAppVersion(appId, filterByStatus);
-    return { appId, appVersionId };
+  async chooseAppAndAppVersion(filterByStatus?: APP_VERSION_STATUS[], appId?: number) {
+    const chosenAppId = appId || (await this.chooseApp());
+    const appVersionId = await this.chooseAppVersion(chosenAppId, filterByStatus);
+    return { appId: chosenAppId, appVersionId };
   },
 
   async chooseBuild(appVersionId: number) {

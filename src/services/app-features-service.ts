@@ -19,7 +19,7 @@ export const listAppFeaturesByAppVersionId = async (
   options?: { excludeTypes?: AppFeatureType[]; includeTypes?: AppFeatureType[] },
 ): Promise<Array<AppFeature>> => {
   try {
-    const path = getAppFeaturesUrl(appVersionId);
+    const path = getAppFeaturesUrl(appVersionId, options?.includeTypes);
     const url = appsUrlBuilder(path);
 
     const response = await execute<ListAppFeatureResponse>(
@@ -36,8 +36,7 @@ export const listAppFeaturesByAppVersionId = async (
     const filteredAppFeatures = sortedAppFeatures.filter(appFeature => {
       const appFeatureType = appFeature.type as AppFeatureType;
       const shouldBeExcluded = excludedFeatureTypes.has(appFeatureType);
-      const shouldBeIncluded = options?.includeTypes ? options?.includeTypes?.includes(appFeatureType) : true;
-      return !shouldBeExcluded && shouldBeIncluded;
+      return !shouldBeExcluded;
     });
     return filteredAppFeatures;
   } catch (error: any) {

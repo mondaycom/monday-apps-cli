@@ -13,7 +13,8 @@ export const appFeatureSchema = z.object({
   // eslint-disable-next-line camelcase
   current_release: z
     .object({
-      data: z.object({ url: z.string() }).optional(),
+      kind: z.string().optional(),
+      data: z.object({ url: z.string().optional(), microFrontendName: z.string().optional() }).optional(),
     })
     .nullable()
     .optional(),

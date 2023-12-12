@@ -7,8 +7,8 @@ import { listAppFeaturesByAppVersionId } from 'src/services/app-features-service
 import { AppFeature } from 'src/types/services/app-features-service';
 import logger from 'utils/logger';
 
-const printAppFeatures = (appVersions: Array<AppFeature>) => {
-  logger.table(appVersions);
+const printAppFeatures = (appFeatures: Array<AppFeature>) => {
+  logger.table(appFeatures);
 };
 
 export default class AppFeatureList extends AuthenticatedCommand {
@@ -21,10 +21,12 @@ export default class AppFeatureList extends AuthenticatedCommand {
   static flags = AppFeatureList.serializeFlags({
     appId: Flags.integer({
       char: 'a',
+      aliases: ['appId'],
       description: APP_ID_TO_ENTER,
     }),
     appVersionId: Flags.integer({
       char: 'i',
+      aliases: ['versionId'],
       description: APP_VERSION_ID_TO_ENTER,
     }),
   });
@@ -32,22 +34,12 @@ export default class AppFeatureList extends AuthenticatedCommand {
   public async run(): Promise<void> {
     const { flags } = await this.parse(AppFeatureList);
 
-    let appId = flags.appId;
+    const appId = flags.appId;
     let appVersionId = flags.appVersionId;
 
-    if (!appId && !appVersionId) {
-      const appAndAppVersionIds = await DynamicChoicesService.chooseAppAndAppVersion();
-      appVersionId = Number(appAndAppVersionIds.appVersionId);
-      appId = Number(appAndAppVersionIds.appId);
-    }
-
-    if (!appVersionId && appId) {
-      appVersionId = Number(await DynamicChoicesService.chooseAppVersion(appId));
-    }
-
     if (!appVersionId) {
-      logger.error(`No app version id provided`);
-      return process.exit(0);
+      const appIdAndAppVersionId = await DynamicChoicesService.chooseAppAndAppVersion(undefined, appId);
+      appVersionId = Number(appIdAndAppVersionId.appVersionId);
     }
 
     this.preparePrintCommand(this, { appId, appVersionId });
@@ -63,6 +55,7 @@ export default class AppFeatureList extends AuthenticatedCommand {
         name: appFeature.name,
         type: appFeature.type,
         status: appFeature.status || 'active',
+        build: appFeature.current_release?.data?.url || appFeature.data?.mircrofrontendName || 'N/A',
       };
     });
 

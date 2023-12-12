@@ -27,11 +27,13 @@ export default class Build extends AuthenticatedCommand {
   static flags = Build.serializeFlags({
     appId: Flags.integer({
       char: 'a',
+      aliases: ['appId'],
+
       description: MESSAGES.appId,
     }),
     appVersionId: Flags.integer({
       char: 'i',
-      aliases: ['v'],
+      aliases: ['versionId'],
       description: MESSAGES.appVersionId,
     }),
     appFeatureId: Flags.integer({
@@ -41,11 +43,13 @@ export default class Build extends AuthenticatedCommand {
     }),
     buildType: Flags.string({
       char: 't',
+      aliases: ['type'],
       description: 'Build type',
       options: [BUILD_TYPES.CUSTOM_URL, BUILD_TYPES.MONDAY_CODE],
     }),
     customUrl: Flags.string({
       char: 'u',
+      aliases: ['customUrl'],
       description: 'Custom url',
     }),
   });
@@ -69,6 +73,10 @@ export default class Build extends AuthenticatedCommand {
         appVersionId = latestDraftVersion.id;
       } else {
         appVersionId = flags.appVersionId;
+      }
+
+      if (!appId) {
+        appId = Number(await DynamicChoicesService.chooseApp());
       }
 
       if (!appVersionId) {
@@ -104,7 +112,8 @@ export default class Build extends AuthenticatedCommand {
         customUrl = await PromptService.promptInput(promptMessage, isCustomUrl);
       }
 
-      this.preparePrintCommand(this, { appVersionId, appFeatureId, customUrl });
+      this.preparePrintCommand(this, { appId, appVersionId, appFeatureId, customUrl });
+
       const updatedAppFeature = await createAppFeatureRelease({
         appId,
         appFeatureId,
@@ -112,6 +121,7 @@ export default class Build extends AuthenticatedCommand {
         customUrl,
         buildType: buildType as BUILD_TYPES,
       });
+
       logger.info(
         `App feature ${appFeatureId} was updated successfully with url: ${
           updatedAppFeature.current_release?.data?.url || ''

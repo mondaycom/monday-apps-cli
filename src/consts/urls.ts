@@ -1,27 +1,27 @@
+import { AppFeatureType } from 'src/types/services/app-features-service';
 import { LogType, LogsFilterCriteriaArguments } from 'types/commands/logs';
 import { AppId } from 'types/general';
 
 const BASE_APPS_URL = '/api/apps';
+const BASE_APP_VERSIONS_URL = '/api/app-versions';
 const BASE_MONDAY_CODE_URL = '/api/code';
 
 export const appVersionIdBaseUrl = (appVersionId: number): string => {
   return `/api/code/${appVersionId}`;
 };
 
-export const appAndAppVersionIdBaseUrl = (appId: number, appVersionId: number): string => {
-  return `/api/code/${appId}/appVersions/${appVersionId}`;
-};
-
 export const getAppVersionDeploymentStatusUrl = (appVersionId: number): string => {
   return `${appVersionIdBaseUrl(appVersionId)}/deployments`;
 };
 
-export const getAppFeaturesUrl = (appVersionId: number): string => {
-  return `${appVersionIdBaseUrl(appVersionId)}/app-features`;
+export const getAppFeaturesUrl = (appVersionId: number, types?: AppFeatureType[]): string => {
+  const url = `${BASE_APP_VERSIONS_URL}/${appVersionId}/app-features`;
+  const appFeatureTypes = types?.map((type, index) => `type[${index}]=${type}`).join('&');
+  return appFeatureTypes ? `${url}?${appFeatureTypes}` : url;
 };
 
 export const getCreateAppFeatureReleaseUrl = (appId: number, appVersionId: number, appFeatureId: number): string => {
-  return `${appAndAppVersionIdBaseUrl(appId, appVersionId)}/appFeatures/${appFeatureId}/releases`;
+  return `${BASE_APPS_URL}/${appId}/versions/${appVersionId}/app-features/${appFeatureId}/releases`;
 };
 
 export const getDeploymentSignedUrl = (appVersionId: number): string => {
