@@ -75,13 +75,9 @@ export default class Build extends AuthenticatedCommand {
         appVersionId = flags.appVersionId;
       }
 
-      if (!appId) {
-        appId = Number(await DynamicChoicesService.chooseApp());
-      }
-
       if (!appVersionId) {
         const allowedStatuses = [APP_VERSION_STATUS.DRAFT];
-        const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion(allowedStatuses);
+        const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion(allowedStatuses, appId);
         appVersionId = appAndAppVersion.appVersionId;
         appId = appAndAppVersion.appId;
       }
