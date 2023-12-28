@@ -17,7 +17,7 @@ export const getDeploymentSignedUrl = (appVersionId: number): string => {
 };
 
 export const getDeploymentClientUpload = (appVersionId: number): string => {
-  return `${appVersionIdBaseUrl(appVersionId)}/deployments/client`;
+  return `${appVersionIdBaseUrl(appVersionId)}/deployments`;
 };
 
 export const getStorageItemsSearchUrl = (appId: number, clientAccountId: number, term: string): string => {
