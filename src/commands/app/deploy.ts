@@ -3,6 +3,7 @@ import { Flags } from '@oclif/core';
 import { getTasksForClientSide, getTasksForServerSide } from 'commands/share/deploy';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { defaultVersionByAppId } from 'services/app-versions-service';
+import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import { getManifestAssetPath, readManifestFile } from 'services/manifest-service';
 import { ManifestPackageType } from 'types/services/manifest-service';
@@ -39,7 +40,8 @@ export default class AppDeploy extends AuthenticatedCommand {
       flags.appId = flags.appId || manifestFileData.app.id;
 
       if (!flags.appId) {
-        throw new Error('No app id found in manifest file or given as flag.');
+        const chosenAppId = await DynamicChoicesService.chooseApp();
+        flags.appId = chosenAppId.toString();
       }
 
       const latestDraftVersion = await defaultVersionByAppId(Number(flags.appId));
