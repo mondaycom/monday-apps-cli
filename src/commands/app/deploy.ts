@@ -6,7 +6,7 @@ import { defaultVersionByAppId } from 'services/app-versions-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import { getManifestAssetPath, readManifestFile } from 'services/manifest-service';
-import { ManifestPackageType } from 'types/services/manifest-service';
+import { ManifestHostingType } from 'types/services/manifest-service';
 import logger from 'utils/logger';
 
 const MESSAGES = {
@@ -50,13 +50,13 @@ export default class AppDeploy extends AuthenticatedCommand {
 
       this.preparePrintCommand(this, { appVersionId, directoryPath: manifestFileData });
 
-      const { client, server } = manifestFileData.app?.packages || {};
-      if (client && client.type === ManifestPackageType.Upload) {
+      const { client, server } = manifestFileData.app?.hosting || {};
+      if (client && client.type === ManifestHostingType.Upload) {
         logger.info('Deploying client side files...');
         await getTasksForClientSide(appVersionId, getManifestAssetPath(manifestFileDir, client.path)).run();
       }
 
-      if (server && server.type === ManifestPackageType.Upload) {
+      if (server && server.type === ManifestHostingType.Upload) {
         logger.info('Deploying server side files...');
         await getTasksForServerSide(appVersionId, getManifestAssetPath(manifestFileDir, server.path)).run();
       }

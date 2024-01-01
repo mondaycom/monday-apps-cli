@@ -1,22 +1,22 @@
-export enum ManifestPackageType {
+export enum ManifestHostingType {
   Upload = 'upload',
   Github = 'github',
   Url = 'url',
 }
 
-export type ManifestPackage = {
-  type: ManifestPackageType;
+export type ManifestHostingData = {
+  type: ManifestHostingType;
   path: string;
 };
 
-export type ManifestPackages = {
-  client?: ManifestPackage;
-  server?: ManifestPackage;
+export type ManifestHosting = {
+  client?: ManifestHostingData;
+  server?: ManifestHostingData;
 };
 
 export type ManifestApp = {
   id?: string;
-  packages?: ManifestPackages;
+  hosting?: ManifestHosting;
 };
 
 export type ManifestFile = {
