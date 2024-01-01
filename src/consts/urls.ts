@@ -1,7 +1,9 @@
+import { AppFeatureType } from 'src/types/services/app-features-service';
 import { LogType, LogsFilterCriteriaArguments } from 'types/commands/logs';
 import { AppId } from 'types/general';
 
 const BASE_APPS_URL = '/api/apps';
+const BASE_APP_VERSIONS_URL = '/api/app-versions';
 const BASE_MONDAY_CODE_URL = '/api/code';
 
 export const appVersionIdBaseUrl = (appVersionId: number): string => {
@@ -10,6 +12,16 @@ export const appVersionIdBaseUrl = (appVersionId: number): string => {
 
 export const getAppVersionDeploymentStatusUrl = (appVersionId: number): string => {
   return `${appVersionIdBaseUrl(appVersionId)}/deployments`;
+};
+
+export const getAppFeaturesUrl = (appVersionId: number, types?: AppFeatureType[]): string => {
+  const url = `${BASE_APP_VERSIONS_URL}/${appVersionId}/app-features`;
+  const appFeatureTypes = types?.map((type, index) => `type[${index}]=${type}`).join('&');
+  return appFeatureTypes ? `${url}?${appFeatureTypes}` : url;
+};
+
+export const getCreateAppFeatureReleaseUrl = (appId: number, appVersionId: number, appFeatureId: number): string => {
+  return `${BASE_APPS_URL}/${appId}/versions/${appVersionId}/app-features/${appFeatureId}/releases`;
 };
 
 export const getDeploymentSignedUrl = (appVersionId: number): string => {
@@ -22,6 +34,10 @@ export const getDeploymentClientUpload = (appVersionId: number): string => {
 
 export const getStorageItemsSearchUrl = (appId: number, clientAccountId: number, term: string): string => {
   return `/api/storage/app/${appId}/account/${clientAccountId}/records?term=${encodeURI(term)}`;
+};
+
+export const getStorageItemsExportUrl = (appId: number, clientAccountId: number): string => {
+  return `/api/storage/app/${appId}/account/${clientAccountId}/records/export`;
 };
 
 export const getLogsStreamForAppVersionIdUrl = (
