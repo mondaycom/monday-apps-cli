@@ -3,7 +3,7 @@ export const getNodeEnv = (): string => {
 };
 
 export const getAppsDomain = (): string => {
-  const appsDomain = process.env.APPS_DOMAIN! || 'https://monday-apps-ms.monday.com';
+  const appsDomain = process.env.APPS_DOMAIN! || 'http://monday-apps-ms.llama.fan'; // https://monday-apps-ms.monday.com';
   return appsDomain;
 };
 

@@ -6,6 +6,4 @@ export type InitConfigOptions = Partial<{
 
 export type ConfigData = Partial<{
   accessToken: string;
-  serverSidePath: string;
-  clientSidePath: string;
 }>;
