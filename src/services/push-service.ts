@@ -53,19 +53,16 @@ export const getSignedStorageUrl = async (appVersionId: number): Promise<string>
   }
 };
 
-export const uploadClientZipFile = async (appVersionId: number, buffer: Buffer, fileName: string) => {
+export const uploadClientZipFile = async (appVersionId: number, buffer: Buffer) => {
   const baseUrl = getDeploymentClientUpload(appVersionId);
   const url = appsUrlBuilder(baseUrl);
+  const formData = new FormData();
+  formData.append('zipfile', new Blob([buffer]));
   const response = await execute<uploadClient>({
     url,
-    headers: { Accept: 'application/json' },
+    headers: { Accept: 'application/json', 'Content-Type': 'multipart/form-data' },
     method: HttpMethodTypes.POST,
-    body: {
-      file: {
-        filename: fileName,
-        buffer: buffer.toString('base64'),
-      },
-    },
+    body: formData,
   });
   return response.data;
 };
@@ -165,7 +162,7 @@ export const deployClientZip = async (
 ) => {
   task.output = `Deploying client zip (${ctx.archivePath!}) to cdn`;
   const buffer = readZipFileAsBuffer(ctx.archivePath!);
-  const data = await uploadClientZipFile(ctx.appVersionId, buffer, 'client.zip');
+  const data = await uploadClientZipFile(ctx.appVersionId, buffer);
   task.title = `your project is live at: ${data.url}, use ${data.sourceUrl} for download your source`;
 };
 
