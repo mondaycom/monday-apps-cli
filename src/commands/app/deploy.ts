@@ -52,7 +52,7 @@ export default class AppDeploy extends AuthenticatedCommand {
 
       const { cdn, server } = manifestFileData.app?.hosting || {};
       if (cdn && cdn.type === ManifestHostingType.Upload) {
-        logger.info('Deploying cdn side files...');
+        logger.info('Deploying files to cdn...');
         await getTasksForClientSide(appVersionId, getManifestAssetPath(manifestFileDir, cdn.path)).run();
       }
 
