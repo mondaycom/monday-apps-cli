@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { load } from 'js-yaml';
 
 import { BadConfigError } from 'errors/bad-config-error';
-import { ManifestFile } from 'types/services/manifest-service';
+import { ManifestFileSchema } from 'types/services/manifest-service';
 
 const MANIFEST_FILE_NAME = 'manifest.yml';
 const ENCODING = 'utf8';
@@ -21,8 +21,9 @@ export const readManifestFile = (directoryPath: string, fileName = MANIFEST_FILE
 
   const filePath = join(directoryPath, fileName);
   const stringifiedData = readFileSync(filePath, { encoding: ENCODING });
-  const data = load(stringifiedData) as ManifestFile;
-  return data;
+  const data = load(stringifiedData);
+  const manifestFileData = ManifestFileSchema.parse(data);
+  return manifestFileData;
 };
 
 export const getManifestAssetPath = (manifestPath: string, relativePath: string) => {
