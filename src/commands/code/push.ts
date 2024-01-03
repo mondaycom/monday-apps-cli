@@ -13,7 +13,6 @@ const MESSAGES = {
   appVersionId: APP_VERSION_ID_TO_ENTER,
   appId: APP_ID_TO_ENTER,
   force: 'Force push to live version',
-  clientSide: 'Client side files',
 };
 
 const getAllowedStatuses = (forceFlag: boolean) =>
@@ -44,10 +43,6 @@ export default class Push extends AuthenticatedCommand {
     force: Flags.boolean({
       char: 'f',
       description: MESSAGES.force,
-    }),
-    clientSide: Flags.boolean({
-      char: 'c',
-      description: MESSAGES.clientSide,
     }),
   });
 

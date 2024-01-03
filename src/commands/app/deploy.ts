@@ -50,10 +50,10 @@ export default class AppDeploy extends AuthenticatedCommand {
 
       this.preparePrintCommand(this, { appVersionId, directoryPath: manifestFileData });
 
-      const { client, server } = manifestFileData.app?.hosting || {};
-      if (client && client.type === ManifestHostingType.Upload) {
-        logger.info('Deploying client side files...');
-        await getTasksForClientSide(appVersionId, getManifestAssetPath(manifestFileDir, client.path)).run();
+      const { cdn, server } = manifestFileData.app?.hosting || {};
+      if (cdn && cdn.type === ManifestHostingType.Upload) {
+        logger.info('Deploying cdn side files...');
+        await getTasksForClientSide(appVersionId, getManifestAssetPath(manifestFileDir, cdn.path)).run();
       }
 
       if (server && server.type === ManifestHostingType.Upload) {

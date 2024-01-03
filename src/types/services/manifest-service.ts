@@ -10,7 +10,7 @@ export type ManifestHostingData = {
 };
 
 export type ManifestHosting = {
-  client?: ManifestHostingData;
+  cdn?: ManifestHostingData;
   server?: ManifestHostingData;
 };
 
