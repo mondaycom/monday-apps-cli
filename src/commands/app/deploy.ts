@@ -1,11 +1,11 @@
 import { Flags } from '@oclif/core';
 
-import { getTasksForClientSide, getTasksForServerSide } from 'commands/share/deploy';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { defaultVersionByAppId } from 'services/app-versions-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import { getManifestAssetPath, readManifestFile } from 'services/manifest-service';
+import { getTasksForClientSide, getTasksForServerSide } from 'services/share/deploy';
 import { ManifestHostingType } from 'types/services/manifest-service';
 import logger from 'utils/logger';
 
