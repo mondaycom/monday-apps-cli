@@ -12,5 +12,9 @@ describe('ManifestService', () => {
       expect(manifest?.app?.hosting?.server?.path).toEqual('./server');
       expect(manifest?.version).toEqual('1.0.0');
     });
+
+    it('should raise an error if manifest file is not valid', () => {
+      expect(() => readManifestFile('src/services/__tests__/mocks/', 'invalid-manifest-mock.yml')).toThrowError();
+    });
   });
 });
