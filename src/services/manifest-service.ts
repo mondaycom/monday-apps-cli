@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { load } from 'js-yaml';
 
 import { BadConfigError } from 'errors/bad-config-error';
-import { ManifestFileSchema } from 'types/services/manifest-service';
+import { ManifestFileSchema } from 'services/schemas/manifest-service-schemas';
 import logger from 'utils/logger';
 
 const MANIFEST_FILE_NAME = 'manifest.yml';
@@ -24,8 +24,7 @@ export const readManifestFile = (directoryPath: string, fileName = MANIFEST_FILE
   const stringifiedData = readFileSync(filePath, { encoding: ENCODING });
   const data = load(stringifiedData);
   try {
-    const manifestFileData = ManifestFileSchema.parse(data);
-    return manifestFileData;
+    return ManifestFileSchema.parse(data);
   } catch (error) {
     logger.error(error);
     throw new BadConfigError(`the file: ${fileName} is not valid`);
