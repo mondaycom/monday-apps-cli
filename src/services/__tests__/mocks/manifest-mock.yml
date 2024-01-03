@@ -1,0 +1,9 @@
+app:
+  hosting:
+    cdn:
+      type: upload
+      path: "./build"
+    server:
+      type: upload
+      path: "./server"
+version: 1.0.0

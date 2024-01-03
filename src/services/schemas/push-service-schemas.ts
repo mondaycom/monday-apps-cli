@@ -8,6 +8,15 @@ export const signedUrlSchema = z
   })
   .merge(baseResponseHttpMetaDataSchema);
 
+export const uploadClientSchema = z
+  .object({
+    data: z.object({
+      url: z.string(),
+      sourceUrl: z.string(),
+    }),
+  })
+  .merge(baseResponseHttpMetaDataSchema);
+
 export const tunnelAuthTokenSchema = z
   .object({
     token: z.string(),

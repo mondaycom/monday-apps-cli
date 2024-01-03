@@ -1,18 +1,11 @@
 import { Flags } from '@oclif/core';
-import { Listr } from 'listr2';
 
+import { getTasksForServerSide } from 'commands/share/deploy';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_VERSION_STATUS } from 'consts/app-versions';
 import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { defaultVersionByAppId } from 'services/app-versions-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
-import {
-  buildAssetToDeployTask,
-  handleDeploymentTask,
-  prepareEnvironmentTask,
-  uploadAssetTask,
-} from 'services/push-service';
-import { PushCommandTasksContext } from 'types/commands/push';
 import logger from 'utils/logger';
 
 const MESSAGES = {
@@ -21,6 +14,9 @@ const MESSAGES = {
   appId: APP_ID_TO_ENTER,
   force: 'Force push to live version',
 };
+
+const getAllowedStatuses = (forceFlag: boolean) =>
+  forceFlag ? [APP_VERSION_STATUS.DRAFT, APP_VERSION_STATUS.LIVE] : [APP_VERSION_STATUS.DRAFT];
 
 export default class Push extends AuthenticatedCommand {
   static description = 'Push your project to get hosted on monday-code.';
@@ -59,6 +55,7 @@ export default class Push extends AuthenticatedCommand {
 
     const appId = flags.appId;
     const force = flags.force;
+
     try {
       if (appId) {
         const latestDraftVersion = await defaultVersionByAppId(Number(appId), force);
@@ -69,36 +66,15 @@ export default class Push extends AuthenticatedCommand {
       }
 
       if (!appVersionId) {
-        const allowedStatuses = force
-          ? [APP_VERSION_STATUS.DRAFT, APP_VERSION_STATUS.LIVE]
-          : [APP_VERSION_STATUS.DRAFT];
+        const allowedStatuses = getAllowedStatuses(force);
         const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion(allowedStatuses);
         appVersionId = appAndAppVersion.appVersionId;
       }
 
       logger.debug(`push code to appVersionId: ${appVersionId}`, this.DEBUG_TAG);
       this.preparePrintCommand(this, { appVersionId, directoryPath: flags.directoryPath });
-      const tasks = new Listr<PushCommandTasksContext>(
-        [
-          { title: 'Build asset to deploy', task: buildAssetToDeployTask },
-          {
-            title: 'Preparing environment',
-            task: prepareEnvironmentTask,
-            enabled: ctx => Boolean(ctx.showPrepareEnvironmentTask),
-          },
-          {
-            title: 'Uploading built asset',
-            task: uploadAssetTask,
-            enabled: ctx => Boolean(ctx.showUploadAssetTask),
-          },
-          {
-            title: 'Deployment in progress',
-            task: handleDeploymentTask,
-            enabled: ctx => Boolean(ctx.showHandleDeploymentTask),
-          },
-        ],
-        { ctx: { appVersionId, directoryPath: flags.directoryPath } },
-      );
+
+      const tasks = getTasksForServerSide(appVersionId, flags.directoryPath);
 
       await tasks.run();
     } catch (error: any) {
