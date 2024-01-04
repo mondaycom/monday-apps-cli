@@ -27,9 +27,28 @@ export default class AppDeploy extends AuthenticatedCommand {
       char: 'a',
       description: MESSAGES.appId,
     }),
+    appVersionId: Flags.string({
+      char: 'v',
+      description: 'App version id',
+    }),
   });
 
   DEBUG_TAG = 'app_deploy';
+
+  async getAppId(appId: string | undefined): Promise<string> {
+    if (appId) return appId;
+    const chosenAppId = await DynamicChoicesService.chooseApp();
+    return chosenAppId.toString();
+  }
+
+  async getAppVersionId(appVersionId: string | undefined, appId: string | undefined): Promise<string> {
+    if (appVersionId) return appVersionId;
+    const chosenAppId = await this.getAppId(appId);
+
+    const latestDraftVersion = await defaultVersionByAppId(Number(chosenAppId));
+    if (!latestDraftVersion) throw new Error('No editable version found for the given app id.');
+    return latestDraftVersion.id.toString();
+  }
 
   public async run(): Promise<void> {
     try {
@@ -39,26 +58,22 @@ export default class AppDeploy extends AuthenticatedCommand {
       const manifestFileData = readManifestFile(manifestFileDir);
       flags.appId = flags.appId || manifestFileData.app.id;
 
-      if (!flags.appId) {
-        const chosenAppId = await DynamicChoicesService.chooseApp();
-        flags.appId = chosenAppId.toString();
-      }
+      flags.appVersionId = await this.getAppVersionId(flags.appVersionId, flags.appId);
 
-      const latestDraftVersion = await defaultVersionByAppId(Number(flags.appId));
-      if (!latestDraftVersion) throw new Error('No editable version found for the given app id.');
-      const appVersionId = latestDraftVersion.id;
-
-      this.preparePrintCommand(this, { appVersionId, directoryPath: manifestFileData });
+      this.preparePrintCommand(this, { appVersionId: flags.appVersionId, directoryPath: manifestFileData });
 
       const { cdn, server } = manifestFileData.app?.hosting || {};
       if (cdn && cdn.type === ManifestHostingType.Upload) {
         logger.info('Deploying files to cdn...');
-        await getTasksForClientSide(appVersionId, getManifestAssetPath(manifestFileDir, cdn.path)).run();
+        await getTasksForClientSide(Number(flags.appVersionId), getManifestAssetPath(manifestFileDir, cdn.path)).run();
       }
 
       if (server && server.type === ManifestHostingType.Upload) {
         logger.info('Deploying server side files...');
-        await getTasksForServerSide(appVersionId, getManifestAssetPath(manifestFileDir, server.path)).run();
+        await getTasksForServerSide(
+          Number(flags.appVersionId),
+          getManifestAssetPath(manifestFileDir, server.path),
+        ).run();
       }
     } catch (error) {
       logger.debug(error, this.DEBUG_TAG);
