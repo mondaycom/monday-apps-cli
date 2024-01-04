@@ -45,7 +45,7 @@ export default class Build extends AuthenticatedCommand {
       char: 't',
       aliases: ['type'],
       description: 'Build type',
-      options: [BUILD_TYPES.CUSTOM_URL, BUILD_TYPES.MONDAY_CODE],
+      options: [BUILD_TYPES.CUSTOM_URL, BUILD_TYPES.MONDAY_CODE, BUILD_TYPES.MONDAY_CODE_CDN],
     }),
     customUrl: Flags.string({
       char: 'u',

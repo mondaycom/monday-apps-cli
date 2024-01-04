@@ -9,9 +9,16 @@ import {
 export type AppFeature = z.infer<typeof appFeatureSchema>;
 export type ListAppFeatureResponse = z.infer<typeof listAppFeaturesSchema>;
 export type CreateAppFeatureReleaseResponse = z.infer<typeof createAppFeatureReleaseSchema>;
+
 export enum BUILD_TYPES {
   CUSTOM_URL = 'custom_url',
   MONDAY_CODE = 'monday_code',
+  MONDAY_CODE_CDN = 'monday_code_cdn',
+}
+
+export enum AppReleaseSingleBuildCategory {
+  MondayCode = 'monday_code',
+  view = 'view',
 }
 
 export enum AppFeatureType {

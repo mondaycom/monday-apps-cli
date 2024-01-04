@@ -12,6 +12,8 @@ import logger from 'utils/logger';
 const MESSAGES = {
   directory: 'Directory path of you project in your machine. If not included will use the current working directory.',
   appId: 'App id (will use the latest draft version)',
+  appVersionId: 'App version id',
+  force: 'Force push to latest version (draft or live)',
 };
 
 export default class AppDeploy extends AuthenticatedCommand {
@@ -29,7 +31,11 @@ export default class AppDeploy extends AuthenticatedCommand {
     }),
     appVersionId: Flags.string({
       char: 'v',
-      description: 'App version id',
+      description: MESSAGES.appVersionId,
+    }),
+    force: Flags.boolean({
+      char: 'f',
+      description: MESSAGES.force,
     }),
   });
 
@@ -41,11 +47,11 @@ export default class AppDeploy extends AuthenticatedCommand {
     return chosenAppId.toString();
   }
 
-  async getAppVersionId(appVersionId: string | undefined, appId: string | undefined): Promise<string> {
+  async getAppVersionId(appVersionId: string | undefined, appId: string | undefined, force: boolean): Promise<string> {
     if (appVersionId) return appVersionId;
     const chosenAppId = await this.getAppId(appId);
 
-    const latestDraftVersion = await defaultVersionByAppId(Number(chosenAppId));
+    const latestDraftVersion = await defaultVersionByAppId(Number(chosenAppId), force);
     if (!latestDraftVersion) throw new Error('No editable version found for the given app id.');
     return latestDraftVersion.id.toString();
   }
@@ -58,7 +64,7 @@ export default class AppDeploy extends AuthenticatedCommand {
       const manifestFileData = readManifestFile(manifestFileDir);
       flags.appId = flags.appId || manifestFileData.app.id;
 
-      flags.appVersionId = await this.getAppVersionId(flags.appVersionId, flags.appId);
+      flags.appVersionId = await this.getAppVersionId(flags.appVersionId, flags.appId, flags.force);
 
       this.preparePrintCommand(this, { appVersionId: flags.appVersionId, directoryPath: manifestFileData });
 
