@@ -53,7 +53,9 @@ export const DynamicChoicesService = {
 
     if (useDefaultVersion && appId) {
       const defaultVersion = await defaultVersionByAppId(appId, useLiveVersion);
-      return { appId, appVersionId: defaultVersion!.id };
+      if (!defaultVersion) throw new Error(`No default version found for app id - ${appId}`);
+
+      return { appId, appVersionId: defaultVersion.id };
     }
 
     const chosenAppId = appId || (await this.chooseApp());

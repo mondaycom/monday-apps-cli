@@ -52,7 +52,6 @@ export default class AppDeploy extends AuthenticatedCommand {
       useLiveVersion: force,
     });
 
-    if (!latestDraftVersion.appVersionId) throw new Error('No editable version found for the given app id.');
     return latestDraftVersion.appVersionId.toString();
   }
 
