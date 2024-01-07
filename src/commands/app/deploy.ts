@@ -1,7 +1,6 @@
 import { Flags } from '@oclif/core';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
-import { defaultVersionByAppId } from 'services/app-versions-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import { getManifestAssetPath, readManifestFile } from 'services/manifest-service';
@@ -12,6 +11,8 @@ import logger from 'utils/logger';
 const MESSAGES = {
   directory: 'Directory path of you project in your machine. If not included will use the current working directory.',
   appId: 'App id (will use the latest draft version)',
+  appVersionId: 'App version id',
+  force: 'Force push to latest version (draft or live)',
 };
 
 export default class AppDeploy extends AuthenticatedCommand {
@@ -25,11 +26,34 @@ export default class AppDeploy extends AuthenticatedCommand {
     }),
     appId: Flags.string({
       char: 'a',
+      aliases: ['appId'],
       description: MESSAGES.appId,
+    }),
+    appVersionId: Flags.string({
+      char: 'v',
+      aliases: ['versionId'],
+      description: MESSAGES.appVersionId,
+    }),
+    force: Flags.boolean({
+      char: 'f',
+      aliases: ['force'],
+      description: MESSAGES.force,
     }),
   });
 
   DEBUG_TAG = 'app_deploy';
+
+  async getAppVersionId(appVersionId: string | undefined, appId: string | undefined, force: boolean): Promise<string> {
+    if (appVersionId) return appVersionId;
+
+    const latestDraftVersion = await DynamicChoicesService.chooseAppAndAppVersion({
+      appId: Number(appId),
+      useDefaultVersion: true,
+      useLiveVersion: force,
+    });
+
+    return latestDraftVersion.appVersionId.toString();
+  }
 
   public async run(): Promise<void> {
     try {
@@ -39,26 +63,22 @@ export default class AppDeploy extends AuthenticatedCommand {
       const manifestFileData = readManifestFile(manifestFileDir);
       flags.appId = flags.appId || manifestFileData.app.id;
 
-      if (!flags.appId) {
-        const chosenAppId = await DynamicChoicesService.chooseApp();
-        flags.appId = chosenAppId.toString();
-      }
+      flags.appVersionId = await this.getAppVersionId(flags.appVersionId, flags.appId, flags.force);
 
-      const latestDraftVersion = await defaultVersionByAppId(Number(flags.appId));
-      if (!latestDraftVersion) throw new Error('No editable version found for the given app id.');
-      const appVersionId = latestDraftVersion.id;
-
-      this.preparePrintCommand(this, { appVersionId, directoryPath: manifestFileData });
+      this.preparePrintCommand(this, { appVersionId: flags.appVersionId, directoryPath: manifestFileData });
 
       const { cdn, server } = manifestFileData.app?.hosting || {};
       if (cdn && cdn.type === ManifestHostingType.Upload) {
         logger.info('Deploying files to cdn...');
-        await getTasksForClientSide(appVersionId, getManifestAssetPath(manifestFileDir, cdn.path)).run();
+        await getTasksForClientSide(Number(flags.appVersionId), getManifestAssetPath(manifestFileDir, cdn.path)).run();
       }
 
       if (server && server.type === ManifestHostingType.Upload) {
         logger.info('Deploying server side files...');
-        await getTasksForServerSide(appVersionId, getManifestAssetPath(manifestFileDir, server.path)).run();
+        await getTasksForServerSide(
+          Number(flags.appVersionId),
+          getManifestAssetPath(manifestFileDir, server.path),
+        ).run();
       }
     } catch (error) {
       logger.debug(error, this.DEBUG_TAG);

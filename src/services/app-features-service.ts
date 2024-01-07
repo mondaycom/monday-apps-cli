@@ -4,6 +4,7 @@ import { createAppFeatureReleaseSchema, listAppFeaturesSchema } from 'services/s
 import {
   AppFeature,
   AppFeatureType,
+  AppReleaseSingleBuildCategory,
   BUILD_TYPES,
   CreateAppFeatureReleaseResponse,
   ListAppFeatureResponse,
@@ -63,7 +64,17 @@ const prepareReleaseByBuildType = (buildType: BUILD_TYPES, customUrl?: string) =
     case BUILD_TYPES.MONDAY_CODE: {
       return {
         kind: 'single_build',
-        appReleaseCategory: BUILD_TYPES.MONDAY_CODE,
+        appReleaseCategory: AppReleaseSingleBuildCategory.MondayCode,
+        data: {
+          url: customUrl,
+        },
+      };
+    }
+
+    case BUILD_TYPES.MONDAY_CODE_CDN: {
+      return {
+        kind: 'single_build',
+        appReleaseCategory: AppReleaseSingleBuildCategory.view,
         data: {
           url: customUrl,
         },

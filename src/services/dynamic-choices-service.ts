@@ -1,7 +1,7 @@
 import { APP_VERSION_STATUS } from 'consts/app-versions';
 import { listAppBuilds } from 'services/app-builds-service';
 import { listAppFeaturesByAppVersionId } from 'services/app-features-service';
-import { listAppVersionsByAppId } from 'services/app-versions-service';
+import { defaultVersionByAppId, listAppVersionsByAppId } from 'services/app-versions-service';
 import { listApps } from 'services/apps-service';
 import { PromptService } from 'services/prompt-service';
 import { AppFeature, AppFeatureType } from 'src/types/services/app-features-service';
@@ -45,7 +45,19 @@ export const DynamicChoicesService = {
     return selectedAppVersionId;
   },
 
-  async chooseAppAndAppVersion(filterByStatus?: APP_VERSION_STATUS[], appId?: number) {
+  async chooseAppAndAppVersion(options?: { appId?: number; useDefaultVersion?: boolean; useLiveVersion?: boolean }) {
+    const { appId, useDefaultVersion = false, useLiveVersion = false } = options || {};
+    const filterByStatus = useLiveVersion
+      ? [APP_VERSION_STATUS.LIVE, APP_VERSION_STATUS.DRAFT]
+      : [APP_VERSION_STATUS.DRAFT];
+
+    if (useDefaultVersion && appId) {
+      const defaultVersion = await defaultVersionByAppId(appId, useLiveVersion);
+      if (!defaultVersion) throw new Error(`No default version found for app id - ${appId}`);
+
+      return { appId, appVersionId: defaultVersion.id };
+    }
+
     const chosenAppId = appId || (await this.chooseApp());
     const appVersionId = await this.chooseAppVersion(chosenAppId, filterByStatus);
     return { appId: chosenAppId, appVersionId };

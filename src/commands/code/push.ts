@@ -1,9 +1,7 @@
 import { Flags } from '@oclif/core';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
-import { APP_VERSION_STATUS } from 'consts/app-versions';
 import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
-import { defaultVersionByAppId } from 'services/app-versions-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getTasksForServerSide } from 'services/share/deploy';
 import logger from 'utils/logger';
@@ -14,9 +12,6 @@ const MESSAGES = {
   appId: APP_ID_TO_ENTER,
   force: 'Force push to live version',
 };
-
-const getAllowedStatuses = (forceFlag: boolean) =>
-  forceFlag ? [APP_VERSION_STATUS.DRAFT, APP_VERSION_STATUS.LIVE] : [APP_VERSION_STATUS.DRAFT];
 
 export default class Push extends AuthenticatedCommand {
   static description = 'Push your project to get hosted on monday-code.';
@@ -51,23 +46,17 @@ export default class Push extends AuthenticatedCommand {
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Push);
-    let appVersionId: number | undefined;
-
-    const appId = flags.appId;
-    const force = flags.force;
+    let appVersionId = flags.appVersionId;
 
     try {
-      if (appId) {
-        const latestDraftVersion = await defaultVersionByAppId(Number(appId), force);
-        if (!latestDraftVersion) throw new Error('No editable version found for the given app id.');
-        appVersionId = latestDraftVersion.id;
-      } else {
-        appVersionId = flags.appVersionId;
-      }
-
       if (!appVersionId) {
-        const allowedStatuses = getAllowedStatuses(force);
-        const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion(allowedStatuses);
+        const force = flags.force;
+        const appId = flags.appId;
+        const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion({
+          appId: Number(appId),
+          useDefaultVersion: true,
+          useLiveVersion: force,
+        });
         appVersionId = appAndAppVersion.appVersionId;
       }
 

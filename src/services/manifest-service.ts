@@ -7,7 +7,7 @@ import { BadConfigError } from 'errors/bad-config-error';
 import { ManifestFileSchema } from 'services/schemas/manifest-service-schemas';
 import logger from 'utils/logger';
 
-const MANIFEST_FILE_NAME = 'manifest.yml';
+const MANIFEST_FILE_NAME = 'app-manifest.yml';
 const ENCODING = 'utf8';
 
 const checkConfigExists = (directoryPath: string, fileName = MANIFEST_FILE_NAME) => {
