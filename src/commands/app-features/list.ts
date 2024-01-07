@@ -12,12 +12,8 @@ const printAppFeatures = (appFeatures: Array<AppFeature>) => {
 };
 
 export default class AppFeatureList extends AuthenticatedCommand {
-  DEBUG_TAG = 'app_feature_list';
-
   static description = 'List all features for a specific app version.';
-
   static examples = ['<%= config.bin %> <%= command.id %> -a APP_ID -i APP_VERSION_ID'];
-
   static flags = AppFeatureList.serializeFlags({
     appId: Flags.integer({
       char: 'a',
@@ -31,6 +27,8 @@ export default class AppFeatureList extends AuthenticatedCommand {
     }),
   });
 
+  DEBUG_TAG = 'app_feature_list';
+
   public async run(): Promise<void> {
     const { flags } = await this.parse(AppFeatureList);
 
@@ -38,7 +36,7 @@ export default class AppFeatureList extends AuthenticatedCommand {
     let appVersionId = flags.appVersionId;
 
     if (!appVersionId) {
-      const appIdAndAppVersionId = await DynamicChoicesService.chooseAppAndAppVersion(undefined, appId);
+      const appIdAndAppVersionId = await DynamicChoicesService.chooseAppAndAppVersion({ appId });
       appVersionId = Number(appIdAndAppVersionId.appVersionId);
     }
 

@@ -1,7 +1,6 @@
 import { Flags } from '@oclif/core';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
-import { defaultVersionByAppId } from 'services/app-versions-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import { getManifestAssetPath, readManifestFile } from 'services/manifest-service';
@@ -27,33 +26,34 @@ export default class AppDeploy extends AuthenticatedCommand {
     }),
     appId: Flags.string({
       char: 'a',
+      aliases: ['appId'],
       description: MESSAGES.appId,
     }),
     appVersionId: Flags.string({
       char: 'v',
+      aliases: ['versionId'],
       description: MESSAGES.appVersionId,
     }),
     force: Flags.boolean({
       char: 'f',
+      aliases: ['force'],
       description: MESSAGES.force,
     }),
   });
 
   DEBUG_TAG = 'app_deploy';
 
-  async getAppId(appId: string | undefined): Promise<string> {
-    if (appId) return appId;
-    const chosenAppId = await DynamicChoicesService.chooseApp();
-    return chosenAppId.toString();
-  }
-
   async getAppVersionId(appVersionId: string | undefined, appId: string | undefined, force: boolean): Promise<string> {
     if (appVersionId) return appVersionId;
-    const chosenAppId = await this.getAppId(appId);
 
-    const latestDraftVersion = await defaultVersionByAppId(Number(chosenAppId), force);
-    if (!latestDraftVersion) throw new Error('No editable version found for the given app id.');
-    return latestDraftVersion.id.toString();
+    const latestDraftVersion = await DynamicChoicesService.chooseAppAndAppVersion({
+      appId: Number(appId),
+      useDefaultVersion: true,
+      useLiveVersion: force,
+    });
+
+    if (!latestDraftVersion.appVersionId) throw new Error('No editable version found for the given app id.');
+    return latestDraftVersion.appVersionId.toString();
   }
 
   public async run(): Promise<void> {

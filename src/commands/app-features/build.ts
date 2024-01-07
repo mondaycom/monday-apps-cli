@@ -1,7 +1,6 @@
 import { Flags } from '@oclif/core';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
-import { APP_VERSION_STATUS } from 'consts/app-versions';
 import { APP_FEATURE_ID_TO_ENTER, APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER, BUILD_ID_TO_ENTER } from 'consts/messages';
 import { defaultVersionByAppId } from 'services/app-versions-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
@@ -76,8 +75,7 @@ export default class Build extends AuthenticatedCommand {
       }
 
       if (!appVersionId) {
-        const allowedStatuses = [APP_VERSION_STATUS.DRAFT];
-        const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion(allowedStatuses, appId);
+        const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion({ appId });
         appVersionId = appAndAppVersion.appVersionId;
         appId = appAndAppVersion.appId;
       }
