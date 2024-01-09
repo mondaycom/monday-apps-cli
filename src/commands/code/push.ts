@@ -52,11 +52,11 @@ export default class Push extends AuthenticatedCommand {
       if (!appVersionId) {
         const force = flags.force;
         const appId = flags.appId;
-        const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion({
+        const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion(false, Boolean(force), {
           appId: Number(appId),
-          useDefaultVersion: true,
-          useLiveVersion: force,
+          autoSelectVersion: true,
         });
+
         appVersionId = appAndAppVersion.appVersionId;
       }
 

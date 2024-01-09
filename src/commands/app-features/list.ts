@@ -36,7 +36,10 @@ export default class AppFeatureList extends AuthenticatedCommand {
     let appVersionId = flags.appVersionId;
 
     if (!appVersionId) {
-      const appIdAndAppVersionId = await DynamicChoicesService.chooseAppAndAppVersion({ appId });
+      const appIdAndAppVersionId = await DynamicChoicesService.chooseAppAndAppVersion(true, true, {
+        appId,
+        autoSelectVersion: false,
+      });
       appVersionId = Number(appIdAndAppVersionId.appVersionId);
     }
 
