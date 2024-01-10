@@ -45,13 +45,17 @@ export const DynamicChoicesService = {
     return selectedAppVersionId;
   },
 
-  async chooseAppAndAppVersion(options?: { appId?: number; useDefaultVersion?: boolean; useLiveVersion?: boolean }) {
-    const { appId, useDefaultVersion = false, useLiveVersion = false } = options || {};
-    const filterByStatus = useLiveVersion
-      ? [APP_VERSION_STATUS.LIVE, APP_VERSION_STATUS.DRAFT]
-      : [APP_VERSION_STATUS.DRAFT];
+  async chooseAppAndAppVersion(
+    useDeprecatedVersion: boolean,
+    useLiveVersion: boolean,
+    options?: { appId?: number; autoSelectVersion?: boolean },
+  ) {
+    const { appId, autoSelectVersion = false } = options || {};
+    const filterByStatus = [APP_VERSION_STATUS.DRAFT];
+    if (useDeprecatedVersion) filterByStatus.push(APP_VERSION_STATUS.DEPRECATED);
+    if (useLiveVersion) filterByStatus.push(APP_VERSION_STATUS.LIVE);
 
-    if (useDefaultVersion && appId) {
+    if (appId && autoSelectVersion) {
       const defaultVersion = await defaultVersionByAppId(appId, useLiveVersion);
       if (!defaultVersion) throw new Error(`No default version found for app id - ${appId}`);
 

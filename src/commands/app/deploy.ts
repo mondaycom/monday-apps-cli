@@ -46,10 +46,9 @@ export default class AppDeploy extends AuthenticatedCommand {
   async getAppVersionId(appVersionId: string | undefined, appId: string | undefined, force: boolean): Promise<string> {
     if (appVersionId) return appVersionId;
 
-    const latestDraftVersion = await DynamicChoicesService.chooseAppAndAppVersion({
+    const latestDraftVersion = await DynamicChoicesService.chooseAppAndAppVersion(false, Boolean(force), {
       appId: Number(appId),
-      useDefaultVersion: true,
-      useLiveVersion: force,
+      autoSelectVersion: true,
     });
 
     return latestDraftVersion.appVersionId.toString();

@@ -47,7 +47,7 @@ export default class Status extends AuthenticatedCommand {
     let appVersionId = flags.appVersionId;
     try {
       if (!appVersionId) {
-        const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion();
+        const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion(true, true);
         appVersionId = appAndAppVersion.appVersionId;
       }
 

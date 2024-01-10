@@ -79,9 +79,50 @@ export default class Logs extends AuthenticatedCommand {
 
   static args = {};
   DEBUG_TAG = 'logs';
+
+  public async run(): Promise<void> {
+    try {
+      const { flags } = await this.parse(Logs);
+
+      const appVersionId = await this.getAppVersionId(flags.appVersionId);
+
+      const eventSource = (flags.eventSource || (await eventSourcePrompt())) as EventSource;
+      const logsType = await this.getLogType(eventSource, flags.logsType);
+      const logsFilterCriteria = await this.getLogsFilterCriteria(
+        eventSource,
+        flags.logsStartDate,
+        flags.logsEndDate,
+        flags.logSearchFromText,
+      );
+
+      const args: LogsCommandArguments = {
+        appVersionId,
+        logsType,
+        logsFilterCriteria,
+      };
+
+      this.preparePrintCommand(this, {
+        appVersionId,
+        logsType,
+        eventSource,
+        logsStartDate: logsFilterCriteria?.fromDate && `"${logsFilterCriteria.fromDate.toString()}"`,
+        logsEndDate: logsFilterCriteria?.toDate && `"${logsFilterCriteria.toDate.toString()}"`,
+        logSearchFromText: logsFilterCriteria?.text,
+      });
+
+      const clientChannel = await logsStream(args.appVersionId, args.logsType, logsFilterCriteria);
+      await streamMessages(clientChannel);
+    } catch (error: any) {
+      logger.debug(error, this.DEBUG_TAG);
+
+      // need to signal to the parent process that the command failed
+      process.exit(1);
+    }
+  }
+
   private async getAppVersionId(appVersionId?: number): Promise<number> {
     if (!appVersionId) {
-      const { appVersionId: inputAppVersionId } = await DynamicChoicesService.chooseAppAndAppVersion();
+      const { appVersionId: inputAppVersionId } = await DynamicChoicesService.chooseAppAndAppVersion(true, true);
       return inputAppVersionId;
     }
 
@@ -198,45 +239,5 @@ export default class Logs extends AuthenticatedCommand {
     );
 
     return { fromDate, toDate, text };
-  }
-
-  public async run(): Promise<void> {
-    try {
-      const { flags } = await this.parse(Logs);
-
-      const appVersionId = await this.getAppVersionId(flags.appVersionId);
-
-      const eventSource = (flags.eventSource || (await eventSourcePrompt())) as EventSource;
-      const logsType = await this.getLogType(eventSource, flags.logsType);
-      const logsFilterCriteria = await this.getLogsFilterCriteria(
-        eventSource,
-        flags.logsStartDate,
-        flags.logsEndDate,
-        flags.logSearchFromText,
-      );
-
-      const args: LogsCommandArguments = {
-        appVersionId,
-        logsType,
-        logsFilterCriteria,
-      };
-
-      this.preparePrintCommand(this, {
-        appVersionId,
-        logsType,
-        eventSource,
-        logsStartDate: logsFilterCriteria?.fromDate && `"${logsFilterCriteria.fromDate.toString()}"`,
-        logsEndDate: logsFilterCriteria?.toDate && `"${logsFilterCriteria.toDate.toString()}"`,
-        logSearchFromText: logsFilterCriteria?.text,
-      });
-
-      const clientChannel = await logsStream(args.appVersionId, args.logsType, logsFilterCriteria);
-      await streamMessages(clientChannel);
-    } catch (error: any) {
-      logger.debug(error, this.DEBUG_TAG);
-
-      // need to signal to the parent process that the command failed
-      process.exit(1);
-    }
   }
 }
