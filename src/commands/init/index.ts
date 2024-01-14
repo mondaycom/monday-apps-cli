@@ -50,7 +50,7 @@ export default class Init extends BaseCommand {
       }
 
       ConfigService.init(args, this.config.configDir, { override: true, setInProcessEnv: true });
-      logger.info(`'${CONFIG_NAME}' created`);
+      logger.info(`'${CONFIG_NAME}' created inside '${this.config.configDir}'`);
     } catch (error) {
       logger.debug(error, this.DEBUG_TAG);
       logger.error(`'${CONFIG_NAME}' failed to initialize`);

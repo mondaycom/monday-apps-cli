@@ -111,7 +111,7 @@ export const ConfigService = {
 
       return data;
     } catch (error) {
-      logger.debug('An error has occurred while creating mapps config file', (error as Error).message);
+      logger.debug('An error has occurred while creating .mappsrc config file', (error as Error).message);
     }
   },
 };
