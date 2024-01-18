@@ -8,35 +8,34 @@ monday-code-cli
 monday.com cli tool for `<monday-code />` apps management.
 
 <!-- toc -->
-
 * [Usage](#usage)
 * [Commands](#commands)
-
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @mondaycom/apps-cli
 $ mapps COMMAND
 running command...
 $ mapps (--version)
-@mondaycom/apps-cli/1.0.0 darwin-arm64 node-v18.12.1
+@mondaycom/apps-cli/2.2.4 darwin-arm64 node-v18.12.1
 $ mapps --help [COMMAND]
 USAGE
   $ mapps COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
+* [`mapps app-features:build`](#mapps-app-featuresbuild)
+* [`mapps app-features:list`](#mapps-app-featureslist)
+* [`mapps app-version:builds`](#mapps-app-versionbuilds)
 * [`mapps app-version:list`](#mapps-app-versionlist)
+* [`mapps app:deploy`](#mapps-appdeploy)
 * [`mapps app:list`](#mapps-applist)
 * [`mapps autocomplete [SHELL]`](#mapps-autocomplete-shell)
 * [`mapps code:env`](#mapps-codeenv)
@@ -45,6 +44,88 @@ USAGE
 * [`mapps code:status`](#mapps-codestatus)
 * [`mapps help [COMMANDS]`](#mapps-help-commands)
 * [`mapps init`](#mapps-init)
+* [`mapps storage:export`](#mapps-storageexport)
+* [`mapps storage:search`](#mapps-storagesearch)
+* [`mapps tunnel:create`](#mapps-tunnelcreate)
+
+## `mapps app-features:build`
+
+Create an app feature build.
+
+```
+USAGE
+  $ mapps app-features:build [--verbose] [--print-command] [-a <value>] [-i <value>] [-d <value>] [-t
+    custom_url|monday_code|monday_code_cdn] [-u <value>]
+
+FLAGS
+  -a, --appId=<value>         Please enter app id:
+  -d, --appFeatureId=<value>  Please enter the app feature id of your app:
+  -i, --appVersionId=<value>  Please enter the app version id of your app:
+  -t, --buildType=<option>    Build type
+                              <options: custom_url|monday_code|monday_code_cdn>
+  -u, --customUrl=<value>     Custom url
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  Create an app feature build.
+
+EXAMPLES
+  $ mapps app-features:build -a APP_ID -i APP_VERSION_ID -d APP_FEATURE_ID  -t BUILD_TYPE -u CUSTOM_URL
+```
+
+_See code: [src/commands/app-features/build.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.2.4/src/commands/app-features/build.ts)_
+
+## `mapps app-features:list`
+
+List all features for a specific app version.
+
+```
+USAGE
+  $ mapps app-features:list [--verbose] [--print-command] [-a <value>] [-i <value>]
+
+FLAGS
+  -a, --appId=<value>         Please enter app id:
+  -i, --appVersionId=<value>  Please enter the app version id of your app:
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  List all features for a specific app version.
+
+EXAMPLES
+  $ mapps app-features:list -a APP_ID -i APP_VERSION_ID
+```
+
+_See code: [src/commands/app-features/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.2.4/src/commands/app-features/list.ts)_
+
+## `mapps app-version:builds`
+
+List all builds for a specific app version
+
+```
+USAGE
+  $ mapps app-version:builds [--verbose] [--print-command] [-i <value>]
+
+FLAGS
+  -i, --appVersionId=<value>  Please enter the app version id of your app:
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  List all builds for a specific app version
+
+EXAMPLES
+  $ mapps app-version:builds -i APP_VERSION_ID
+```
+
+_See code: [src/commands/app-version/builds.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.2.4/src/commands/app-version/builds.ts)_
 
 ## `mapps app-version:list`
 
@@ -68,33 +149,35 @@ EXAMPLES
   $ mapps app-version:list
 ```
 
-_See
-code: [dist/commands/app-version/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/app-version/list.ts)_
+_See code: [src/commands/app-version/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.2.4/src/commands/app-version/list.ts)_
 
-## `mapps app-version:builds`
+## `mapps app:deploy`
 
-List all builds for a specific app-version.
+Deploy an app using manifest file.
 
 ```
 USAGE
-  $ mapps app-version:builds [--verbose] [--print-command] [-i <value>]
+  $ mapps app:deploy [--verbose] [--print-command] [-d <value>] [-a <value>] [-v <value>] [-f]
 
 FLAGS
-  -i, --appVersionId=<value>  Please enter the app version id of your app:
+  -a, --appId=<value>          App id (will use the latest draft version)
+  -d, --directoryPath=<value>  Directory path of you project in your machine. If not included will use the current
+                               working directory.
+  -f, --force                  Force push to latest version (draft or live)
+  -v, --appVersionId=<value>   App version id
 
 GLOBAL FLAGS
   --print-command  Print the command that was executed (optional).
   --verbose        Print advanced logs (optional).
 
 DESCRIPTION
-   List all builds for a specific app-version.
+  Deploy an app using manifest file.
 
 EXAMPLES
-  $ mapps app-version:builds
+  $ mapps app:deploy
 ```
 
-_See
-code: [dist/commands/app-version/builds.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/app-version/builds.ts)_
+_See code: [src/commands/app/deploy.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.2.4/src/commands/app/deploy.ts)_
 
 ## `mapps app:list`
 
@@ -115,12 +198,11 @@ EXAMPLES
   $ mapps app:list
 ```
 
-_See
-code: [dist/commands/app/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/app/list.ts)_
+_See code: [src/commands/app/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.2.4/src/commands/app/list.ts)_
 
 ## `mapps autocomplete [SHELL]`
 
-display autocomplete installation instructions
+Display autocomplete installation instructions.
 
 ```
 USAGE
@@ -133,7 +215,7 @@ FLAGS
   -r, --refresh-cache  Refresh cache (ignores displaying instructions)
 
 DESCRIPTION
-  display autocomplete installation instructions
+  Display autocomplete installation instructions.
 
 EXAMPLES
   $ mapps autocomplete
@@ -147,8 +229,7 @@ EXAMPLES
   $ mapps autocomplete --refresh-cache
 ```
 
-_See
-code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v2.2.0/src/commands/autocomplete/index.ts)_
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.0.5/src/commands/autocomplete/index.ts)_
 
 ## `mapps code:env`
 
@@ -177,8 +258,7 @@ EXAMPLES
   $ mapps code:env
 ```
 
-_See
-code: [dist/commands/code/env.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/code/env.ts)_
+_See code: [src/commands/code/env.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.2.4/src/commands/code/env.ts)_
 
 ## `mapps code:logs`
 
@@ -211,8 +291,7 @@ EXAMPLES
   $ mapps code:logs -i APP_VERSION_ID -t LOGS_TYPE
 ```
 
-_See
-code: [dist/commands/code/logs.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/code/logs.ts)_
+_See code: [src/commands/code/logs.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.2.4/src/commands/code/logs.ts)_
 
 ## `mapps code:push`
 
@@ -220,11 +299,13 @@ Push your project to get hosted on monday-code.
 
 ```
 USAGE
-  $ mapps code:push [--verbose] [--print-command] [-d <value>] [-i <value>]
+  $ mapps code:push [--verbose] [--print-command] [-d <value>] [-a <value>] [-i <value>] [-f]
 
 FLAGS
+  -a, --appId=<value>          Please enter app id:
   -d, --directoryPath=<value>  Directory path of you project in your machine. If not included will use the current
                                working directory.
+  -f, --force                  Force push to live version
   -i, --appVersionId=<value>   Please enter the app version id of your app:
 
 GLOBAL FLAGS
@@ -238,10 +319,11 @@ EXAMPLES
   $ mapps code:push -d PROJECT DIRECTORY PATH -i APP_VERSION_ID_TO_PUSH
 
   $ mapps code:push -i APP_VERSION_ID_TO_PUSH
+
+  $ mapps code:push -a APP_ID_TO_PUSH
 ```
 
-_See
-code: [dist/commands/code/push.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/code/push.ts)_
+_See code: [src/commands/code/push.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.2.4/src/commands/code/push.ts)_
 
 ## `mapps code:status`
 
@@ -265,8 +347,7 @@ EXAMPLES
   $ mapps code:status -i APP_VERSION_ID
 ```
 
-_See
-code: [dist/commands/code/status.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/code/status.ts)_
+_See code: [src/commands/code/status.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.2.4/src/commands/code/status.ts)_
 
 ## `mapps help [COMMANDS]`
 
@@ -286,7 +367,7 @@ DESCRIPTION
   Display help for mapps.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.9/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.0.12/src/commands/help.ts)_
 
 ## `mapps init`
 
@@ -294,9 +375,10 @@ Initialize mapps config file - ".mappsrc".
 
 ```
 USAGE
-  $ mapps init [--verbose] [--print-command] [-t <value>]
+  $ mapps init [--verbose] [--print-command] [-t <value>] [-l]
 
 FLAGS
+  -l, --local          create the configuration file locally, in the current project working directory
   -t, --token=<value>  monday.com api access token (https://developer.monday.com/api-reference/docs/authentication)
 
 GLOBAL FLAGS
@@ -310,6 +392,89 @@ EXAMPLES
   $ mapps init -t SECRET_TOKEN
 ```
 
-_See
-code: [dist/commands/init/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v1.0.0/dist/commands/init/index.ts)_
+_See code: [src/commands/init/index.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.2.4/src/commands/init/index.ts)_
+
+## `mapps storage:export`
+
+Export all keys and values stored on monday for a specific customer account.
+
+```
+USAGE
+  $ mapps storage:export [--verbose] [--print-command] [-a <value>] [-c <value>] [-f <value>] [-d <value>]
+
+FLAGS
+  -a, --appId=<value>            Select the app that you wish to retrieve the key for
+  -c, --clientAccountId=<value>  Client account number.
+  -d, --fileDirectory=<value>    Optional, file path.
+  -f, --fileFormat=<value>       Optional, file format "CSV" or "JSON" (the default value is "JSON").
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  Export all keys and values stored on monday for a specific customer account.
+
+EXAMPLES
+  $ mapps storage:export -a APP_ID -c CLIENT_ACCOUNT_ID -d FILE_FULL_PATH -f FILE_FORMAT
+```
+
+_See code: [src/commands/storage/export.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.2.4/src/commands/storage/export.ts)_
+
+## `mapps storage:search`
+
+Search keys and values stored on monday for a specific customer account.
+
+```
+USAGE
+  $ mapps storage:search [--verbose] [--print-command] [-a <value>] [-c <value>] [-t <value>]
+
+FLAGS
+  -a, --appId=<value>            Select the app that you wish to retrieve the key for
+  -c, --clientAccountId=<value>  Client account number.
+  -t, --term=<value>             Term to search for.
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  Search keys and values stored on monday for a specific customer account.
+
+EXAMPLES
+  $ mapps storage:search -a APP_ID -c CLIENT_ACCOUNT_ID -t TERM
+```
+
+_See code: [src/commands/storage/search.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.2.4/src/commands/storage/search.ts)_
+
+## `mapps tunnel:create`
+
+Create a networking tunnel to publicly expose code running on the local machine.
+
+```
+USAGE
+  $ mapps tunnel:create [--verbose] [--print-command] [-p <value>] [-a <value>]
+
+FLAGS
+  -a, --appId=<value>  Specify an app id to get a unique tunnel domain for this app.
+  -p, --port=<value>   [default: 8080] Port to forward tunnel traffic to.
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  Create a networking tunnel to publicly expose code running on the local machine.
+
+EXAMPLES
+  $ mapps tunnel:create
+
+  $ mapps tunnel:create -p PORT_FOR_TUNNEL
+
+  $ mapps tunnel:create -a APP_ID_FOR_TUNNEL
+
+  $ mapps tunnel:create -p PORT_FOR_TUNNEL -a APP_ID_FOR_TUNNEL
+```
+
+_See code: [src/commands/tunnel/create.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.2.4/src/commands/tunnel/create.ts)_
 <!-- commandsstop -->

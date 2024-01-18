@@ -57,7 +57,7 @@ const flagsWithModeRelationships: Relationship = {
   flags: [
     {
       name: 'mode',
-      // eslint-disable-next-line @typescript-eslint/require-await
+
       when: async (flags: Record<string, unknown>) => isValueRequired(flags.mode as (typeof MODES_WITH_KEYS)[number]),
     },
   ],

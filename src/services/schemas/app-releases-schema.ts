@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { AppReleaseCategory } from 'consts/app-release';
 import { baseResponseHttpMetaDataSchema } from 'services/schemas/api-service-schemas';
 import { appReleaseIdSchema, appVersionIdSchema } from 'services/schemas/general-schemas';
 
@@ -8,7 +9,7 @@ export const appReleaseSchema = z.object({
   // eslint-disable-next-line camelcase
   app_version_id: appVersionIdSchema,
   kind: z.string(),
-  category: z.string(),
+  category: z.nativeEnum(AppReleaseCategory),
   state: z.string(),
   data: z
     .object({

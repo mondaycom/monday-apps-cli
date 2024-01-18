@@ -2,6 +2,37 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "types": ["node", "jest"],
-    "sourceMap": true
+    "sourceMap": true,
+    "noEmit": true,
+    "rootDirs": ["src", "test"],
+    "paths": {
+      "src/*": [
+        "./src/*"
+      ],
+      "test/*": [
+        "./test/*"
+      ],
+      "consts/*": [
+        "./src/consts/*"
+      ],
+      "services/*": [
+        "./src/services/*"
+      ],
+      "types/*": [
+        "./src/types/*"
+      ],
+      "errors/*": [
+        "./src/errors/*"
+      ],
+      "utils/*": [
+        "./src/utils/*"
+      ],
+      "commands/*": [
+        "./src/commands/*"
+      ],
+      "commands-base/*": [
+        "./src/commands-base/*"
+      ]
+    }
   }
 }
