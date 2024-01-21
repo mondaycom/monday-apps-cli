@@ -4,6 +4,7 @@ import {
   buildAssetToDeployTask,
   buildClientZip,
   deployClientZip,
+  handleDenyConflictingDeploymentTask,
   handleDeploymentTask,
   prepareEnvironmentTask,
   uploadAssetTask,
@@ -33,6 +34,11 @@ export const getTasksForServerSide = (appVersionId: number, directoryPath?: stri
         title: 'Preparing environment',
         task: prepareEnvironmentTask,
         enabled: ctx => Boolean(ctx.showPrepareEnvironmentTask),
+      },
+      {
+        title: 'Deny conflicting deployment',
+        task: handleDenyConflictingDeploymentTask,
+        enabled: ctx => Boolean(ctx.stopDeploymentTaskOnConflictError),
       },
       {
         title: 'Uploading built asset',

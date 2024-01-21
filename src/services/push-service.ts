@@ -190,11 +190,31 @@ export const buildAssetToDeployTask = async (
 };
 
 export const prepareEnvironmentTask = async (ctx: PushCommandTasksContext) => {
-  const signedCloudStorageUrl = await getSignedStorageUrl(ctx.appVersionId);
-  const archiveContent = readFileData(ctx.archivePath!);
-  ctx.signedCloudStorageUrl = signedCloudStorageUrl;
-  ctx.archiveContent = archiveContent;
-  ctx.showUploadAssetTask = true;
+  try {
+    const signedCloudStorageUrl = await getSignedStorageUrl(ctx.appVersionId);
+    const archiveContent = readFileData(ctx.archivePath!);
+    ctx.signedCloudStorageUrl = signedCloudStorageUrl;
+    ctx.archiveContent = archiveContent;
+    ctx.showUploadAssetTask = true;
+  } catch (error: any | HttpError) {
+    if (error instanceof HttpError && error.code === 409) {
+      ctx.stopDeploymentTaskOnConflictError = true;
+      return;
+    }
+
+    throw error;
+  }
+};
+
+export const handleDenyConflictingDeploymentTask = (
+  ctx: PushCommandTasksContext,
+  task: ListrTaskWrapper<PushCommandTasksContext, any>,
+) => {
+  const msg = `Deployment stopped.
+   - An existing deployment is already is progress for app-version ${ctx.appVersionId}.
+   - Run the command "code:status -v ${ctx.appVersionId}" to check the existing deployment status.
+   - It might take a few minutes to complete, or if enough time passes so it will fail, you can try a new deployment with "code:push".`;
+  task.title = msg;
 };
 
 export const uploadAssetTask = async (
