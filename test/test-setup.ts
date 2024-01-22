@@ -1,24 +1,38 @@
 import {
-  getStderr,
-  getStdout,
+  getRawStderr,
+  getRawStdout,
   clearStderr,
   clearStdout,
   getConfigDataByKeySpy,
   processExistSpy,
+  clearDebugOutput,
+  getRawDebugOutput,
 } from './cli-test-utils';
 import { enableDebugMode, default as logger } from 'utils/logger';
 
 enableDebugMode();
 
-global.beforeEach(() => {
-  let stdout = getStdout();
-  let stderr = getStderr();
-  jest.spyOn(process.stdout, 'write').mockImplementation(stdoutValue => stdout.push(stdoutValue) > -1);
+function addLoggerSpies() {
+  let stdout = getRawStdout();
+  let stderr = getRawStderr();
+  const debugOutput = getRawDebugOutput();
+  jest.spyOn(logger, 'error').mockImplementation(val => stderr.push(val as string));
+  jest.spyOn(logger, 'log').mockImplementation(val => stdout.push(val as string));
+  jest.spyOn(logger, 'info').mockImplementation(val => stdout.push(val as string));
+  jest.spyOn(logger, 'warn').mockImplementation(val => stdout.push(val as string));
+  jest.spyOn(logger, 'table').mockImplementation(val => stdout.push(val as string));
+  jest.spyOn(logger, 'success').mockImplementation(val => stdout.push(val as string));
+  jest.spyOn(logger, 'debug').mockImplementation(val => debugOutput.push(val as string));
+}
+
+function AddStderrSpy() {
+  let stderr = getRawStderr();
   jest.spyOn(process.stderr, 'write').mockImplementation(stderrValue => stderr.push(stderrValue) > -1);
-  jest.spyOn(logger, 'error').mockImplementation(val => stderr.push(val as string) > -1);
-  jest.spyOn(logger, 'log').mockImplementation(val => stdout.push(val as string) > -1);
-  jest.spyOn(logger, 'info').mockImplementation(val => stdout.push(val as string) > -1);
-  jest.spyOn(logger, 'warn').mockImplementation(val => stdout.push(val as string) > -1);
+}
+
+global.beforeEach(() => {
+  AddStderrSpy();
+  addLoggerSpies();
   getConfigDataByKeySpy.mockReturnValue('mocked-access-token');
   // @ts-ignore
   processExistSpy.mockImplementation(code => {
@@ -31,6 +45,7 @@ global.beforeEach(() => {
 global.afterEach(() => {
   clearStderr();
   clearStdout();
+  clearDebugOutput();
   getConfigDataByKeySpy.mockReset();
   processExistSpy.mockReset();
 });
