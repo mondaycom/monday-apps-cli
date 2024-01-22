@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
     "skipLibCheck": true,
+    "module": "esnext",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "esModuleInterop": true,
     "importHelpers": true,
-    "module": "ES2022",
     "outDir": "dist",
     "rootDir": "src",
     "baseUrl": ".",
@@ -47,9 +47,10 @@
     "src/**/*"
   ],
   "exclude": [
+    "test",
     "node_modules",
     "bin",
     "dist",
-    "__tests__"
+    "./**/*/__tests__"
   ]
 }

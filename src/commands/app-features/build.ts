@@ -59,10 +59,10 @@ export default class Build extends AuthenticatedCommand {
   public async run(): Promise<void> {
     const { flags } = await this.parse(Build);
     let appVersionId: number | undefined;
-    let appFeatureId: number | undefined = flags.appFeatureId;
-    let buildType: string | undefined = flags.buildType;
-    let customUrl: string | undefined = flags.customUrl;
-    let appId = flags.appId;
+    let { appFeatureId } = flags;
+    let { buildType } = flags;
+    let { customUrl } = flags;
+    let { appId } = flags;
     let appFeature: AppFeature;
 
     try {
@@ -104,7 +104,7 @@ export default class Build extends AuthenticatedCommand {
       }
 
       if (!customUrl) {
-        const isCustomUrl = buildType === BUILD_TYPES.CUSTOM_URL;
+        const isCustomUrl = (buildType as BUILD_TYPES) === BUILD_TYPES.CUSTOM_URL;
         const promptMessage = isCustomUrl ? 'Add your custom url' : 'Add your route to monday-code base url';
         customUrl = await PromptService.promptInput(promptMessage, isCustomUrl);
       }
