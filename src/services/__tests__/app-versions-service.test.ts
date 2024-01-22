@@ -11,14 +11,14 @@ const appWithDraftsVersions = [
     id: 1,
     name: 'name',
     versionNumber: 'versionNumber',
-    appId: appId,
+    appId,
     status: APP_VERSION_STATUS.DRAFT,
   },
   {
     id: 2,
     name: 'name',
     versionNumber: 'versionNumber',
-    appId: appId,
+    appId,
     status: APP_VERSION_STATUS.DRAFT,
   },
 ];
@@ -28,7 +28,7 @@ const appWithLiveVersion = [
     id: 1,
     name: 'name',
     versionNumber: 'versionNumber',
-    appId: appId,
+    appId,
     status: APP_VERSION_STATUS.LIVE,
   },
 ];

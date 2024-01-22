@@ -39,7 +39,6 @@ export default class TunnelCreate extends AuthenticatedCommand {
       const { flags } = await this.parse(TunnelCreate);
       const { port, appId } = flags;
 
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       logger.debug(`creating tunnel: port=${port}, appId=${appId}`, this.DEBUG_TAG);
       const tasks = new Listr<TunnelCommandTasksContext>(
         [
