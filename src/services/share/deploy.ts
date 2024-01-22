@@ -6,7 +6,6 @@ import {
   deployClientZip,
   handleDeploymentTask,
   prepareEnvironmentTask,
-  stopNewDeploymentWhileExistingInProgress,
   uploadAssetTask,
 } from 'services/push-service';
 import { PushCommandTasksContext } from 'types/commands/push';
@@ -34,11 +33,6 @@ export const getTasksForServerSide = (appVersionId: number, directoryPath?: stri
         title: 'Preparing environment',
         task: prepareEnvironmentTask,
         enabled: ctx => Boolean(ctx.showPrepareEnvironmentTask),
-      },
-      {
-        title: 'Deny conflicting deployment',
-        task: stopNewDeploymentWhileExistingInProgress,
-        enabled: ctx => Boolean(ctx.stopDeploymentTaskOnConflictError),
       },
       {
         title: 'Uploading built asset',

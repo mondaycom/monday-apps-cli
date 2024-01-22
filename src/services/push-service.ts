@@ -199,22 +199,14 @@ export const prepareEnvironmentTask = async (ctx: PushCommandTasksContext) => {
     ctx.showUploadAssetTask = true;
   } catch (error: any | HttpError) {
     if (error instanceof HttpError && error.code === StatusCodes.CONFLICT) {
-      ctx.stopDeploymentTaskOnConflictError = true;
-      return;
+      const msg = `This deployment could not start, as there is already an existing deployment in progress for app version ${ctx.appVersionId}.
+   - Run the command "code:status -v ${ctx.appVersionId}" to check the existing deployment status.
+   - It might take a few minutes to complete, or if enough time passes so it will fail, you can try a new deployment with "code:push".`;
+      throw new Error(msg);
     }
 
     throw error;
   }
-};
-
-export const stopNewDeploymentWhileExistingInProgress = (
-  ctx: PushCommandTasksContext,
-  task: ListrTaskWrapper<PushCommandTasksContext, any>,
-) => {
-  const msg = `This deployment could not start, as there is already an existing deployment in progress for app version ${ctx.appVersionId}.
-   - Run the command "code:status -v ${ctx.appVersionId}" to check the existing deployment status.
-   - It might take a few minutes to complete, or if enough time passes so it will fail, you can try a new deployment with "code:push".`;
-  task.title = msg;
 };
 
 export const uploadAssetTask = async (
