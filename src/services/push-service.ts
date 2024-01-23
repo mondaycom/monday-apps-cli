@@ -1,5 +1,6 @@
 import axios from 'axios';
 import chalk from 'chalk';
+import { StatusCodes } from 'http-status-codes';
 import { ListrTaskWrapper } from 'listr2';
 
 import { getAppVersionDeploymentStatusUrl, getDeploymentClientUpload, getDeploymentSignedUrl } from 'consts/urls';
@@ -190,11 +191,22 @@ export const buildAssetToDeployTask = async (
 };
 
 export const prepareEnvironmentTask = async (ctx: PushCommandTasksContext) => {
-  const signedCloudStorageUrl = await getSignedStorageUrl(ctx.appVersionId);
-  const archiveContent = readFileData(ctx.archivePath!);
-  ctx.signedCloudStorageUrl = signedCloudStorageUrl;
-  ctx.archiveContent = archiveContent;
-  ctx.showUploadAssetTask = true;
+  try {
+    const signedCloudStorageUrl = await getSignedStorageUrl(ctx.appVersionId);
+    const archiveContent = readFileData(ctx.archivePath!);
+    ctx.signedCloudStorageUrl = signedCloudStorageUrl;
+    ctx.archiveContent = archiveContent;
+    ctx.showUploadAssetTask = true;
+  } catch (error: any | HttpError) {
+    if (error instanceof HttpError && error.code === StatusCodes.CONFLICT) {
+      const msg = `This deployment could not start, as there is already an existing deployment in progress for app version ${ctx.appVersionId}.
+   - Run the command "code:status -v ${ctx.appVersionId}" to check the existing deployment status.
+   - It might take a few minutes to complete, or if enough time passes so it will fail, you can try a new deployment with "code:push".`;
+      throw new Error(msg);
+    }
+
+    throw error;
+  }
 };
 
 export const uploadAssetTask = async (
