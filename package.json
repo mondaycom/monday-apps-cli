@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "start": "./bin/run.js",
-    "dev": "./bin/dev.js",
+    "dev": "yarn postpack && ./bin/dev.js",
     "build": "shx rm -rf dist && tsc -b && tsc-alias -f -p tsconfig.json",
     "lint": "eslint . --ext .ts --config .eslintrc",
     "lint:fix": "npm run lint -- --fix",
