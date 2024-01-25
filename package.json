@@ -21,7 +21,7 @@
   "scripts": {
     "start": "./bin/run.js",
     "dev": "yarn postpack && ./bin/dev.js",
-    "build": "shx rm -rf dist && tsc -b && tsc-alias -f -p tsconfig.json",
+    "build": "shx rm -rf dist && tsc -b build.tsconfig.json && tsc-alias -f -p build.tsconfig.json",
     "lint": "eslint . --ext .ts --config .eslintrc",
     "lint:fix": "npm run lint -- --fix",
     "postpack": "shx rm -f oclif.manifest.json",

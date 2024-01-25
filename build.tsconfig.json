@@ -1,30 +1,15 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["node", "jest"],
-    "sourceMap": true,
-    "noEmit": true,
-    "skipLibCheck": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "declaration": true,
-    "esModuleInterop": true,
-    "importHelpers": true,
-    "outDir": "dist",
-    "rootDirs": ["src", "test"],
+    "rootDir": "src",
     "baseUrl": ".",
+    "sourceMap": false,
+    "inlineSourceMap": false,
+    "noEmit": false,
     "strict": true,
-    "target": "ES2022",
-    "lib": [
-      "ES2022",
-      "DOM"
-    ],
     "paths": {
       "src/*": [
         "./src/*"
-      ],
-      "test/*": [
-        "./test/*"
       ],
       "consts/*": [
         "./src/consts/*"
@@ -49,13 +34,11 @@
       ]
     }
   },
-  "include": [
-    "src/**/*"
-  ],
   "exclude": [
     "test",
     "node_modules",
     "bin",
-    "dist"
+    "dist",
+    "./**/*/__tests__"
   ]
 }
