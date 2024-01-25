@@ -68,7 +68,7 @@ export const uploadClientZipFile = async (appVersionId: number, buffer: Buffer) 
   return response.data;
 };
 
-export const getAppVersionDeploymentStatus = async (appVersionId: number) => {
+export const getAppVersionDeploymentStatus = async (appVersionId: number, extendedRetryPolicy: boolean = false) => {
   try {
     const baseAppVersionIdStatusUrl = getAppVersionDeploymentStatusUrl(appVersionId);
     const url = appsUrlBuilder(baseAppVersionIdStatusUrl);
@@ -79,6 +79,7 @@ export const getAppVersionDeploymentStatus = async (appVersionId: number) => {
         method: HttpMethodTypes.GET,
       },
       appVersionDeploymentStatusSchema,
+      extendedRetryPolicy ? { shouldResetTimeout: true, retries: 6 } : undefined,
     );
     return response;
   } catch (error_: any | HttpError) {
@@ -107,7 +108,7 @@ export const pollForDeploymentStatus = async (
         DeploymentStatusTypesSchema['building-app'],
         DeploymentStatusTypesSchema['deploying-app'],
       ];
-      const response = await getAppVersionDeploymentStatus(appVersionId);
+      const response = await getAppVersionDeploymentStatus(appVersionId, true);
       if (statusesToKeepPolling.includes(response.status)) {
         if (progressLogger) {
           progressLogger(response.status, response.tip);
