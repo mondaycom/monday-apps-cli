@@ -36,3 +36,10 @@ export const createAppFeatureReleaseSchema = z
     app_feature: appFeatureSchema,
   })
   .merge(baseResponseHttpMetaDataSchema);
+
+export const createAppFeatureSchema = z
+  .object({
+    // eslint-disable-next-line camelcase
+    app_feature: appFeatureSchema,
+  })
+  .merge(baseResponseHttpMetaDataSchema);

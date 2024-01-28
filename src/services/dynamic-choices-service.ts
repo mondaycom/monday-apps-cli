@@ -67,6 +67,23 @@ export const DynamicChoicesService = {
     return { appId: chosenAppId, appVersionId };
   },
 
+  async chooseAppFeatureType(excludeTypes?: AppFeatureType[]) {
+    const featureTypes = Object.values(AppFeatureType);
+    const featureTypeChoicesMap: Record<string, AppFeatureType> = {};
+    for (const featureType of featureTypes) {
+      if (excludeTypes?.includes(featureType)) continue;
+      featureTypeChoicesMap[featureType] = featureType;
+    }
+
+    const selectedFeatureTypeKey = await PromptService.promptSelectionWithAutoComplete<string>(
+      'Select a feature type',
+      Object.keys(featureTypeChoicesMap),
+    );
+
+    const selectedFeatureType = featureTypeChoicesMap[selectedFeatureTypeKey];
+    return selectedFeatureType;
+  },
+
   async chooseBuild(appVersionId: number) {
     const appReleases = await listAppBuilds(appVersionId);
     const appReleaseChoicesMap: Record<string, number> = {};

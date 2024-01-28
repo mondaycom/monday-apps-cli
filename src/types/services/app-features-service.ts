@@ -3,11 +3,13 @@ import { z } from 'zod';
 import {
   appFeatureSchema,
   createAppFeatureReleaseSchema,
+  createAppFeatureSchema,
   listAppFeaturesSchema,
 } from 'src/services/schemas/app-features-schemas';
 
 export type AppFeature = z.infer<typeof appFeatureSchema>;
 export type ListAppFeatureResponse = z.infer<typeof listAppFeaturesSchema>;
+export type CreateAppFeatureRequest = z.infer<typeof createAppFeatureSchema>;
 export type CreateAppFeatureReleaseResponse = z.infer<typeof createAppFeatureReleaseSchema>;
 
 export enum BUILD_TYPES {
