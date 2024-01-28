@@ -3,7 +3,6 @@ import { Flags } from '@oclif/core';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { createAppFeature } from 'services/app-features-service';
-import { defaultVersionByAppId } from 'services/app-versions-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { PromptService } from 'services/prompt-service';
 import { AppFeatureType } from 'types/services/app-features-service';
@@ -32,35 +31,25 @@ export default class Create extends AuthenticatedCommand {
     }),
     featureType: Flags.string({
       char: 't',
-      aliases: ['feature-type'],
       description: MESSAGES.featureType,
     }),
     featureName: Flags.string({
       char: 'n',
-      aliases: ['feature-name'],
       description: MESSAGES.featureName,
     }),
   });
 
   static args = {};
-  DEBUG_TAG = 'app-feature_create';
+  DEBUG_TAG = 'app-feature-create';
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Create);
-    let appVersionId: number | undefined;
+    let appVersionId = flags.appVersionId;
     let appId = flags.appId;
     let appFeatureType = flags.featureType;
     let appFeatureName = flags.featureName;
 
     try {
-      if (appId) {
-        const latestDraftVersion = appVersionId ? { id: appVersionId } : await defaultVersionByAppId(Number(appId));
-        if (!latestDraftVersion) throw new Error('No editable version found for the given app id.');
-        appVersionId = latestDraftVersion.id;
-      } else {
-        appVersionId = flags.appVersionId;
-      }
-
       if (!appVersionId) {
         const appAndAppVersion = await DynamicChoicesService.chooseAppAndAppVersion(false, false, {
           appId,
