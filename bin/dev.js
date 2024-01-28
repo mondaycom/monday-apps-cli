@@ -10,6 +10,7 @@ process.env.NODE_ENV = 'development';
 
 // In dev mode, always show stack traces
 oclif.settings.debug = true;
+oclif.settings.tsnodeEnabled = true;
 
 // Start the CLI
 oclif

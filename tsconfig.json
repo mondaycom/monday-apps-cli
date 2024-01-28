@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "types": ["node", "jest"],
+    "sourceMap": true,
+    "noEmit": true,
     "skipLibCheck": true,
     "module": "esnext",
     "moduleResolution": "node",
@@ -8,7 +11,7 @@
     "esModuleInterop": true,
     "importHelpers": true,
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDirs": ["src", "test"],
     "baseUrl": ".",
     "strict": true,
     "target": "ES2022",
@@ -19,6 +22,9 @@
     "paths": {
       "src/*": [
         "./src/*"
+      ],
+      "test/*": [
+        "./test/*"
       ],
       "consts/*": [
         "./src/consts/*"
@@ -50,7 +56,6 @@
     "test",
     "node_modules",
     "bin",
-    "dist",
-    "./**/*/__tests__"
+    "dist"
   ]
 }

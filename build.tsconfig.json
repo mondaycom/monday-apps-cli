@@ -1,16 +1,15 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["node", "jest"],
-    "sourceMap": true,
-    "noEmit": true,
-    "rootDirs": ["src", "test"],
+    "rootDir": "src",
+    "baseUrl": ".",
+    "sourceMap": false,
+    "inlineSourceMap": false,
+    "noEmit": false,
+    "strict": true,
     "paths": {
       "src/*": [
         "./src/*"
-      ],
-      "test/*": [
-        "./test/*"
       ],
       "consts/*": [
         "./src/consts/*"
@@ -34,5 +33,12 @@
         "./src/commands-base/*"
       ]
     }
-  }
+  },
+  "exclude": [
+    "test",
+    "node_modules",
+    "bin",
+    "dist",
+    "./**/*/__tests__"
+  ]
 }

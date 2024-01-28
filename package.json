@@ -20,8 +20,8 @@
   ],
   "scripts": {
     "start": "./bin/run.js",
-    "dev": "./bin/dev.js",
-    "build": "shx rm -rf dist && tsc -b && tsc-alias -f -p tsconfig.json",
+    "dev": "yarn postpack && ./bin/dev.js",
+    "build": "shx rm -rf dist && tsc -b build.tsconfig.json && tsc-alias -f -p build.tsconfig.json",
     "lint": "eslint . --ext .ts --config .eslintrc",
     "lint:fix": "npm run lint -- --fix",
     "postpack": "shx rm -f oclif.manifest.json",
@@ -107,6 +107,7 @@
     "prettier": "^3.0.0",
     "shx": "^0.3.3",
     "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.6",
     "tslib": "^2.4.1",
     "tsx": "^3.12.7",
