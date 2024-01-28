@@ -80,7 +80,7 @@ export default class Create extends AuthenticatedCommand {
 
       if (
         !(Object.values(AppFeatureType) as string[]).includes(appFeatureType) ||
-        appFeatureType === AppFeatureType.AppFeatureOauth
+        appFeatureType === (AppFeatureType.AppFeatureOauth as string)
       ) {
         logger.error(`Invalid feature type`);
         return process.exit(0);
