@@ -15,7 +15,7 @@ function makeModuleNameMapper(srcPath, tsconfigPath) {
   return aliases;
 }
 
-const TS_CONFIG_PATH = './test/jest.tsconfig.json';
+const TS_CONFIG_PATH = './tsconfig.json';
 const SRC_PATH_MAPPING = {
   src: {jestPath: '<rootDir>/src', basePath: './src/'},
   test: {jestPath: '<rootDir>/test', basePath: './test/'},
