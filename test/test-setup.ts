@@ -1,37 +1,25 @@
-import {
-  getRawStderr,
-  getRawStdout,
-  clearStderr,
-  clearStdout,
-  getConfigDataByKeySpy,
-  processExistSpy,
-  clearDebugOutput,
-  getRawDebugOutput,
-} from './cli-test-utils';
+import { getConfigDataByKeySpy, processExistSpy, stderrWriteSpy, stdoutWriteSpy } from './cli-test-utils';
 import { enableDebugMode, default as logger } from 'utils/logger';
 
 enableDebugMode();
 
 function addLoggerSpies() {
-  let stdout = getRawStdout();
-  let stderr = getRawStderr();
-  const debugOutput = getRawDebugOutput();
-  jest.spyOn(logger, 'error').mockImplementation(val => stderr.push(val as string));
-  jest.spyOn(logger, 'log').mockImplementation(val => stdout.push(val as string));
-  jest.spyOn(logger, 'info').mockImplementation(val => stdout.push(val as string));
-  jest.spyOn(logger, 'warn').mockImplementation(val => stdout.push(val as string));
-  jest.spyOn(logger, 'table').mockImplementation(val => stdout.push(val as string));
-  jest.spyOn(logger, 'success').mockImplementation(val => stdout.push(val as string));
-  jest.spyOn(logger, 'debug').mockImplementation(val => debugOutput.push(val as string));
-}
+  jest.spyOn(logger, 'error').mockImplementation(val => console.error(val as string));
+  jest.spyOn(logger, 'log').mockImplementation(val => console.log(val as string));
+  jest.spyOn(logger, 'info').mockImplementation(val => console.info(val as string));
+  jest.spyOn(logger, 'warn').mockImplementation(val => console.warn(val as string));
+  jest.spyOn(logger, 'table').mockImplementation(val => console.table(val as string));
+  jest.spyOn(logger, 'success').mockImplementation(val => console.info(val as string));
+  jest.spyOn(logger, 'debug').mockImplementation(val => {
+    if (val instanceof Error) {
+      return console.error(val);
+    }
 
-function AddStderrSpy() {
-  let stderr = getRawStderr();
-  jest.spyOn(process.stderr, 'write').mockImplementation(stderrValue => stderr.push(stderrValue) > -1);
+    console.debug(val as string);
+  });
 }
 
 global.beforeEach(() => {
-  AddStderrSpy();
   addLoggerSpies();
   getConfigDataByKeySpy.mockReturnValue('mocked-access-token');
   // @ts-ignore
@@ -43,11 +31,10 @@ global.beforeEach(() => {
 });
 
 global.afterEach(() => {
-  clearStderr();
-  clearStdout();
-  clearDebugOutput();
   getConfigDataByKeySpy.mockReset();
   processExistSpy.mockReset();
+  stderrWriteSpy.mockReset();
+  stdoutWriteSpy.mockReset();
 });
 
 process.on('unhandledRejection', err => {

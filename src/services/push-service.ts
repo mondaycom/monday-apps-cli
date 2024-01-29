@@ -132,7 +132,10 @@ export const uploadFileToStorage = async (
 ): Promise<any> => {
   const DEBUG_TAG = 'upload_file_to_storage';
   try {
-    const response = await axios.put(cloudStorageUrl, fileData, {
+    const response = await axios.request({
+      method: 'put',
+      url: cloudStorageUrl,
+      data: fileData,
       headers: { 'Content-Type': fileType },
     });
     return response;
