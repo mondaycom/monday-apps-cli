@@ -2,7 +2,12 @@ import crypto from 'node:crypto';
 import https from 'node:https';
 
 import axios, { AxiosError } from 'axios';
-import { default as axiosRetry, isIdempotentRequestError, isNetworkError } from 'axios-retry';
+import {
+  IAxiosRetryConfig,
+  default as axiosRetry,
+  exponentialDelay,
+  isNetworkOrIdempotentRequestError,
+} from 'axios-retry';
 import { ZodObject } from 'zod/lib/types';
 
 import { CONFIG_KEYS } from 'consts/config';
@@ -16,15 +21,27 @@ import logger from 'utils/logger';
 
 const DEFAULT_TIMEOUT = 10 * 1000;
 
-axiosRetry(axios, {
-  retries: 5, // number of retries
-  retryDelay: retryCount => retryCount * 1000,
+/**
+ * Our default retry policy for axios-retry
+ * @see https://github.com/softonic/axios-retry?tab=readme-ov-file#usage
+ * shouldResetTimeout: if true, does not fail the entire process based on the time passed from the original request, but rather applies the timeout to each retry individually
+ * retryDelay: exponential delay with jitter, minimum 1 second before the 1st retry
+ * retryCondition: retry if network error (excluding CANCELED and ABORTED) or 5xx error on idempotent or safe requests (GET, HEAD, OPTIONS, PUT, DELETE)
+ */
+const DEFAULT_RETRY_POLICY: IAxiosRetryConfig = {
+  shouldResetTimeout: false,
+  retries: 3,
+  retryDelay: (...arg) => exponentialDelay(...arg, 1000),
   retryCondition: error => {
-    const retriableStatusCodes = [500, 502, 503, 504];
-    const isRetriableStatusCode = error.response && retriableStatusCodes.includes(error.response.status);
-    return isRetriableStatusCode || isNetworkError(error) || isIdempotentRequestError(error);
+    const retriableErrorCodes = ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED', 'ENOTFOUND'];
+    return retriableErrorCodes.includes(error?.code as string) || isNetworkOrIdempotentRequestError(error);
   },
-});
+};
+
+const configureRetryPolicy = (customPolicy: IAxiosRetryConfig): void => {
+  const retryPolicy = { ...DEFAULT_RETRY_POLICY, ...customPolicy };
+  axiosRetry(axios, retryPolicy);
+};
 
 const validateResponseIfError = (response: object, schemaValidator?: ZodObject<any>): object => {
   if (schemaValidator) {
@@ -70,8 +87,10 @@ const handleErrors = (error: any | Error | AxiosError): never => {
 export async function execute<T extends BaseResponseHttpMetaData>(
   params: ExecuteParams,
   schemaValidator?: ZodObject<any>,
+  retryPolicy: IAxiosRetryConfig = {},
 ): Promise<T> {
   const DEBUG_TAG = 'api_service';
+  configureRetryPolicy(retryPolicy);
   const accessToken = ConfigService.getConfigDataByKey(CONFIG_KEYS.ACCESS_TOKEN);
   if (!accessToken) {
     logger.error(ACCESS_TOKEN_NOT_FOUND);
