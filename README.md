@@ -1,11 +1,7 @@
-<h3 style="color:red"><b>Public access to this CLI is currently restricted but will become available in the next few
-months</b></h3>
-
----
-monday-code-cli
+monday-apps-cli
 =================
 
-monday.com cli tool for `<monday-code />` apps management.
+monday.com cli tool for monday apps management.
 
 <!-- toc -->
 * [Usage](#usage)
