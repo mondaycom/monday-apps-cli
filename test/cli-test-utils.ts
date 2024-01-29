@@ -1,50 +1,34 @@
 import axios from 'axios';
 import { ConfigService } from 'services/config-service';
+import { isDefined } from 'utils/guards';
 
-let stdout: (string | Uint8Array | object)[] = [];
-let stderr: (string | Uint8Array | object)[] = [];
+import { Command } from '@oclif/core';
+
+const ANSI_REGEX = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
+
 let debugOutput: (string | Uint8Array | object)[] = [];
 
 const axiosRequestSpy = jest.spyOn(axios, 'request');
 
 export const getConfigDataByKeySpy = jest.spyOn(ConfigService, 'getConfigDataByKey');
-
 export const processExistSpy = jest.spyOn(process, 'exit');
-
-export function getRawStdout() {
-  return stdout;
-}
-
-export function getRawStderr() {
-  return stderr;
-}
-
-export function getRawDebugOutput() {
-  return debugOutput;
-}
-
-export function clearDebugOutput() {
-  debugOutput = [];
-}
-
-export function clearStdout() {
-  stdout = [];
-}
-
-export function clearStderr() {
-  stderr = [];
-}
+export const stdoutWriteSpy = jest.spyOn(process.stdout, 'write');
+export const stderrWriteSpy = jest.spyOn(process.stderr, 'write');
 
 function joinOutputArray(arr: (string | Uint8Array | object)[]) {
   return arr.map(val => (typeof val === 'string' ? val : JSON.stringify(val))).join('');
 }
 
+const stripAnsi = (str: string) => str.replace(ANSI_REGEX, '');
+
 export function getStdout() {
-  return joinOutputArray(stdout);
+  const stdoutArgs = stdoutWriteSpy.mock.calls.map(args => args[0]);
+  return stripAnsi(joinOutputArray(stdoutArgs));
 }
 
 export function getStderr() {
-  return joinOutputArray(stderr);
+  const stderrArgs = stderrWriteSpy.mock.calls.map(args => args[0]);
+  return stripAnsi(joinOutputArray(stderrArgs));
 }
 
 export function getDebugOutput() {
@@ -64,3 +48,23 @@ export function resetRequestSpy() {
 export function getRequestSpy() {
   return axiosRequestSpy;
 }
+
+export const buildMockFlags = <T extends typeof Command>(
+  command: T,
+  flagsMap: Partial<Record<keyof T['flags'], string | number>>,
+): Array<string> => {
+  return Object.entries(flagsMap).flatMap(([flagName, value]) => buildMockFlag(command, flagName, value));
+};
+
+export const buildMockFlag = <T extends typeof Command>(
+  command: T,
+  flagName: keyof T['flags'],
+  value?: string | number,
+): Array<string> => {
+  const mockedFlag = [`-${command.flags[flagName].char}`];
+  if (isDefined(value)) {
+    mockedFlag.push(value.toString());
+  }
+
+  return mockedFlag;
+};

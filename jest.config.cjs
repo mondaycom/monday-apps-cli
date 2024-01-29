@@ -17,8 +17,8 @@ function makeModuleNameMapper(srcPath, tsconfigPath) {
 
 const TS_CONFIG_PATH = './tsconfig.json';
 const SRC_PATH_MAPPING = {
-  src: {jestPath: '<rootDir>/src', basePath: './src/'},
-  test: {jestPath: '<rootDir>/test', basePath: './test/'},
+  src: { jestPath: '<rootDir>/src', basePath: './src/' },
+  test: { jestPath: '<rootDir>/test', basePath: './test/' },
 };
 
 module.exports = {
@@ -26,12 +26,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/test/test-setup.ts'],
-  testPathIgnorePatterns: ['/node_modules/', '/dist/', '/bin/', '/.github/', '/patches/', '/scripts/'],
-  coverageReporters: ['json', 'lcov'],
-  coveragePathIgnorePatterns: [
-    '/node_modules/',
-    '<rootDir>/src/types',
-  ],
+  resolver: 'ts-jest-resolver',
   clearMocks: true,
   testTimeout: 10000,
 };

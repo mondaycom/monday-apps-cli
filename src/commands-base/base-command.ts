@@ -69,7 +69,6 @@ export abstract class BaseCommand extends Command {
       printGeneratedCommand(this._printContext.command, this._printContext.flags, this._printContext.args);
     }
 
-    process.exit(0);
-    return super.finally(_);
+    return process.exit(0);
   }
 }
