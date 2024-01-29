@@ -20,6 +20,10 @@ export const getAppFeaturesUrl = (appVersionId: number, types?: AppFeatureType[]
   return appFeatureTypes ? `${url}?${appFeatureTypes}` : url;
 };
 
+export const getCreateAppFeatureUrl = (appId: number, appVersionId: number): string => {
+  return `${BASE_APPS_URL}/${appId}/app-versions/${appVersionId}/app-features`;
+};
+
 export const getCreateAppFeatureReleaseUrl = (appId: number, appVersionId: number, appFeatureId: number): string => {
   return `${BASE_APPS_URL}/${appId}/versions/${appVersionId}/app-features/${appFeatureId}/releases`;
 };

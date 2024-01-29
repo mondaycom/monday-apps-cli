@@ -1,12 +1,17 @@
-import { getAppFeaturesUrl, getCreateAppFeatureReleaseUrl } from 'consts/urls';
+import { getAppFeaturesUrl, getCreateAppFeatureReleaseUrl, getCreateAppFeatureUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
-import { createAppFeatureReleaseSchema, listAppFeaturesSchema } from 'services/schemas/app-features-schemas';
+import {
+  createAppFeatureReleaseSchema,
+  createAppFeatureSchema,
+  listAppFeaturesSchema,
+} from 'services/schemas/app-features-schemas';
 import {
   AppFeature,
   AppFeatureType,
   AppReleaseSingleBuildCategory,
   BUILD_TYPES,
   CreateAppFeatureReleaseResponse,
+  CreateAppFeatureRequest,
   ListAppFeatureResponse,
 } from 'src/types/services/app-features-service';
 import logger from 'src/utils/logger';
@@ -84,6 +89,48 @@ const prepareReleaseByBuildType = (buildType: BUILD_TYPES, customUrl?: string) =
     default: {
       throw new Error('Invalid build type');
     }
+  }
+};
+
+export const createAppFeature = async ({
+  appId,
+  appVersionId,
+  appFeatureType,
+  options,
+}: {
+  appVersionId: AppVersionId;
+  appId: AppId;
+  appFeatureType: string;
+  options?: { name?: string; description?: string };
+}): Promise<AppFeature> => {
+  try {
+    const path = getCreateAppFeatureUrl(appId, appVersionId);
+    const url = appsUrlBuilder(path);
+    const response = await execute<CreateAppFeatureRequest>(
+      {
+        url,
+        headers: { Accept: 'application/json' },
+        method: HttpMethodTypes.POST,
+        body: {
+          name: options?.name,
+          type: appFeatureType,
+          data: {
+            description: options?.description,
+          },
+        },
+      },
+      createAppFeatureSchema,
+    );
+
+    const appFeature = response.app_feature;
+    return appFeature;
+  } catch (error: any) {
+    if (error instanceof HttpError) {
+      logger.error(error.message);
+      throw error;
+    }
+
+    throw new Error('Failed to create app feature.');
   }
 };
 
