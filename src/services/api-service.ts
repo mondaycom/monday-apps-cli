@@ -33,7 +33,8 @@ const DEFAULT_RETRY_POLICY: IAxiosRetryConfig = {
   retries: 3,
   retryDelay: (...arg) => exponentialDelay(...arg, 1000),
   retryCondition: error => {
-    return isNetworkOrIdempotentRequestError(error);
+    const retriableErrorCodes = ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED', 'ENOTFOUND'];
+    return retriableErrorCodes.includes(error?.code as string) || isNetworkOrIdempotentRequestError(error);
   },
 };
 
