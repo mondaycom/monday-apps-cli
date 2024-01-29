@@ -5,7 +5,14 @@ import CodePush from 'commands/code/push';
 import { getAppVersionDeploymentStatusUrl, getDeploymentSignedUrl } from 'consts/urls';
 import * as filesService from 'services/files-service';
 import { PromptService } from 'services/prompt-service';
-import { buildMockFlags, getRequestSpy, getStdout, resetRequestSpy } from 'test/cli-test-utils';
+import {
+  buildMockFlags,
+  getRequestSpy,
+  getStdout,
+  mockSelectionWithAutoCompleteImplementation,
+  resetMockSelectionWithAutoCompleteImplementation,
+  resetRequestSpy,
+} from 'test/cli-test-utils';
 import { DeploymentStatusTypesSchema } from 'types/services/push-service';
 
 const promptSelectionWithAutoCompleteSpy = jest.spyOn(PromptService, 'promptSelectionWithAutoComplete');
@@ -39,22 +46,15 @@ describe('code:push', () => {
   const MOCK_EMPTY_SERVER_RESPONSE = { data: {}, headers: {} };
 
   beforeEach(() => {
-    promptSelectionWithAutoCompleteSpy.mockImplementation(async (message: string, _choices: string[]) => {
-      if (message.includes('Select an app')) {
-        return 'mockAppId';
-      }
-
-      if (message.includes('Select an app version')) {
-        return 'mockAppVersionId';
-      }
-
-      throw new Error('Unexpected message');
-    });
+    jest.useFakeTimers();
     fsExistsSpy.mockReturnValue(true);
     fsReadFileSpy.mockImplementation(() => JSON.stringify({}));
     createTarGzArchiveSpy.mockResolvedValue('mockTarGzArchive');
-    jest.useFakeTimers();
     jest.spyOn(nodeTimersPromises, 'setTimeout').mockImplementation(async (_ms: number | undefined) => ({}));
+    mockSelectionWithAutoCompleteImplementation([
+      { answer: 'mockAppId', question: 'Select an app' },
+      { answer: 'mockAppVersionId', question: 'Select an app version' },
+    ]);
   });
 
   afterEach(() => {
@@ -63,6 +63,7 @@ describe('code:push', () => {
     fsReadFileSpy.mockReset();
     createTarGzArchiveSpy.mockReset();
     resetRequestSpy();
+    resetMockSelectionWithAutoCompleteImplementation();
   });
 
   it('Push should work', async () => {

@@ -3,6 +3,7 @@ import { ConfigService } from 'services/config-service';
 import { isDefined } from 'utils/guards';
 
 import { Command } from '@oclif/core';
+import { PromptService } from 'services/prompt-service';
 
 const ANSI_REGEX = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
 
@@ -14,6 +15,8 @@ export const getConfigDataByKeySpy = jest.spyOn(ConfigService, 'getConfigDataByK
 export const processExistSpy = jest.spyOn(process, 'exit');
 export const stdoutWriteSpy = jest.spyOn(process.stdout, 'write');
 export const stderrWriteSpy = jest.spyOn(process.stderr, 'write');
+
+const promptSelectionWithAutoCompleteSpy = jest.spyOn(PromptService, 'promptSelectionWithAutoComplete');
 
 function joinOutputArray(arr: (string | Uint8Array | object)[]) {
   return arr.map(val => (typeof val === 'string' ? val : JSON.stringify(val))).join('');
@@ -39,6 +42,22 @@ export function mockRequestResolvedValueOnce(response: unknown, responseHeaders?
   const headers = responseHeaders || {};
   const enrichedResponse = { data: response, headers };
   axiosRequestSpy.mockResolvedValueOnce(enrichedResponse);
+}
+
+export function mockSelectionWithAutoCompleteImplementation(prompts: Array<{ answer: string; question: string }>) {
+  promptSelectionWithAutoCompleteSpy.mockImplementation(async (message: string, _choices: string[]) => {
+    const selectedPrompt = prompts.find(({ answer, question }) => message.includes(question));
+
+    if (!selectedPrompt) {
+      throw new Error('Unexpected message');
+    }
+
+    return selectedPrompt.answer;
+  });
+}
+
+export function resetMockSelectionWithAutoCompleteImplementation() {
+  promptSelectionWithAutoCompleteSpy.mockReset();
 }
 
 export function resetRequestSpy() {
