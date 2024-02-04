@@ -13,3 +13,9 @@ export const listAppSchema = z
     apps: z.array(appSchema),
   })
   .merge(baseResponseHttpMetaDataSchema);
+
+export const createAppSchema = z
+  .object({
+    app: appSchema,
+  })
+  .merge(baseResponseHttpMetaDataSchema);

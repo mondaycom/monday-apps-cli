@@ -61,6 +61,10 @@ export const listAppsUrl = (): string => {
   return BASE_APPS_URL;
 };
 
+export const createAppUrl = (): string => {
+  return BASE_APPS_URL;
+};
+
 export const listAppVersionsByAppIdUrl = (appId: AppId): string => {
   return `${BASE_APPS_URL}/${appId}/versions`;
 };
