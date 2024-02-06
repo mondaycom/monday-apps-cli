@@ -12,7 +12,7 @@ export default class AppCreate extends AuthenticatedCommand {
   static examples = ['<%= config.bin %> <%= command.id %>', '<%= config.bin %> <%= command.id %> -n NEW_APP_NAME'];
 
   static flags = AppCreate.serializeFlags({
-    port: Flags.integer({
+    name: Flags.string({
       char: 'n',
       description: 'Name your new app.',
       required: false,
