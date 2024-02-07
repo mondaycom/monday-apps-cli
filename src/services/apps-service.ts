@@ -29,7 +29,7 @@ export const listApps = async (): Promise<Array<App>> => {
   }
 };
 
-export const createApp = async (name?: string): Promise<App> => {
+export const createApp = async (body?: { name?: string }): Promise<App> => {
   try {
     const path = createAppUrl();
     const url = appsUrlBuilder(path);
@@ -38,7 +38,7 @@ export const createApp = async (name?: string): Promise<App> => {
         url,
         headers: { Accept: 'application/json' },
         method: HttpMethodTypes.POST,
-        body: name ? { name } : undefined,
+        body,
       },
       createAppSchema,
     );

@@ -27,7 +27,7 @@ export default class AppCreate extends AuthenticatedCommand {
       const { name } = flags;
 
       logger.debug(`invoking create app: name=${name}`, this.DEBUG_TAG);
-      const app = await createApp();
+      const app = await createApp({ name });
       logger.success(`App created successfully: ${app.name} (id: ${app.id})`);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
