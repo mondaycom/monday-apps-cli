@@ -5,6 +5,7 @@ import { load } from 'js-yaml';
 
 import { BadConfigError } from 'errors/bad-config-error';
 import { ManifestFileSchema } from 'services/schemas/manifest-service-schemas';
+import { BUILD_TYPES, BUILD_TYPES_MANIFEST_FORMAT } from 'types/services/app-features-service';
 import logger from 'utils/logger';
 
 const MANIFEST_FILE_NAME = 'app-manifest.yml';
@@ -34,4 +35,10 @@ export const readManifestFile = (directoryPath: string, fileName = MANIFEST_FILE
 export const getManifestAssetPath = (manifestPath: string, relativePath: string) => {
   const assetPath = join(manifestPath, relativePath);
   return assetPath;
+};
+
+export const buildTypeManifestFormatMap = {
+  [BUILD_TYPES_MANIFEST_FORMAT.CUSTOM_URL]: BUILD_TYPES.CUSTOM_URL,
+  [BUILD_TYPES_MANIFEST_FORMAT.MONDAY_CODE]: BUILD_TYPES.MONDAY_CODE,
+  [BUILD_TYPES_MANIFEST_FORMAT.MONDAY_CODE_CDN]: BUILD_TYPES.MONDAY_CODE_CDN,
 };

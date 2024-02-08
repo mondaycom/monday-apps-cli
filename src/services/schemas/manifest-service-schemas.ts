@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { AppFeatureType, BUILD_TYPES } from 'types/services/app-features-service';
+import { AppFeatureType, BUILD_TYPES_MANIFEST_FORMAT } from 'types/services/app-features-service';
 import { ManifestHostingType } from 'types/services/manifest-service';
 
 const ManifestHostingSchema = z
@@ -15,7 +15,7 @@ export const ManifestFeatureSchema = z.object({
   name: z.string().optional(),
   build: z
     .object({
-      source: z.nativeEnum(BUILD_TYPES),
+      source: z.nativeEnum(BUILD_TYPES_MANIFEST_FORMAT),
       sufix: z.string().optional(),
     })
     .optional(),

@@ -6,7 +6,7 @@ import { createAppFeatureWithRelease } from 'services/app-features-service';
 import { defaultVersionByAppId } from 'services/app-versions-service';
 import { getMondayDomain } from 'services/env-service';
 import { cloneFolderFromGitRepo } from 'services/git-service';
-import { readManifestFile } from 'services/manifest-service';
+import { buildTypeManifestFormatMap, readManifestFile } from 'services/manifest-service';
 import { createAppSchema, listAppSchema } from 'services/schemas/apps-service-schemas';
 import { getTunnelingDomain } from 'services/tunnel-service';
 import { AppCreateCommandTasksContext } from 'types/commands/app-create';
@@ -89,7 +89,7 @@ export const createFeatures = async (ctx: AppCreateCommandTasksContext) => {
       appVersionId: defaultVersion.id,
       appFeatureType: feature.type,
       build: feature.build && {
-        buildType: feature.build.source,
+        buildType: buildTypeManifestFormatMap[feature.build.source],
         url: `https://${baseUrl}${feature.build.sufix}`,
       },
       options: { name: feature.name },

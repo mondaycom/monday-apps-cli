@@ -18,6 +18,12 @@ export enum BUILD_TYPES {
   MONDAY_CODE_CDN = 'monday_code_cdn',
 }
 
+export enum BUILD_TYPES_MANIFEST_FORMAT {
+  CUSTOM_URL = 'customUrl',
+  MONDAY_CODE = 'mondayCode',
+  MONDAY_CODE_CDN = 'mondayCodeCdn',
+}
+
 export enum AppReleaseSingleBuildCategory {
   MondayCode = 'monday_code',
   view = 'view',
