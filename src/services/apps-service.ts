@@ -8,6 +8,7 @@ import { getMondayDomain } from 'services/env-service';
 import { cloneFolderFromGitRepo } from 'services/git-service';
 import { readManifestFile } from 'services/manifest-service';
 import { createAppSchema, listAppSchema } from 'services/schemas/apps-service-schemas';
+import { getTunnelingDomain } from 'services/tunnel-service';
 import { AppCreateCommandTasksContext } from 'types/commands/app-create';
 import { HttpError } from 'types/errors';
 import { HttpMethodTypes } from 'types/services/api-service';
@@ -79,6 +80,7 @@ export const cloneAppTemplateAndLoadManifest = async (
 
 export const createFeatures = async (ctx: AppCreateCommandTasksContext) => {
   const defaultVersion = await defaultVersionByAppId(ctx.appId!, false);
+  const baseUrl = await getTunnelingDomain();
   if (!defaultVersion) throw new Error(`No default version found for app id - ${ctx.appId}`);
   ctx.appVersionId = defaultVersion.id;
   const createFeaturesPromises = ctx.features?.map(feature => {
@@ -88,7 +90,7 @@ export const createFeatures = async (ctx: AppCreateCommandTasksContext) => {
       appFeatureType: feature.type,
       build: feature.build && {
         buildType: feature.build.source,
-        url: `https://baseUrl${feature.build.sufix}`,
+        url: `https://${baseUrl}${feature.build.sufix}`,
       },
       options: { name: feature.name },
     });

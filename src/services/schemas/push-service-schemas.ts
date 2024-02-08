@@ -24,6 +24,12 @@ export const tunnelAuthTokenSchema = z
   })
   .merge(baseResponseHttpMetaDataSchema);
 
+export const tunnelDomainSchema = z
+  .object({
+    domain: z.string(),
+  })
+  .merge(baseResponseHttpMetaDataSchema);
+
 export const deploymentStatusTypesArray = [
   'started',
   'pending',
