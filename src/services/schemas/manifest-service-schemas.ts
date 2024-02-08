@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { AppFeatureType, BUILD_TYPES } from 'types/services/app-features-service';
 import { ManifestHostingType } from 'types/services/manifest-service';
 
 const ManifestHostingSchema = z
@@ -9,18 +10,32 @@ const ManifestHostingSchema = z
   })
   .strict();
 
+export const ManifestFeatureSchema = z.object({
+  type: z.nativeEnum(AppFeatureType),
+  name: z.string().optional(),
+  build: z
+    .object({
+      source: z.nativeEnum(BUILD_TYPES),
+      sufix: z.string().optional(),
+    })
+    .optional(),
+});
+
 export const ManifestFileSchema = z
   .object({
     version: z.string(),
     app: z
       .object({
         id: z.string().optional(),
+        name: z.string().optional(),
         hosting: z
           .object({
             cdn: ManifestHostingSchema.optional(),
             server: ManifestHostingSchema.optional(),
           })
-          .strict(),
+          .strict()
+          .optional(),
+        features: z.array(ManifestFeatureSchema).optional(),
       })
       .strict(),
   })

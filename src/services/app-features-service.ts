@@ -172,3 +172,30 @@ export const createAppFeatureRelease = async ({
     throw new Error('Failed to list app features.');
   }
 };
+
+export const createAppFeatureWithRelease = async ({
+  appId,
+  appVersionId,
+  appFeatureType,
+  build,
+  options,
+}: {
+  appId: AppId;
+  appVersionId: AppVersionId;
+  appFeatureType: string;
+  build?: { buildType: BUILD_TYPES; url: string };
+  options?: { name?: string; description?: string; customUrl?: string };
+}): Promise<AppFeature> => {
+  const appFeature = await createAppFeature({ appId, appVersionId, appFeatureType, options });
+  if (build) {
+    await createAppFeatureRelease({
+      appId,
+      appVersionId,
+      appFeatureId: appFeature.id,
+      buildType: build.buildType,
+      customUrl: build.url,
+    });
+  }
+
+  return appFeature;
+};

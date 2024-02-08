@@ -1,3 +1,4 @@
+import { APP_TEMPLATES_CONFIG } from 'consts/app-templates-config';
 import { APP_VERSION_STATUS } from 'consts/app-versions';
 import { listAppBuilds } from 'services/app-builds-service';
 import { listAppFeaturesByAppVersionId } from 'services/app-features-service';
@@ -119,5 +120,13 @@ export const DynamicChoicesService = {
     );
 
     return appFeatureChoicesMap[selectedAppFeatureKey];
+  },
+
+  async chooseAppTemplate() {
+    const selectedTemplateName = await PromptService.promptList(
+      'Select a template to start with',
+      APP_TEMPLATES_CONFIG.map(template => template.name),
+    );
+    return APP_TEMPLATES_CONFIG.find(template => template.name === selectedTemplateName)!;
   },
 };

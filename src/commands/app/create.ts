@@ -1,7 +1,13 @@
+import path from 'node:path';
+
 import { Flags } from '@oclif/core';
+import { Listr } from 'listr2';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
-import { createApp } from 'services/apps-service';
+import { cloneAppTemplateAndLoadManifest, createApp, createFeatures, finishCreateApp } from 'services/apps-service';
+import { DynamicChoicesService } from 'services/dynamic-choices-service';
+import { PromptService } from 'services/prompt-service';
+import { AppCreateCommandTasksContext } from 'types/commands/app-create';
 import logger from 'utils/logger';
 
 export default class AppCreate extends AuthenticatedCommand {
@@ -24,11 +30,22 @@ export default class AppCreate extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(AppCreate);
-      const { name } = flags;
 
-      logger.debug(`invoking create app: name=${name}`, this.DEBUG_TAG);
-      const app = await createApp({ name });
-      logger.success(`App created successfully: ${app.name} (id: ${app.id})`);
+      if (!flags.name) {
+        flags.name = await PromptService.promptInput('Enter app name:');
+      }
+
+      const { githubUrl, folder, branch } = await DynamicChoicesService.chooseAppTemplate();
+      const selectedTemplatePath = path.join('./', folder.split('/').pop()!);
+
+      const tasks = new Listr<AppCreateCommandTasksContext>([
+        { title: 'Downloading template', task: cloneAppTemplateAndLoadManifest },
+        { title: 'Creating app', task: createApp },
+        { title: 'Creating features', task: createFeatures },
+        { title: 'Finalizing', task: finishCreateApp },
+      ]);
+
+      await tasks.run({ appName: flags.name, targetPath: selectedTemplatePath, folder: folder, branch, githubUrl });
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
 

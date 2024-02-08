@@ -32,6 +32,7 @@ USAGE
 * [`mapps app-features:list`](#mapps-app-featureslist)
 * [`mapps app-version:builds`](#mapps-app-versionbuilds)
 * [`mapps app-version:list`](#mapps-app-versionlist)
+* [`mapps app:create`](#mapps-appcreate)
 * [`mapps app:deploy`](#mapps-appdeploy)
 * [`mapps app:list`](#mapps-applist)
 * [`mapps autocomplete [SHELL]`](#mapps-autocomplete-shell)
@@ -174,6 +175,32 @@ EXAMPLES
 ```
 
 _See code: [src/commands/app-version/list.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.3.0/src/commands/app-version/list.ts)_
+
+## `mapps app:create`
+
+Create an app.
+
+```
+USAGE
+  $ mapps app:create [--verbose] [--print-command] [-n <value>]
+
+FLAGS
+  -n, --name=<value>  Name your new app.
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  Create an app.
+
+EXAMPLES
+  $ mapps app:create
+
+  $ mapps app:create -n NEW_APP_NAME
+```
+
+_See code: [src/commands/app/create.ts](https://github.com/mondaycom/monday-code-cli/blob/v2.3.0/src/commands/app/create.ts)_
 
 ## `mapps app:deploy`
 
