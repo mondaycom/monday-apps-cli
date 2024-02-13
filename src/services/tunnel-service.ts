@@ -1,13 +1,14 @@
 import * as ngrok from '@ngrok/ngrok';
 import { ListrTaskWrapper } from 'listr2';
 
-import { generateTunnelingTokenUrl } from 'consts/urls';
+import { generateTunnelingTokenUrl, getTunnelingDomainUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
-import { tunnelAuthTokenSchema } from 'services/schemas/push-service-schemas';
+import { tunnelAuthTokenSchema, tunnelDomainSchema } from 'services/schemas/push-service-schemas';
 import { TunnelCommandTasksContext } from 'types/commands/tunnel';
 import { HttpError } from 'types/errors';
+import { AppId } from 'types/general';
 import { HttpMethodTypes } from 'types/services/api-service';
-import { TunnelAuthToken } from 'types/services/tunnel-service';
+import { TunnelAuthToken, TunnelDomain } from 'types/services/tunnel-service';
 import logger from 'utils/logger';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
@@ -46,6 +47,29 @@ export const generateTunnelingAuthToken = async (ctx: TunnelCommandTasksContext)
     };
   } catch (error: any | HttpError) {
     handleError(error, DEBUG_TAG, 'Failed to generate tunneling auth token.');
+  }
+};
+
+export const getTunnelingDomain = async (appId?: AppId) => {
+  const DEBUG_TAG = 'get_tunneling_domain';
+  try {
+    const baseUrl = getTunnelingDomainUrl();
+    const url = appsUrlBuilder(baseUrl);
+    const response = await execute<TunnelDomain>(
+      {
+        url,
+        headers: { Accept: 'application/json' },
+        method: HttpMethodTypes.GET,
+        query: {
+          appId,
+        },
+      },
+      tunnelDomainSchema,
+    );
+
+    return response.domain;
+  } catch (error: any | HttpError) {
+    handleError(error, DEBUG_TAG, 'Failed to get tunneling domain.');
   }
 };
 
