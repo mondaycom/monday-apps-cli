@@ -187,7 +187,8 @@ export const createAppFeatureWithRelease = async ({
   options?: { name?: string; description?: string; customUrl?: string };
 }): Promise<AppFeature> => {
   const appFeature = await createAppFeature({ appId, appVersionId, appFeatureType, options });
-  if (build) {
+  if (!build) return appFeature;
+  try {
     await createAppFeatureRelease({
       appId,
       appVersionId,
@@ -195,6 +196,10 @@ export const createAppFeatureWithRelease = async ({
       buildType: build.buildType,
       customUrl: build.url,
     });
+  } catch (error: any) {
+    logger.debug((error as Error).message);
+    logger.error('Failed to connect app feature to release.');
+    throw error;
   }
 
   return appFeature;

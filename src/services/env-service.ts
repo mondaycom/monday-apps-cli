@@ -7,11 +7,6 @@ export const getAppsDomain = (): string => {
   return appsDomain;
 };
 
-export const getMondayDomain = (): string => {
-  const mondayDomain = process.env.MONDAY_DOMAIN! || 'https://monday.com';
-  return mondayDomain;
-};
-
 export const initCurrentWorkingDirectory = (): string => {
   process.env.CURRENT_WORKING_DIRECTORY = process.cwd();
   return process.env.CURRENT_WORKING_DIRECTORY;

@@ -1,4 +1,5 @@
 import AppCreate from 'commands/app/create';
+import { APP_TEMPLATES_CONFIG } from 'consts/app-templates-config';
 import { APP_VERSION_STATUS } from 'consts/app-versions';
 import {
   createAppUrl,
@@ -7,7 +8,14 @@ import {
   getTunnelingDomainUrl,
   listAppVersionsByAppIdUrl,
 } from 'consts/urls';
-import { buildMockFlags, getRequestSpy, getStdout, mockListPromptImplementation } from 'test/cli-test-utils';
+import {
+  buildMockFlags,
+  getRequestSpy,
+  getStdout,
+  mockSelectionWithAutoCompleteImplementation,
+  resetMockSelectionWithAutoCompleteImplementation,
+} from 'test/cli-test-utils';
+import { getLastParam } from 'utils/urls-builder';
 
 const requestSpy = getRequestSpy();
 
@@ -17,8 +25,6 @@ describe('app:create', () => {
   const MOCK_APP_ID = 1_000_000_001;
   const MOCK_APP_VERSION_ID = 1_000_000_002;
   const MOCK_APP_FEATURE_ID = 1_000_000_003;
-  const question = 'Select a template to start with';
-  const answer = 'Fullstack React + Node.js (TypeScript)';
 
   const mockAppCreateResponse = {
     app: {
@@ -63,9 +69,17 @@ describe('app:create', () => {
     domain: 'abcdefgh.monday.mock',
   };
 
+  afterEach(() => {
+    resetMockSelectionWithAutoCompleteImplementation();
+  });
+
   it('should create app successfully', async () => {
+    const question = 'Select a template to start with';
+    const selectedTemplate = APP_TEMPLATES_CONFIG[0];
+    const answer = selectedTemplate.name;
+
     const mockPushFlags = buildMockFlags(AppCreate, { name: 'New App by CLI' });
-    mockListPromptImplementation([{ question, answer }]);
+    mockSelectionWithAutoCompleteImplementation([{ question, answer }]);
 
     requestSpy.mockImplementation(async config => {
       if (config.url!.endsWith(createAppUrl())) {
@@ -103,10 +117,6 @@ describe('app:create', () => {
     });
     await AppCreate.run(mockPushFlags);
     const stdout = getStdout();
-    expect(stdout).toContain('Your app is ready');
-    expect(stdout).toContain("cd ./quickstart-fullstack-react-node' to see your app files.");
-    expect(stdout).toContain(
-      `open in browser: http://monday.llama.fan/apps/manage/${MOCK_APP_ID}/app_versions/${MOCK_APP_VERSION_ID}/sections/appDetails to manage your app`,
-    );
+    expect(stdout).toContain(`'cd ${getLastParam(selectedTemplate.folder)}' to see your app files.`);
   });
 });

@@ -123,7 +123,7 @@ export const DynamicChoicesService = {
   },
 
   async chooseAppTemplate() {
-    const selectedTemplateName = await PromptService.promptList(
+    const selectedTemplateName = await PromptService.promptSelectionWithAutoComplete(
       'Select a template to start with',
       APP_TEMPLATES_CONFIG.map(template => template.name),
     );

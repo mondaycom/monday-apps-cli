@@ -18,6 +18,8 @@ describe('app:list', () => {
   it('should list apps if exists', async () => {
     mockRequestResolvedValueOnce(mockAppListResponse);
     await AppList.run();
+
+    // requires investigation - This should work with getStderr
     const stdout = getStdout();
     expect(stdout).toContain('app1');
     expect(stdout).toContain('app2');
