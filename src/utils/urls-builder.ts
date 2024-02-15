@@ -6,4 +6,8 @@ const appsUrlBuilder = (url: string): string => {
   return constructedUrl.href;
 };
 
-export { appsUrlBuilder };
+const getLastParam = (url: string): string => {
+  return url.split('/').pop() || url;
+};
+
+export { appsUrlBuilder, getLastParam };

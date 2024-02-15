@@ -84,3 +84,7 @@ export const appReleasesUrl = (appVersionId: AppId): string => {
 export const generateTunnelingTokenUrl = (): string => {
   return `${BASE_MONDAY_CODE_URL}/tunnel-token`;
 };
+
+export const getTunnelingDomainUrl = (): string => {
+  return `${BASE_MONDAY_CODE_URL}/tunnel-domain`;
+};
