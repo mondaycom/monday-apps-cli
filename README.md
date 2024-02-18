@@ -27,6 +27,7 @@ USAGE
 # Commands
 
 <!-- commands -->
+* [`mapps api:generate`](#mapps-api-generate)
 * [`mapps app-features:build`](#mapps-app-featuresbuild)
 * [`mapps app-features:create`](#mapps-app-featurescreate)
 * [`mapps app-features:list`](#mapps-app-featureslist)
@@ -45,6 +46,10 @@ USAGE
 * [`mapps storage:export`](#mapps-storageexport)
 * [`mapps storage:search`](#mapps-storagesearch)
 * [`mapps tunnel:create`](#mapps-tunnelcreate)
+
+## `api:generate`
+Prepares your environment for custom queries development.
+run it from your root directory and itl create all neccesary files and scripts to start working with the api.
 
 ## `mapps app-features:build`
 
