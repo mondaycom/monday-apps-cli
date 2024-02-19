@@ -47,9 +47,9 @@ USAGE
 * [`mapps storage:search`](#mapps-storagesearch)
 * [`mapps tunnel:create`](#mapps-tunnelcreate)
 
-## `api:generate`
-Prepares your environment for custom queries development.
-run it from your root directory and itl create all neccesary files and scripts to start working with the api.
+## `mapps api:generate`
+
+Run the setup-api-monday command from @mondaycom/setup-api';
 
 ## `mapps app-features:build`
 
