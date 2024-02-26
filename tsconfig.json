@@ -50,12 +50,12 @@
     }
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
   ],
   "exclude": [
     "test",
     "node_modules",
     "bin",
-    "dist"
+    "dist",
   ]
 }

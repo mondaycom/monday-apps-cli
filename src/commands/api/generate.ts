@@ -6,8 +6,6 @@ import logger from 'utils/logger';
 
 export default class ApiGenerate extends Command {
   DEBUG_TAG = 'api:generate';
-  // TODO: yarn add @mondaycom/setup-api - when this package is published
-  // TODO: bump version and run the prepublish script
 
   static description = `Prepares your environment for custom queries development.
                         run it from your root directory and it will create all neccesary files and scripts
@@ -25,7 +23,7 @@ export default class ApiGenerate extends Command {
 
   runSetupApi() {
     return new Promise<void>((resolve, reject) => {
-      const setupApiProcess = spawn('npx', ['setup-api-monday'], { stdio: 'inherit' });
+      const setupApiProcess = spawn('npx', ['setup-api-monday@^1.0.0'], { stdio: 'inherit' });
 
       setupApiProcess.on('close', code => {
         if (code === 0) {
