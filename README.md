@@ -16,7 +16,7 @@ $ npm install -g @mondaycom/apps-cli
 $ mapps COMMAND
 running command...
 $ mapps (--version)
-@mondaycom/apps-cli/2.3.4 darwin-arm64 node-v18.19.0
+@mondaycom/apps-cli/2.3.4 darwin-arm64 node-v18.12.1
 $ mapps --help [COMMAND]
 USAGE
   $ mapps COMMAND
@@ -49,15 +49,15 @@ USAGE
 
 ## `mapps api:generate`
 
-Prepares your environment for custom queries development.
+Prepares your environment for custom queries development. run it from your root directory!
 
 ```
 USAGE
   $ mapps api:generate
 
 DESCRIPTION
-  Prepares your environment for custom queries development.
-  run it from your root directory and it will create all neccesary files and scripts
+  Prepares your environment for custom queries development. run it from your root directory!
+  Creates all neccesary files and scripts
   to start working with custom api queries and mutations.
 ```
 
