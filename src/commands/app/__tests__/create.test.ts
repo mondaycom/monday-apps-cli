@@ -46,6 +46,7 @@ describe('app:create', () => {
   };
 
   const mockAppFeaturesResponse = {
+    // eslint-disable-next-line camelcase
     app_feature: {
       id: MOCK_APP_FEATURE_ID,
       appVersionId: MOCK_APP_VERSION_ID,
@@ -56,6 +57,7 @@ describe('app:create', () => {
   };
 
   const mockAppFeatureBuildResponse = {
+    // eslint-disable-next-line camelcase
     app_feature: {
       id: MOCK_APP_FEATURE_ID,
       appVersionId: MOCK_APP_VERSION_ID,
