@@ -33,12 +33,20 @@ export const listAppVersionsByAppId = async (appId: AppId): Promise<Array<AppVer
 };
 
 export const defaultVersionByAppId = async (appId: AppId, useLiveVersion = false): Promise<AppVersion | undefined> => {
-  logger.info(`Using latest draft version for app id - ${appId}`);
+  logger.info(`Getting the latest valid version for app id - ${appId}`);
 
   const appVersions = await listAppVersionsByAppId(appId);
   const latestVersion = appVersions.sort((a, b) => b.id - a.id)[0];
   const allowedStatuses = useLiveVersion
     ? [APP_VERSION_STATUS.LIVE, APP_VERSION_STATUS.DRAFT]
     : [APP_VERSION_STATUS.DRAFT];
-  return allowedStatuses.includes(latestVersion.status) ? latestVersion : undefined;
+
+  const validVersion = allowedStatuses.includes(latestVersion.status) ? latestVersion : undefined;
+  if (validVersion) {
+    logger.info(`Using version - ${validVersion?.id} for app id - ${appId}`);
+  } else {
+    logger.error(`No valid version found for app id - ${appId}`);
+  }
+
+  return validVersion;
 };

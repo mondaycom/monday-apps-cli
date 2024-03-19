@@ -16,7 +16,7 @@ $ npm install -g @mondaycom/apps-cli
 $ mapps COMMAND
 running command...
 $ mapps (--version)
-@mondaycom/apps-cli/2.3.4 darwin-arm64 node-v18.12.1
+@mondaycom/apps-cli/2.3.4 darwin-arm64 node-v18.19.0
 $ mapps --help [COMMAND]
 USAGE
   $ mapps COMMAND

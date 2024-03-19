@@ -13,10 +13,10 @@ export default class ApiGenerate extends BaseCommand {
   async run() {
     try {
       await this.runSetupApi();
-      logger.info('setup-api completed successfully.');
+      logger.info('setup-api completed successfully');
     } catch (error) {
       logger.debug(error, this.DEBUG_TAG);
-      logger.error(`setup-api failed, please make sure you run it in your root directory and try again}`);
+      logger.error(`setup-api failed, please make sure you run it in your root directory and try again`);
       throw error;
     }
   }
