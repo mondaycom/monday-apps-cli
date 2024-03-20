@@ -8,7 +8,8 @@ export default class ApiGenerate extends BaseCommand {
 
   static description = `Prepares your environment for custom queries development. run it from your root directory!
                         Creates all neccesary files and scripts
-                        to start working with custom api queries and mutations.`;
+                        to start working with custom api queries and mutations.
+                        Read the documentation at [@mondaydotcomorg/setup-api](https://github.com/mondaycom/monday-graphql-api/tree/main/packages/setup-api)`;
 
   async run() {
     try {
