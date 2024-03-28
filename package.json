@@ -1,16 +1,16 @@
 {
   "name": "@mondaycom/apps-cli",
-  "version": "2.3.3",
+  "version": "2.3.5",
   "description": "A cli tool to manage apps (and monday-code projects) in monday.com",
   "author": "monday.com Apps Team",
   "type": "module",
   "bin": {
     "mapps": "./bin/run.js"
   },
-  "homepage": "https://github.com/mondaycom/monday-code-cli",
+  "homepage": "https://github.com/mondaycom/monday-apps-cli",
   "license": "MIT",
   "main": "dist/index.js",
-  "repository": "mondaycom/monday-code-cli",
+  "repository": "mondaycom/monday-apps-cli",
   "files": [
     "/bin",
     "/dist",
@@ -37,11 +37,12 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "bugs": "https://github.com/mondaycom/monday-code-cli/issues",
+  "bugs": "https://github.com/mondaycom/monday-apps-cli/issues",
   "keywords": [
     "monday.com",
     "monday",
     "monday-code",
+    "monday-apps",
     "oclif",
     "cli"
   ],
