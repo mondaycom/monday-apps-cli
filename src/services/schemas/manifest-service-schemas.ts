@@ -16,7 +16,7 @@ export const ManifestFeatureSchema = z.object({
   build: z
     .object({
       source: z.nativeEnum(BUILD_TYPES_MANIFEST_FORMAT),
-      sufix: z.string().optional(),
+      suffix: z.string().optional(),
     })
     .optional(),
 });
