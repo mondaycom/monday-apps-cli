@@ -18,6 +18,7 @@ import { pollPromise } from 'services/polling-service';
 import { appVersionDeploymentStatusSchema, signedUrlSchema } from 'services/schemas/push-service-schemas';
 import { PushCommandTasksContext } from 'types/commands/push';
 import { HttpError } from 'types/errors';
+import { Region } from 'types/general/region';
 import { TimeInMs } from 'types/general/time';
 import { HttpMethodTypes } from 'types/services/api-service';
 import {
@@ -28,15 +29,19 @@ import {
 } from 'types/services/push-service';
 import logger from 'utils/logger';
 import { createProgressBarString } from 'utils/progress-bar';
+import { queryBuilderAddRegion } from 'utils/region';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
-export const getSignedStorageUrl = async (appVersionId: number): Promise<string> => {
+export const getSignedStorageUrl = async (appVersionId: number, region?: Region): Promise<string> => {
   const DEBUG_TAG = 'get_signed_storage_url';
   try {
     const baseSignUrl = getDeploymentSignedUrl(appVersionId);
     const url = appsUrlBuilder(baseSignUrl);
+    const query = queryBuilderAddRegion({}, region);
+
     const response = await execute<SignedUrl>(
       {
+        query,
         url,
         headers: { Accept: 'application/json' },
         method: HttpMethodTypes.POST,
@@ -68,12 +73,15 @@ export const uploadClientZipFile = async (appVersionId: number, buffer: Buffer) 
   return response.data;
 };
 
-export const getAppVersionDeploymentStatus = async (appVersionId: number) => {
+export const getAppVersionDeploymentStatus = async (appVersionId: number, region?: Region) => {
   try {
     const baseAppVersionIdStatusUrl = getAppVersionDeploymentStatusUrl(appVersionId);
     const url = appsUrlBuilder(baseAppVersionIdStatusUrl);
+    const query = queryBuilderAddRegion({}, region);
+
     const response = await execute<AppVersionDeploymentStatus>(
       {
+        query,
         url,
         headers: { Accept: 'application/json' },
         method: HttpMethodTypes.GET,

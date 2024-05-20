@@ -1,6 +1,7 @@
 import { Flags } from '@oclif/core';
 import { Relationship } from '@oclif/core/lib/interfaces/parser';
 
+import { addToRegionToFlags } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ENV_MANAGEMENT_MODES } from 'consts/manage-app-env';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
@@ -8,6 +9,7 @@ import { handleEnvironmentRequest, listAppEnvKeys } from 'services/manage-app-en
 import { PromptService } from 'services/prompt-service';
 import { ManageAppEnvFlags } from 'types/commands/manage-app-env';
 import { AppId } from 'types/general';
+import { Region } from 'types/general/region';
 import logger from 'utils/logger';
 
 const MODES_WITH_KEYS: Array<APP_ENV_MANAGEMENT_MODES> = [
@@ -68,34 +70,37 @@ export default class Env extends AuthenticatedCommand {
 
   static examples = ['<%= config.bin %> <%= command.id %>'];
 
-  static flags = Env.serializeFlags({
-    appId: Flags.integer({
-      char: 'i',
-      aliases: ['a'],
-      description: 'The id of the app to manage environment variables for',
+  static flags = Env.serializeFlags(
+    addToRegionToFlags({
+      appId: Flags.integer({
+        char: 'i',
+        aliases: ['a'],
+        description: 'The id of the app to manage environment variables for',
+      }),
+      mode: Flags.string({
+        char: 'm',
+        description: 'management mode',
+        options: Object.values(APP_ENV_MANAGEMENT_MODES),
+      }),
+      key: Flags.string({
+        char: 'k',
+        description: 'variable key [required for set and delete]]',
+        relationships: [flagsWithModeRelationships],
+      }),
+      value: Flags.string({
+        char: 'v',
+        description: 'variable value [required for set]',
+        relationships: [flagsWithModeRelationships],
+      }),
     }),
-    mode: Flags.string({
-      char: 'm',
-      description: 'management mode',
-      options: Object.values(APP_ENV_MANAGEMENT_MODES),
-    }),
-    key: Flags.string({
-      char: 'k',
-      description: 'variable key [required for set and delete]]',
-      relationships: [flagsWithModeRelationships],
-    }),
-    value: Flags.string({
-      char: 'v',
-      description: 'variable value [required for set]',
-      relationships: [flagsWithModeRelationships],
-    }),
-  });
+  );
 
   static args = {};
   DEBUG_TAG = 'env';
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(Env);
+      const { region } = flags;
       let { mode, key, value, appId } = flags as ManageAppEnvFlags;
 
       if (!appId) {
@@ -107,7 +112,7 @@ export default class Env extends AuthenticatedCommand {
       value = await promptForValueIfNotProvided(mode, value);
       this.preparePrintCommand(this, { appId, mode, key, value });
 
-      await handleEnvironmentRequest(appId, mode, key, value);
+      await handleEnvironmentRequest(appId, mode, key, value, region as Region);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
 

@@ -1,6 +1,7 @@
 import { Flags } from '@oclif/core';
 import { Relationship } from '@oclif/core/lib/interfaces/parser';
 
+import { addToRegionToFlags } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { streamMessages } from 'services/client-channel-service';
@@ -8,6 +9,7 @@ import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { logsStream } from 'services/notification-service';
 import { PromptService } from 'services/prompt-service';
 import { EventSource, LogType, LogsCommandArguments, LogsFilterCriteriaArguments } from 'types/commands/logs';
+import { Region } from 'types/general/region';
 import { isDefined } from 'utils/guards';
 import logger from 'utils/logger';
 import { TIME_IN_MILLISECONDS } from 'utils/time-enum';
@@ -46,36 +48,38 @@ export default class Logs extends AuthenticatedCommand {
 
   static examples = ['<%= config.bin %> <%= command.id %> -i APP_VERSION_ID -t LOGS_TYPE'];
 
-  static flags = Logs.serializeFlags({
-    appVersionId: Flags.integer({
-      char: 'i',
-      aliases: ['v'],
-      description: APP_VERSION_ID_TO_ENTER,
+  static flags = Logs.serializeFlags(
+    addToRegionToFlags({
+      appVersionId: Flags.integer({
+        char: 'i',
+        aliases: ['v'],
+        description: APP_VERSION_ID_TO_ENTER,
+      }),
+      logsType: Flags.string({
+        char: 't',
+        description: LOGS_TYPE_TO_LISTEN_PROMPT_MESSAGE,
+      }),
+      eventSource: Flags.string({
+        char: 's',
+        description: EVENT_SOURCE,
+      }),
+      logsStartDate: Flags.string({
+        char: 'f',
+        description: 'Start date (MM/DD/YYYY HH:mm) e.g. "03/24/1983 15:45"' + SUPPORTED_HISTORY_FLAGS,
+        relationships,
+      }),
+      logsEndDate: Flags.string({
+        char: 'e',
+        description: 'End date (MM/DD/YYYY HH:mm) e.g. "03/25/1983 16:45"' + SUPPORTED_HISTORY_FLAGS,
+        relationships,
+      }),
+      logSearchFromText: Flags.string({
+        char: 'r',
+        description: EVENT_SEARCH_FOR_TEXT,
+        relationships,
+      }),
     }),
-    logsType: Flags.string({
-      char: 't',
-      description: LOGS_TYPE_TO_LISTEN_PROMPT_MESSAGE,
-    }),
-    eventSource: Flags.string({
-      char: 's',
-      description: EVENT_SOURCE,
-    }),
-    logsStartDate: Flags.string({
-      char: 'f',
-      description: 'Start date (MM/DD/YYYY HH:mm) e.g. "03/24/1983 15:45"' + SUPPORTED_HISTORY_FLAGS,
-      relationships,
-    }),
-    logsEndDate: Flags.string({
-      char: 'e',
-      description: 'End date (MM/DD/YYYY HH:mm) e.g. "03/25/1983 16:45"' + SUPPORTED_HISTORY_FLAGS,
-      relationships,
-    }),
-    logSearchFromText: Flags.string({
-      char: 'r',
-      description: EVENT_SEARCH_FOR_TEXT,
-      relationships,
-    }),
-  });
+  );
 
   static args = {};
   DEBUG_TAG = 'logs';
@@ -83,16 +87,16 @@ export default class Logs extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(Logs);
-
+      const { logsStartDate, logsEndDate, logSearchFromText, region } = flags;
       const appVersionId = await this.getAppVersionId(flags.appVersionId);
 
       const eventSource = (flags.eventSource || (await eventSourcePrompt())) as EventSource;
       const logsType = await this.getLogType(eventSource, flags.logsType);
       const logsFilterCriteria = await this.getLogsFilterCriteria(
         eventSource,
-        flags.logsStartDate,
-        flags.logsEndDate,
-        flags.logSearchFromText,
+        logsStartDate,
+        logsEndDate,
+        logSearchFromText,
       );
 
       const args: LogsCommandArguments = {
@@ -110,7 +114,7 @@ export default class Logs extends AuthenticatedCommand {
         logSearchFromText: logsFilterCriteria?.text,
       });
 
-      const clientChannel = await logsStream(args.appVersionId, args.logsType, logsFilterCriteria);
+      const clientChannel = await logsStream(args.appVersionId, args.logsType, logsFilterCriteria, region as Region);
       await streamMessages(clientChannel);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);

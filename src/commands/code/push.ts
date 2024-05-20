@@ -1,9 +1,11 @@
 import { Flags } from '@oclif/core';
 
+import { addToRegionToFlags } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getTasksForServerSide } from 'services/share/deploy';
+import { Region } from 'types/general/region';
 import logger from 'utils/logger';
 
 const MESSAGES = {
@@ -21,31 +23,34 @@ export default class Push extends AuthenticatedCommand {
     '<%= config.bin %> <%= command.id %> -a APP_ID_TO_PUSH',
   ];
 
-  static flags = Push.serializeFlags({
-    directoryPath: Flags.string({
-      char: 'd',
-      description: MESSAGES.directory,
+  static flags = Push.serializeFlags(
+    addToRegionToFlags({
+      directoryPath: Flags.string({
+        char: 'd',
+        description: MESSAGES.directory,
+      }),
+      appId: Flags.string({
+        char: 'a',
+        description: MESSAGES.appId,
+      }),
+      appVersionId: Flags.integer({
+        char: 'i',
+        aliases: ['v'],
+        description: MESSAGES.appVersionId,
+      }),
+      force: Flags.boolean({
+        char: 'f',
+        description: MESSAGES.force,
+      }),
     }),
-    appId: Flags.string({
-      char: 'a',
-      description: MESSAGES.appId,
-    }),
-    appVersionId: Flags.integer({
-      char: 'i',
-      aliases: ['v'],
-      description: MESSAGES.appVersionId,
-    }),
-    force: Flags.boolean({
-      char: 'f',
-      description: MESSAGES.force,
-    }),
-  });
+  );
 
   static args = {};
   DEBUG_TAG = 'code_push';
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Push);
+    const { directoryPath, region } = flags;
     let appVersionId = flags.appVersionId;
 
     try {
@@ -61,9 +66,9 @@ export default class Push extends AuthenticatedCommand {
       }
 
       logger.debug(`push code to appVersionId: ${appVersionId}`, this.DEBUG_TAG);
-      this.preparePrintCommand(this, { appVersionId, directoryPath: flags.directoryPath });
+      this.preparePrintCommand(this, { appVersionId, directoryPath: directoryPath });
 
-      const tasks = getTasksForServerSide(appVersionId, flags.directoryPath);
+      const tasks = getTasksForServerSide(appVersionId, directoryPath, region as Region);
 
       await tasks.run();
     } catch (error: any) {

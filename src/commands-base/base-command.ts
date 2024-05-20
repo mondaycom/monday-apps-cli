@@ -1,9 +1,24 @@
 import { Command, Flags } from '@oclif/core';
 
+import { regionFlag } from 'commands/utils/region';
 import { PrintCommandContext } from 'types/commands/base-command';
 import { printGeneratedCommand } from 'utils/command-printer';
 import logger from 'utils/logger';
 
+export const sharedFlags = {
+  verbose: Flags.boolean({
+    description: 'Print advanced logs (optional).',
+    default: false,
+    helpGroup: 'global',
+  }),
+
+  'print-command': Flags.boolean({
+    aliases: ['pc'],
+    description: 'Print the command that was executed (optional).',
+    default: false,
+    helpGroup: 'global',
+  }),
+};
 export abstract class BaseCommand extends Command {
   protected static _withPrintCommand = true;
   private _printCommandCalled = false;
@@ -30,27 +45,12 @@ export abstract class BaseCommand extends Command {
     this._printContext = { command, flags, args };
   }
 
-  public static serializeFlags<T>(flags: T): T & typeof this.sharedFlags {
+  public static serializeFlags<T>(flags: T): T & typeof sharedFlags {
     return {
-      ...this.sharedFlags,
+      ...sharedFlags,
       ...flags,
-    } as typeof flags & typeof this.sharedFlags;
+    } as typeof flags & typeof sharedFlags;
   }
-
-  static sharedFlags? = {
-    verbose: Flags.boolean({
-      description: 'Print advanced logs (optional).',
-      default: false,
-      helpGroup: 'global',
-    }),
-
-    'print-command': Flags.boolean({
-      aliases: ['pc'],
-      description: 'Print the command that was executed (optional).',
-      default: false,
-      helpGroup: 'global',
-    }),
-  };
 
   protected catch(err: Error & { exitCode?: number }): any {
     err?.message && logger.error((err as Error).message);
