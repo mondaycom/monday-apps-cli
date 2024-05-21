@@ -98,6 +98,7 @@ export const getAppVersionDeploymentStatus = async (appVersionId: number, region
 export const pollForDeploymentStatus = async (
   appVersionId: number,
   retryAfter: number,
+  region?: Region,
   options: {
     ttl?: number;
     progressLogger?: (message: keyof typeof DeploymentStatusTypesSchema, tip?: string) => void;
@@ -115,7 +116,7 @@ export const pollForDeploymentStatus = async (
         DeploymentStatusTypesSchema['building-app'],
         DeploymentStatusTypesSchema['deploying-app'],
       ];
-      const response = await getAppVersionDeploymentStatus(appVersionId);
+      const response = await getAppVersionDeploymentStatus(appVersionId, region);
       if (statusesToKeepPolling.includes(response.status)) {
         if (progressLogger) {
           progressLogger(response.status, response.tip);
@@ -129,7 +130,7 @@ export const pollForDeploymentStatus = async (
     retryAfter,
     ttl || retryAfter * 60,
   );
-  const response = await getAppVersionDeploymentStatus(appVersionId);
+  const response = await getAppVersionDeploymentStatus(appVersionId, region);
   return response;
 };
 
@@ -203,7 +204,7 @@ export const buildAssetToDeployTask = async (
 
 export const prepareEnvironmentTask = async (ctx: PushCommandTasksContext) => {
   try {
-    const signedCloudStorageUrl = await getSignedStorageUrl(ctx.appVersionId);
+    const signedCloudStorageUrl = await getSignedStorageUrl(ctx.appVersionId, ctx.region);
     const archiveContent = readFileData(ctx.archivePath!);
     ctx.signedCloudStorageUrl = signedCloudStorageUrl;
     ctx.archiveContent = archiveContent;
@@ -289,7 +290,7 @@ export const handleDeploymentTask = async (
   const now = Date.now();
   const retryAfter = TimeInMs.second * 5;
   const ttl = TimeInMs.minute * 30;
-  const deploymentStatus = await pollForDeploymentStatus(ctx.appVersionId, retryAfter, {
+  const deploymentStatus = await pollForDeploymentStatus(ctx.appVersionId, retryAfter, ctx.region, {
     ttl,
     progressLogger: (message: keyof typeof DeploymentStatusTypesSchema, tip?: string) => {
       const deltaInSeconds = (Date.now() - now) / TimeInMs.second;
