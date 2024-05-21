@@ -1,21 +1,24 @@
+import { Config } from '@oclif/core';
+
 import { BaseCommand } from 'commands-base/base-command';
 import { CONFIG_KEYS } from 'consts/config';
-import { ACCESS_TOKEN_NOT_FOUND } from 'consts/messages';
+import { ACCESS_TOKEN_NOT_FOUND_RUNNING_INIT } from 'consts/messages';
 import { AuthenticationError } from 'errors/authentication-error';
 import { ConfigService } from 'services/config-service';
 import logger from 'utils/logger';
 
-const validateAccessToken = (): void => {
+const validateAccessToken = async (config: Config): Promise<void> => {
   const accessToken = ConfigService.getConfigDataByKey(CONFIG_KEYS.ACCESS_TOKEN);
   if (!accessToken) {
-    throw new AuthenticationError(ACCESS_TOKEN_NOT_FOUND);
+    logger.success(ACCESS_TOKEN_NOT_FOUND_RUNNING_INIT);
+    await config.runCommand('init', ['--local']);
   }
 };
 
 export abstract class AuthenticatedCommand extends BaseCommand {
   public async init(): Promise<void> {
     await super.init();
-    validateAccessToken();
+    await validateAccessToken(this.config);
   }
 
   protected catch(err: Error & { exitCode?: number }): any {
