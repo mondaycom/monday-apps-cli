@@ -1,6 +1,5 @@
 import { Command, Flags } from '@oclif/core';
 
-import { regionFlag } from 'commands/utils/region';
 import { PrintCommandContext } from 'types/commands/base-command';
 import { printGeneratedCommand } from 'utils/command-printer';
 import logger from 'utils/logger';
