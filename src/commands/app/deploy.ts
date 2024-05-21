@@ -1,5 +1,6 @@
 import { Flags } from '@oclif/core';
 
+import { addToRegionToFlags } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
@@ -19,27 +20,29 @@ export default class AppDeploy extends AuthenticatedCommand {
   static description = 'Deploy an app using manifest file.';
   static withPrintCommand = false;
   static examples = ['<%= config.bin %> <%= command.id %>'];
-  static flags = AppDeploy.serializeFlags({
-    directoryPath: Flags.string({
-      char: 'd',
-      description: MESSAGES.directory,
+  static flags = AppDeploy.serializeFlags(
+    addToRegionToFlags({
+      directoryPath: Flags.string({
+        char: 'd',
+        description: MESSAGES.directory,
+      }),
+      appId: Flags.string({
+        char: 'a',
+        aliases: ['appId'],
+        description: MESSAGES.appId,
+      }),
+      appVersionId: Flags.string({
+        char: 'v',
+        aliases: ['versionId'],
+        description: MESSAGES.appVersionId,
+      }),
+      force: Flags.boolean({
+        char: 'f',
+        aliases: ['force'],
+        description: MESSAGES.force,
+      }),
     }),
-    appId: Flags.string({
-      char: 'a',
-      aliases: ['appId'],
-      description: MESSAGES.appId,
-    }),
-    appVersionId: Flags.string({
-      char: 'v',
-      aliases: ['versionId'],
-      description: MESSAGES.appVersionId,
-    }),
-    force: Flags.boolean({
-      char: 'f',
-      aliases: ['force'],
-      description: MESSAGES.force,
-    }),
-  });
+  );
 
   DEBUG_TAG = 'app_deploy';
 
