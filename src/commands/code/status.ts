@@ -8,7 +8,6 @@ import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getAppVersionDeploymentStatus } from 'services/push-service';
 import { getMondayCodeBuild } from 'src/services/app-builds-service';
 import { HttpError } from 'types/errors';
-import { Region } from 'types/general/region';
 import { AppVersionDeploymentStatus } from 'types/services/push-service';
 import logger from 'utils/logger';
 import { getRegionFromString } from 'utils/region';

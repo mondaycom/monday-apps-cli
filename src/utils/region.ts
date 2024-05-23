@@ -9,5 +9,5 @@ export const addRegionToQuery = (query: object | undefined, region?: Region) => 
 };
 
 export const getRegionFromString = (region?: any): Region | undefined => {
-  return Region[region as keyof typeof Region];
+  return region && typeof region === 'string' ? Region[region.toUpperCase() as keyof typeof Region] : undefined;
 };
