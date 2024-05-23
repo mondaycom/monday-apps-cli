@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import { Relationship } from '@oclif/core/lib/interfaces/parser';
 
-import { addRegionToFlags } from 'commands/utils/region';
+import { addRegionToFlags, chooseRegionIfNeeded } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ENV_MANAGEMENT_MODES } from 'consts/manage-app-env';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
@@ -109,12 +109,14 @@ export default class Env extends AuthenticatedCommand {
         appId = Number(await DynamicChoicesService.chooseApp());
       }
 
+      const selectedRegion = await chooseRegionIfNeeded(region, { appId });
+
       mode = await promptForModeIfNotProvided(mode);
       key = await promptForKeyIfNotProvided(mode, appId, key);
       value = await promptForValueIfNotProvided(mode, value);
-      this.preparePrintCommand(this, { appId, mode, key, value });
+      this.preparePrintCommand(this, { appId, mode, key, value, region: selectedRegion });
 
-      await handleEnvironmentRequest(appId, mode, key, value, region);
+      await handleEnvironmentRequest(appId, mode, key, value, selectedRegion);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
 

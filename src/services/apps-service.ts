@@ -97,3 +97,10 @@ export const createFeatures = async (ctx: AppCreateCommandTasksContext) => {
 
   await Promise.all(createFeaturesPromises);
 };
+
+export const checkIfAppSupportMultiRegion = async (appId: number): Promise<boolean> => {
+  const apps = await listApps();
+  const app = apps.find(app => app.id === appId);
+  if (!app) throw new Error(`App with id ${appId} not found.`);
+  return Boolean(app.mondayCodeConfig?.isMultiRegion);
+};

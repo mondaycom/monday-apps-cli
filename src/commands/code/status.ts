@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import { StatusCodes } from 'http-status-codes';
 
-import { addRegionToFlags } from 'commands/utils/region';
+import { addRegionToFlags, chooseRegionIfNeeded } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_VERSION_ID_TO_ENTER, VAR_UNKNOWN } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
@@ -58,9 +58,11 @@ export default class Status extends AuthenticatedCommand {
         appVersionId = appAndAppVersion.appVersionId;
       }
 
+      const selectedRegion = await chooseRegionIfNeeded(region, { appVersionId });
+
       this.preparePrintCommand(this, { appVersionId });
-      const deploymentStatus = await getAppVersionDeploymentStatus(appVersionId, region as Region);
-      const mondayCodeRelease = await getMondayCodeBuild(appVersionId, region as Region);
+      const deploymentStatus = await getAppVersionDeploymentStatus(appVersionId, selectedRegion);
+      const mondayCodeRelease = await getMondayCodeBuild(appVersionId, selectedRegion);
 
       if (deploymentStatus.deployment) {
         deploymentStatus.deployment.liveUrl = mondayCodeRelease?.data?.liveUrl;

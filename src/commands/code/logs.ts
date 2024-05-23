@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import { Relationship } from '@oclif/core/lib/interfaces/parser';
 
-import { addRegionToFlags } from 'commands/utils/region';
+import { addRegionToFlags, chooseRegionIfNeeded } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { streamMessages } from 'services/client-channel-service';
@@ -91,7 +91,7 @@ export default class Logs extends AuthenticatedCommand {
       const { logsStartDate, logsEndDate, logSearchFromText, region: strRegion } = flags;
       const region = getRegionFromString(strRegion);
       const appVersionId = await this.getAppVersionId(flags.appVersionId);
-
+      const selectedRegion = await chooseRegionIfNeeded(region, { appVersionId });
       const eventSource = (flags.eventSource || (await eventSourcePrompt())) as EventSource;
       const logsType = await this.getLogType(eventSource, flags.logsType);
       const logsFilterCriteria = await this.getLogsFilterCriteria(
@@ -116,7 +116,7 @@ export default class Logs extends AuthenticatedCommand {
         logSearchFromText: logsFilterCriteria?.text,
       });
 
-      const clientChannel = await logsStream(args.appVersionId, args.logsType, logsFilterCriteria, region);
+      const clientChannel = await logsStream(args.appVersionId, args.logsType, logsFilterCriteria, selectedRegion);
       await streamMessages(clientChannel);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);

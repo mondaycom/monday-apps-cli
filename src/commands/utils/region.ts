@@ -1,8 +1,11 @@
 import { Flags } from '@oclif/core';
 
+import { checkIfAppSupportMultiRegion, listApps } from 'services/apps-service';
+import { PromptService } from 'services/prompt-service';
 import { Region } from 'types/general/region';
 import { Permissions } from 'types/utils/permissions';
 import { isPermitted } from 'utils/permissions';
+import { isANumber } from 'utils/validations';
 
 export const regionFlag = {
   region: Flags.string({
@@ -21,4 +24,30 @@ export function addRegionToFlags<T>(flags: T): T {
   }
 
   return flags;
+}
+
+const regionsPrompt = async () =>
+  PromptService.promptList('Choose region', [Region.US, Region.EU, Region.AU], Region.US);
+
+export async function chooseRegionIfNeeded<T>(
+  region?: Region,
+  options?: { appId?: number; appVersionId?: number },
+): Promise<Region | undefined> {
+  if (Region) {
+    return;
+  }
+
+  let isMultiRegionApp = false;
+  if (isANumber(options?.appId)) {
+    const isAppSupportMultiRegion = await checkIfAppSupportMultiRegion(options?.appId);
+    if (isAppSupportMultiRegion) {
+      isMultiRegionApp = true;
+    }
+  }
+
+  if (isMultiRegionApp) {
+    return (await regionsPrompt()) as Region;
+  }
+
+  return undefined;
 }

@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 
-import { addRegionToFlags } from 'commands/utils/region';
+import { addRegionToFlags, chooseRegionIfNeeded } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
@@ -70,6 +70,10 @@ export default class AppDeploy extends AuthenticatedCommand {
 
       flags.appVersionId = await this.getAppVersionId(appVersionId, appId, force);
 
+      const selectedRegion = await chooseRegionIfNeeded(region, {
+        appId: Number(flags.appId),
+        appVersionId: Number(flags.appVersionId),
+      });
       this.preparePrintCommand(this, { appVersionId: appVersionId, directoryPath: manifestFileData });
 
       const { cdn, server } = manifestFileData.app?.hosting || {};
@@ -78,7 +82,7 @@ export default class AppDeploy extends AuthenticatedCommand {
         await getTasksForClientSide(
           Number(appVersionId),
           getManifestAssetPath(manifestFileDir, cdn.path),
-          region,
+          selectedRegion,
         ).run();
       }
 
@@ -87,7 +91,7 @@ export default class AppDeploy extends AuthenticatedCommand {
         await getTasksForServerSide(
           Number(appVersionId),
           getManifestAssetPath(manifestFileDir, server.path),
-          region,
+          selectedRegion,
         ).run();
       }
     } catch (error) {
