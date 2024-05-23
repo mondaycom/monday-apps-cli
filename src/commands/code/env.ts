@@ -9,7 +9,6 @@ import { handleEnvironmentRequest, listAppEnvKeys } from 'services/manage-app-en
 import { PromptService } from 'services/prompt-service';
 import { ManageAppEnvFlags } from 'types/commands/manage-app-env';
 import { AppId } from 'types/general';
-import { Region } from 'types/general/region';
 import logger from 'utils/logger';
 import { getRegionFromString } from 'utils/region';
 

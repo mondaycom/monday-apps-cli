@@ -6,7 +6,6 @@ import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import { getManifestAssetPath, readManifestFile } from 'services/manifest-service';
 import { getTasksForClientSide, getTasksForServerSide } from 'services/share/deploy';
-import { Region } from 'types/general/region';
 import { ManifestHostingType } from 'types/services/manifest-service';
 import logger from 'utils/logger';
 import { getRegionFromString } from 'utils/region';

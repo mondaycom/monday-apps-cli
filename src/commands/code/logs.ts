@@ -9,7 +9,6 @@ import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { logsStream } from 'services/notification-service';
 import { PromptService } from 'services/prompt-service';
 import { EventSource, LogType, LogsCommandArguments, LogsFilterCriteriaArguments } from 'types/commands/logs';
-import { Region } from 'types/general/region';
 import { isDefined } from 'utils/guards';
 import logger from 'utils/logger';
 import { getRegionFromString } from 'utils/region';

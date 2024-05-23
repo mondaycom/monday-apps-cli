@@ -8,7 +8,6 @@ import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getAppVersionDeploymentStatus } from 'services/push-service';
 import { getMondayCodeBuild } from 'src/services/app-builds-service';
 import { HttpError } from 'types/errors';
-import { Region } from 'types/general/region';
 import { AppVersionDeploymentStatus } from 'types/services/push-service';
 import logger from 'utils/logger';
 import { getRegionFromString } from 'utils/region';
@@ -59,8 +58,8 @@ export default class Status extends AuthenticatedCommand {
       }
 
       this.preparePrintCommand(this, { appVersionId });
-      const deploymentStatus = await getAppVersionDeploymentStatus(appVersionId, region as Region);
-      const mondayCodeRelease = await getMondayCodeBuild(appVersionId, region as Region);
+      const deploymentStatus = await getAppVersionDeploymentStatus(appVersionId, region);
+      const mondayCodeRelease = await getMondayCodeBuild(appVersionId, region);
 
       if (deploymentStatus.deployment) {
         deploymentStatus.deployment.liveUrl = mondayCodeRelease?.data?.liveUrl;

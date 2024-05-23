@@ -5,7 +5,6 @@ import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getTasksForServerSide } from 'services/share/deploy';
-import { Region } from 'types/general/region';
 import logger from 'utils/logger';
 import { getRegionFromString } from 'utils/region';
 
