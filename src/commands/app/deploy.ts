@@ -6,6 +6,7 @@ import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import { getManifestAssetPath, readManifestFile } from 'services/manifest-service';
 import { getTasksForClientSide, getTasksForServerSide } from 'services/share/deploy';
+import { Region } from 'types/general/region';
 import { ManifestHostingType } from 'types/services/manifest-service';
 import logger from 'utils/logger';
 
@@ -60,26 +61,27 @@ export default class AppDeploy extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(AppDeploy);
-
-      const manifestFileDir = flags.directoryPath || getCurrentWorkingDirectory();
+      const { directoryPath, appId, appVersionId, region, force } = flags;
+      const manifestFileDir = directoryPath || getCurrentWorkingDirectory();
       const manifestFileData = readManifestFile(manifestFileDir);
-      flags.appId = flags.appId || manifestFileData.app.id;
+      flags.appId = appId || manifestFileData.app.id;
 
-      flags.appVersionId = await this.getAppVersionId(flags.appVersionId, flags.appId, flags.force);
+      flags.appVersionId = await this.getAppVersionId(appVersionId, appId, force);
 
-      this.preparePrintCommand(this, { appVersionId: flags.appVersionId, directoryPath: manifestFileData });
+      this.preparePrintCommand(this, { appVersionId: appVersionId, directoryPath: manifestFileData });
 
       const { cdn, server } = manifestFileData.app?.hosting || {};
       if (cdn && cdn.type === ManifestHostingType.Upload) {
         logger.info('Deploying files to cdn...');
-        await getTasksForClientSide(Number(flags.appVersionId), getManifestAssetPath(manifestFileDir, cdn.path)).run();
+        await getTasksForClientSide(Number(appVersionId), getManifestAssetPath(manifestFileDir, cdn.path)).run();
       }
 
       if (server && server.type === ManifestHostingType.Upload) {
         logger.info('Deploying server side files...');
         await getTasksForServerSide(
-          Number(flags.appVersionId),
+          Number(appVersionId),
           getManifestAssetPath(manifestFileDir, server.path),
+          region as Region,
         ).run();
       }
     } catch (error) {
