@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import { StatusCodes } from 'http-status-codes';
 
-import { addToRegionToFlags } from 'commands/utils/region';
+import { addRegionToFlags } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_VERSION_ID_TO_ENTER, VAR_UNKNOWN } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
@@ -11,6 +11,7 @@ import { HttpError } from 'types/errors';
 import { Region } from 'types/general/region';
 import { AppVersionDeploymentStatus } from 'types/services/push-service';
 import logger from 'utils/logger';
+import { getRegionFromString } from 'utils/region';
 
 const printDeploymentStatus = (
   appVersionId: number,
@@ -37,7 +38,7 @@ export default class Status extends AuthenticatedCommand {
   static examples = ['<%= config.bin %> <%= command.id %> -i APP_VERSION_ID'];
 
   static flags = Status.serializeFlags(
-    addToRegionToFlags({
+    addRegionToFlags({
       appVersionId: Flags.integer({
         char: 'i',
         aliases: ['v'],
@@ -48,7 +49,8 @@ export default class Status extends AuthenticatedCommand {
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Status);
-    const { region } = flags;
+    const { region: strRegion } = flags;
+    const region = getRegionFromString(strRegion);
     let appVersionId = flags.appVersionId;
     try {
       if (!appVersionId) {

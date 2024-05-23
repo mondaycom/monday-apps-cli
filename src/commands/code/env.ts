@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import { Relationship } from '@oclif/core/lib/interfaces/parser';
 
-import { addToRegionToFlags } from 'commands/utils/region';
+import { addRegionToFlags } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ENV_MANAGEMENT_MODES } from 'consts/manage-app-env';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
@@ -11,6 +11,7 @@ import { ManageAppEnvFlags } from 'types/commands/manage-app-env';
 import { AppId } from 'types/general';
 import { Region } from 'types/general/region';
 import logger from 'utils/logger';
+import { getRegionFromString } from 'utils/region';
 
 const MODES_WITH_KEYS: Array<APP_ENV_MANAGEMENT_MODES> = [
   APP_ENV_MANAGEMENT_MODES.SET,
@@ -71,7 +72,7 @@ export default class Env extends AuthenticatedCommand {
   static examples = ['<%= config.bin %> <%= command.id %>'];
 
   static flags = Env.serializeFlags(
-    addToRegionToFlags({
+    addRegionToFlags({
       appId: Flags.integer({
         char: 'i',
         aliases: ['a'],
@@ -100,7 +101,8 @@ export default class Env extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(Env);
-      const { region } = flags;
+      const { region: strRegion } = flags;
+      const region = getRegionFromString(strRegion);
       let { mode, key, value, appId } = flags as ManageAppEnvFlags;
 
       if (!appId) {
@@ -112,7 +114,7 @@ export default class Env extends AuthenticatedCommand {
       value = await promptForValueIfNotProvided(mode, value);
       this.preparePrintCommand(this, { appId, mode, key, value });
 
-      await handleEnvironmentRequest(appId, mode, key, value, region as Region);
+      await handleEnvironmentRequest(appId, mode, key, value, region);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
 

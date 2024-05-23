@@ -1,3 +1,3 @@
 export enum Permissions {
-  MULTI_REGION = 'mcodeMultiRegion',
+  MCODE_MULTI_REGION = 'mcode_multi_region',
 }

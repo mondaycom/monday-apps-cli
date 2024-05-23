@@ -1,12 +1,13 @@
 import { Flags } from '@oclif/core';
 
-import { addToRegionToFlags } from 'commands/utils/region';
+import { addRegionToFlags } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getTasksForServerSide } from 'services/share/deploy';
 import { Region } from 'types/general/region';
 import logger from 'utils/logger';
+import { getRegionFromString } from 'utils/region';
 
 const MESSAGES = {
   directory: 'Directory path of you project in your machine. If not included will use the current working directory.',
@@ -24,7 +25,7 @@ export default class Push extends AuthenticatedCommand {
   ];
 
   static flags = Push.serializeFlags(
-    addToRegionToFlags({
+    addRegionToFlags({
       directoryPath: Flags.string({
         char: 'd',
         description: MESSAGES.directory,
@@ -50,7 +51,8 @@ export default class Push extends AuthenticatedCommand {
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Push);
-    const { directoryPath, region } = flags;
+    const { directoryPath, region: strRegion } = flags;
+    const region = getRegionFromString(strRegion);
     let appVersionId = flags.appVersionId;
 
     try {
@@ -68,7 +70,7 @@ export default class Push extends AuthenticatedCommand {
       logger.debug(`push code to appVersionId: ${appVersionId}`, this.DEBUG_TAG);
       this.preparePrintCommand(this, { appVersionId, directoryPath: directoryPath });
 
-      const tasks = getTasksForServerSide(appVersionId, directoryPath, region as Region);
+      const tasks = getTasksForServerSide(appVersionId, directoryPath, region);
 
       await tasks.run();
     } catch (error: any) {

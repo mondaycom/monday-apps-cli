@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import { Relationship } from '@oclif/core/lib/interfaces/parser';
 
-import { addToRegionToFlags } from 'commands/utils/region';
+import { addRegionToFlags } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { streamMessages } from 'services/client-channel-service';
@@ -12,6 +12,7 @@ import { EventSource, LogType, LogsCommandArguments, LogsFilterCriteriaArguments
 import { Region } from 'types/general/region';
 import { isDefined } from 'utils/guards';
 import logger from 'utils/logger';
+import { getRegionFromString } from 'utils/region';
 import { TIME_IN_MILLISECONDS } from 'utils/time-enum';
 import { getDayDiff, isDate } from 'utils/validations';
 
@@ -49,7 +50,7 @@ export default class Logs extends AuthenticatedCommand {
   static examples = ['<%= config.bin %> <%= command.id %> -i APP_VERSION_ID -t LOGS_TYPE'];
 
   static flags = Logs.serializeFlags(
-    addToRegionToFlags({
+    addRegionToFlags({
       appVersionId: Flags.integer({
         char: 'i',
         aliases: ['v'],
@@ -87,7 +88,8 @@ export default class Logs extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(Logs);
-      const { logsStartDate, logsEndDate, logSearchFromText, region } = flags;
+      const { logsStartDate, logsEndDate, logSearchFromText, region: strRegion } = flags;
+      const region = getRegionFromString(strRegion);
       const appVersionId = await this.getAppVersionId(flags.appVersionId);
 
       const eventSource = (flags.eventSource || (await eventSourcePrompt())) as EventSource;
@@ -114,7 +116,7 @@ export default class Logs extends AuthenticatedCommand {
         logSearchFromText: logsFilterCriteria?.text,
       });
 
-      const clientChannel = await logsStream(args.appVersionId, args.logsType, logsFilterCriteria, region as Region);
+      const clientChannel = await logsStream(args.appVersionId, args.logsType, logsFilterCriteria, region);
       await streamMessages(clientChannel);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);

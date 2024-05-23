@@ -6,7 +6,7 @@ export const isPermitted = (permission: Permissions): boolean => {
     return false;
   }
 
-  if (permission === Permissions.MULTI_REGION) {
+  if (permission === Permissions.MCODE_MULTI_REGION) {
     return getIsSupportMultiRegion();
   }
 

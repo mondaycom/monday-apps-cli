@@ -12,8 +12,8 @@ export const regionFlag = {
   }),
 };
 
-export function addToRegionToFlags<T>(flags: T): T {
-  if (isPermitted(Permissions.MULTI_REGION)) {
+export function addRegionToFlags<T>(flags: T): T {
+  if (isPermitted(Permissions.MCODE_MULTI_REGION)) {
     return {
       ...flags,
       ...regionFlag,

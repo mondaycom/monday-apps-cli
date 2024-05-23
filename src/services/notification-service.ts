@@ -9,7 +9,7 @@ import { Region } from 'types/general/region';
 import { HttpMethodTypes } from 'types/services/api-service';
 import { ClientChannel } from 'types/services/notification-service';
 import logger from 'utils/logger';
-import { queryBuilderAddRegion } from 'utils/region';
+import { addRegionToQuery } from 'utils/region';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
 export const logsStream = async (
@@ -22,7 +22,7 @@ export const logsStream = async (
     const logsStreamForUrl = getLogsStreamForAppVersionIdUrl(appVersionId, logsType, logsFilterCriteria);
     const url = appsUrlBuilder(logsStreamForUrl);
     logger.debug(`fetching logs url: ${url}`);
-    const query = queryBuilderAddRegion({}, region);
+    const query = addRegionToQuery({}, region);
     const response = await execute<ClientChannel>(
       {
         query,

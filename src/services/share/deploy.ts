@@ -11,7 +11,7 @@ import {
 import { PushCommandTasksContext } from 'types/commands/push';
 import { Region } from 'types/general/region';
 
-export const getTasksForClientSide = (appVersionId: number, directoryPath?: string) => {
+export const getTasksForClientSide = (appVersionId: number, directoryPath?: string, region?: Region) => {
   return new Listr<PushCommandTasksContext>(
     [
       { title: 'Build asset to deploy', task: buildClientZip },
@@ -21,7 +21,7 @@ export const getTasksForClientSide = (appVersionId: number, directoryPath?: stri
       },
     ],
     {
-      ctx: { appVersionId, directoryPath },
+      ctx: { appVersionId, directoryPath, region },
     },
   );
 };

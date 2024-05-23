@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 
-import { addToRegionToFlags } from 'commands/utils/region';
+import { addRegionToFlags } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
@@ -9,6 +9,7 @@ import { getTasksForClientSide, getTasksForServerSide } from 'services/share/dep
 import { Region } from 'types/general/region';
 import { ManifestHostingType } from 'types/services/manifest-service';
 import logger from 'utils/logger';
+import { getRegionFromString } from 'utils/region';
 
 const MESSAGES = {
   directory: 'Directory path of you project in your machine. If not included will use the current working directory.',
@@ -22,7 +23,7 @@ export default class AppDeploy extends AuthenticatedCommand {
   static withPrintCommand = false;
   static examples = ['<%= config.bin %> <%= command.id %>'];
   static flags = AppDeploy.serializeFlags(
-    addToRegionToFlags({
+    addRegionToFlags({
       directoryPath: Flags.string({
         char: 'd',
         description: MESSAGES.directory,
@@ -61,7 +62,8 @@ export default class AppDeploy extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(AppDeploy);
-      const { directoryPath, appId, appVersionId, region, force } = flags;
+      const { directoryPath, appId, appVersionId, region: strRegion, force } = flags;
+      const region = getRegionFromString(strRegion);
       const manifestFileDir = directoryPath || getCurrentWorkingDirectory();
       const manifestFileData = readManifestFile(manifestFileDir);
       flags.appId = appId || manifestFileData.app.id;
@@ -73,7 +75,11 @@ export default class AppDeploy extends AuthenticatedCommand {
       const { cdn, server } = manifestFileData.app?.hosting || {};
       if (cdn && cdn.type === ManifestHostingType.Upload) {
         logger.info('Deploying files to cdn...');
-        await getTasksForClientSide(Number(appVersionId), getManifestAssetPath(manifestFileDir, cdn.path)).run();
+        await getTasksForClientSide(
+          Number(appVersionId),
+          getManifestAssetPath(manifestFileDir, cdn.path),
+          region,
+        ).run();
       }
 
       if (server && server.type === ManifestHostingType.Upload) {
@@ -81,7 +87,7 @@ export default class AppDeploy extends AuthenticatedCommand {
         await getTasksForServerSide(
           Number(appVersionId),
           getManifestAssetPath(manifestFileDir, server.path),
-          region as Region,
+          region,
         ).run();
       }
     } catch (error) {

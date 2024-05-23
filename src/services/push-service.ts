@@ -29,7 +29,7 @@ import {
 } from 'types/services/push-service';
 import logger from 'utils/logger';
 import { createProgressBarString } from 'utils/progress-bar';
-import { queryBuilderAddRegion } from 'utils/region';
+import { addRegionToQuery } from 'utils/region';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
 export const getSignedStorageUrl = async (appVersionId: number, region?: Region): Promise<string> => {
@@ -37,7 +37,7 @@ export const getSignedStorageUrl = async (appVersionId: number, region?: Region)
   try {
     const baseSignUrl = getDeploymentSignedUrl(appVersionId);
     const url = appsUrlBuilder(baseSignUrl);
-    const query = queryBuilderAddRegion({}, region);
+    const query = addRegionToQuery({}, region);
 
     const response = await execute<SignedUrl>(
       {
@@ -77,7 +77,7 @@ export const getAppVersionDeploymentStatus = async (appVersionId: number, region
   try {
     const baseAppVersionIdStatusUrl = getAppVersionDeploymentStatusUrl(appVersionId);
     const url = appsUrlBuilder(baseAppVersionIdStatusUrl);
-    const query = queryBuilderAddRegion({}, region);
+    const query = addRegionToQuery({}, region);
 
     const response = await execute<AppVersionDeploymentStatus>(
       {

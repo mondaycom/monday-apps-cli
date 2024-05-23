@@ -10,7 +10,7 @@ import { Region } from 'types/general/region';
 import { HttpMethodTypes } from 'types/services/api-service';
 import { ListAppEnvironmentKeysResponse } from 'types/services/manage-app-env-service';
 import logger from 'utils/logger';
-import { queryBuilderAddRegion } from 'utils/region';
+import { addRegionToQuery } from 'utils/region';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
 const handleHttpErrors = (error: HttpError) => {
@@ -33,7 +33,7 @@ export const listAppEnvKeys = async (appId: AppId, region?: Region): Promise<Arr
   try {
     const path = appEnvironmentKeysUrl(appId);
     const url = appsUrlBuilder(path);
-    const query = queryBuilderAddRegion({}, region);
+    const query = addRegionToQuery({}, region);
 
     const response = await execute<ListAppEnvironmentKeysResponse>(
       {
@@ -59,7 +59,7 @@ export const setEnv = async (appId: AppId, key: string, value: string, region?: 
   try {
     const path = appEnvironmentUrl(appId, key);
     const url = appsUrlBuilder(path);
-    const query = queryBuilderAddRegion({}, region);
+    const query = addRegionToQuery({}, region);
 
     await execute({
       query,
@@ -81,7 +81,7 @@ export const deleteEnv = async (appId: AppId, key: string, region?: Region) => {
   try {
     const path = appEnvironmentUrl(appId, key);
     const url = appsUrlBuilder(path);
-    const query = queryBuilderAddRegion({}, region);
+    const query = addRegionToQuery({}, region);
 
     await execute({
       query,
