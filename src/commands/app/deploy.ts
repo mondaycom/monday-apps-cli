@@ -61,8 +61,8 @@ export default class AppDeploy extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(AppDeploy);
-      const { directoryPath, appId, appVersionId, region: strRegion, force } = flags;
-      const region = getRegionFromString(strRegion);
+      const { directoryPath, appId, appVersionId, force } = flags;
+      const region = getRegionFromString(flags?.region);
       const manifestFileDir = directoryPath || getCurrentWorkingDirectory();
       const manifestFileData = readManifestFile(manifestFileDir);
       flags.appId = appId || manifestFileData.app.id;
