@@ -89,7 +89,7 @@ export const createFeatures = async (ctx: AppCreateCommandTasksContext) => {
         appFeatureType: feature.type,
         build: feature.build && {
           buildType: buildTypeManifestFormatMap[feature.build.source],
-          url: `https://${baseUrl}${feature.build.sufix}`,
+          url: `https://${baseUrl}${feature.build.suffix}`,
         },
         options: { name: feature.name },
       });
