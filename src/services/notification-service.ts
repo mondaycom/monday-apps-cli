@@ -9,7 +9,6 @@ import { Region } from 'types/general/region';
 import { HttpMethodTypes } from 'types/services/api-service';
 import { ClientChannel } from 'types/services/notification-service';
 import logger from 'utils/logger';
-import { addRegionToQuery } from 'utils/region';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
 export const logsStream = async (
@@ -19,13 +18,11 @@ export const logsStream = async (
   region?: Region,
 ): Promise<ClientChannel> => {
   try {
-    const logsStreamForUrl = getLogsStreamForAppVersionIdUrl(appVersionId, logsType, logsFilterCriteria);
+    const logsStreamForUrl = getLogsStreamForAppVersionIdUrl(appVersionId, logsType, logsFilterCriteria, region);
     const url = appsUrlBuilder(logsStreamForUrl);
     logger.debug(`fetching logs url: ${url}`);
-    const query = addRegionToQuery({}, region);
     const response = await execute<ClientChannel>(
       {
-        query,
         url,
         headers: { Accept: 'application/json' },
         method: HttpMethodTypes.GET,
