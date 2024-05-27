@@ -1,7 +1,6 @@
 import { Flags } from '@oclif/core';
 import { Relationship } from '@oclif/core/lib/interfaces/parser';
 
-import { addRegionToFlags } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { streamMessages } from 'services/client-channel-service';
@@ -11,7 +10,7 @@ import { PromptService } from 'services/prompt-service';
 import { EventSource, LogType, LogsCommandArguments, LogsFilterCriteriaArguments } from 'types/commands/logs';
 import { isDefined } from 'utils/guards';
 import logger from 'utils/logger';
-import { getRegionFromString } from 'utils/region';
+import { addRegionToFlags, getRegionFromString } from 'utils/region';
 import { TIME_IN_MILLISECONDS } from 'utils/time-enum';
 import { getDayDiff, isDate } from 'utils/validations';
 

@@ -1,12 +1,11 @@
 import { Flags } from '@oclif/core';
 
-import { addRegionToFlags } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getTasksForServerSide } from 'services/share/deploy';
 import logger from 'utils/logger';
-import { getRegionFromString } from 'utils/region';
+import { addRegionToFlags, getRegionFromString } from 'utils/region';
 
 const MESSAGES = {
   directory: 'Directory path of you project in your machine. If not included will use the current working directory.',
