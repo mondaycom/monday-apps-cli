@@ -60,20 +60,21 @@ export default class AppDeploy extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(AppDeploy);
-      const { directoryPath, force, appId } = flags;
+      const { directoryPath, force } = flags;
+      let { appId, appVersionId } = flags;
       const region = getRegionFromString(flags?.region);
       const manifestFileDir = directoryPath || getCurrentWorkingDirectory();
       const manifestFileData = readManifestFile(manifestFileDir);
-      flags.appId = appId || manifestFileData.app.id;
+      appId = appId || manifestFileData.app.id;
 
-      flags.appVersionId = await this.getAppVersionId(flags.appVersionId, flags.appId, force);
-      this.preparePrintCommand(this, { appVersionId: flags.appVersionId, directoryPath: manifestFileData });
+      appVersionId = await this.getAppVersionId(appVersionId, appId, force);
+      this.preparePrintCommand(this, { appVersionId: appVersionId, directoryPath: manifestFileData });
 
       const { cdn, server } = manifestFileData.app?.hosting || {};
       if (cdn && cdn.type === ManifestHostingType.Upload) {
         logger.info('Deploying files to cdn...');
         await getTasksForClientSide(
-          Number(flags.appVersionId),
+          Number(appVersionId),
           getManifestAssetPath(manifestFileDir, cdn.path),
           region,
         ).run();
@@ -82,7 +83,7 @@ export default class AppDeploy extends AuthenticatedCommand {
       if (server && server.type === ManifestHostingType.Upload) {
         logger.info('Deploying server side files...');
         await getTasksForServerSide(
-          Number(flags.appVersionId),
+          Number(appVersionId),
           getManifestAssetPath(manifestFileDir, server.path),
           region,
         ).run();
