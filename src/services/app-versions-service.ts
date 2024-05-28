@@ -25,6 +25,7 @@ export const listAppVersionsByAppId = async (appId: AppId): Promise<Array<AppVer
     return sortedAppVersions;
   } catch (error: any) {
     if (error instanceof HttpError) {
+      logger.error(error.message);
       throw error;
     }
 
