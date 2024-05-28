@@ -1,5 +1,7 @@
 import { Flags } from '@oclif/core';
 
+import logger from 'src/utils/logger';
+import { HttpError } from 'types/errors';
 import { Region } from 'types/general/region';
 import { Permissions } from 'types/utils/permissions';
 import { isPermitted } from 'utils/permissions';
@@ -34,3 +36,11 @@ export function addRegionToFlags<T>(flags: T): T {
 
   return flags;
 }
+
+export const handelRegionError = (error: HttpError) => {
+  if (error.code === 400 && error.message === 'Region parameter is required for this app') {
+    logger.error(error.message);
+  }
+
+  return error;
+};

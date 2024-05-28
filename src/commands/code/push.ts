@@ -4,8 +4,9 @@ import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getTasksForServerSide } from 'services/share/deploy';
+import { HttpError } from 'types/errors';
 import logger from 'utils/logger';
-import { addRegionToFlags, getRegionFromString } from 'utils/region';
+import { addRegionToFlags, getRegionFromString, handelRegionError } from 'utils/region';
 
 const MESSAGES = {
   directory: 'Directory path of you project in your machine. If not included will use the current working directory.',
@@ -73,6 +74,9 @@ export default class Push extends AuthenticatedCommand {
       await tasks.run();
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
+      if (error instanceof HttpError) {
+        handelRegionError(error);
+      }
 
       // need to signal to the parent process that the command failed
       process.exit(1);
