@@ -86,17 +86,7 @@ export async function execute<T extends BaseResponseHttpMetaData>(
       secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
       rejectUnauthorized: false,
     });
-    // axios.interceptors.request.use(
-    //   function (config) {
-    //     // Do something before request is sent
-    //     console.log('axios config:', JSON.stringify({ config }, null, 2));
-    //     return config;
-    //   },
-    //   function (error) {
-    //     // Do something with request error
-    //     return Promise.reject(error);
-    //   },
-    // );
+
     const response = await axios.request<T>({
       httpsAgent,
       method,

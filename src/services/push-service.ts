@@ -88,7 +88,6 @@ export const getAppVersionDeploymentStatus = async (appVersionId: number, region
       },
       appVersionDeploymentStatusSchema,
     );
-    // console.log(JSON.stringify({ response }, null, 2));
     return response;
   } catch (error_: any | HttpError) {
     const error = error_ instanceof HttpError ? error_ : new Error('Failed to check app version deployment status.');
