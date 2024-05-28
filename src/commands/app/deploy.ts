@@ -8,7 +8,7 @@ import { getManifestAssetPath, readManifestFile } from 'services/manifest-servic
 import { getTasksForClientSide, getTasksForServerSide } from 'services/share/deploy';
 import { ManifestHostingType } from 'types/services/manifest-service';
 import logger from 'utils/logger';
-import { getRegionFromString } from 'utils/region';
+import { addRegionToFlags, getRegionFromString } from 'utils/region';
 
 const MESSAGES = {
   directory: 'Directory path of you project in your machine. If not included will use the current working directory.',
@@ -61,18 +61,20 @@ export default class AppDeploy extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(AppDeploy);
-      const { directoryPath, appId, appVersionId, region: strRegion, force } = flags;
-      const region = getRegionFromString(strRegion);
+      const { directoryPath, force } = flags;
+      let { appId, appVersionId } = flags;
+      const region = getRegionFromString(flags?.region);
       const manifestFileDir = directoryPath || getCurrentWorkingDirectory();
       const manifestFileData = readManifestFile(manifestFileDir);
-      flags.appId = appId || manifestFileData.app.id;
+      appId = appId || manifestFileData.app.id;
 
-      flags.appVersionId = await this.getAppVersionId(appVersionId, appId, force);
+      appVersionId = await this.getAppVersionId(appVersionId, appId, force);
 
       const selectedRegion = await chooseRegionIfNeeded(region, {
-        appId: Number(flags.appId),
-        appVersionId: Number(flags.appVersionId),
+        appId,
+        appVersionId,
       });
+
       this.preparePrintCommand(this, { appVersionId: appVersionId, directoryPath: manifestFileData });
 
       const { cdn, server } = manifestFileData.app?.hosting || {};

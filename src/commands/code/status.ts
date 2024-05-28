@@ -10,7 +10,9 @@ import { getMondayCodeBuild } from 'src/services/app-builds-service';
 import { HttpError } from 'types/errors';
 import { AppVersionDeploymentStatus } from 'types/services/push-service';
 import logger from 'utils/logger';
-import { getRegionFromString } from 'utils/region';
+import { addRegionToFlags, getRegionFromString, handelRegionError } from 'utils/region';
+
+const DEBUG_TAG = 'code_status';
 
 const printDeploymentStatus = (
   appVersionId: number,
@@ -69,6 +71,7 @@ export default class Status extends AuthenticatedCommand {
 
       printDeploymentStatus(appVersionId, deploymentStatus);
     } catch (error: unknown) {
+      logger.debug({ res: error }, DEBUG_TAG);
       if (error instanceof HttpError && error.code === StatusCodes.NOT_FOUND) {
         logger.error(`No deployment found for provided app version id - "${appVersionId || VAR_UNKNOWN}"`);
       } else {
@@ -77,6 +80,10 @@ export default class Status extends AuthenticatedCommand {
             appVersionId || VAR_UNKNOWN
           }"`,
         );
+      }
+
+      if (error instanceof HttpError) {
+        handelRegionError(error);
       }
 
       process.exit(1);

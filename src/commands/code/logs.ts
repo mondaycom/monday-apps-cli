@@ -9,9 +9,10 @@ import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { logsStream } from 'services/notification-service';
 import { PromptService } from 'services/prompt-service';
 import { EventSource, LogType, LogsCommandArguments, LogsFilterCriteriaArguments } from 'types/commands/logs';
+import { HttpError } from 'types/errors';
 import { isDefined } from 'utils/guards';
 import logger from 'utils/logger';
-import { getRegionFromString } from 'utils/region';
+import { addRegionToFlags, getRegionFromString, handelRegionError } from 'utils/region';
 import { TIME_IN_MILLISECONDS } from 'utils/time-enum';
 import { getDayDiff, isDate } from 'utils/validations';
 
@@ -119,6 +120,9 @@ export default class Logs extends AuthenticatedCommand {
       await streamMessages(clientChannel);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
+      if (error instanceof HttpError) {
+        handelRegionError(error);
+      }
 
       // need to signal to the parent process that the command failed
       process.exit(1);

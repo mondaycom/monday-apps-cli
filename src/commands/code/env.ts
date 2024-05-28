@@ -8,9 +8,10 @@ import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { handleEnvironmentRequest, listAppEnvKeys } from 'services/manage-app-env-service';
 import { PromptService } from 'services/prompt-service';
 import { ManageAppEnvFlags } from 'types/commands/manage-app-env';
+import { HttpError } from 'types/errors';
 import { AppId } from 'types/general';
 import logger from 'utils/logger';
-import { getRegionFromString } from 'utils/region';
+import { addRegionToFlags, getRegionFromString, handelRegionError } from 'utils/region';
 
 const MODES_WITH_KEYS: Array<APP_ENV_MANAGEMENT_MODES> = [
   APP_ENV_MANAGEMENT_MODES.SET,
@@ -118,6 +119,9 @@ export default class Env extends AuthenticatedCommand {
       await handleEnvironmentRequest(appId, mode, key, value, selectedRegion);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
+      if (error instanceof HttpError) {
+        handelRegionError(error);
+      }
 
       // need to signal to the parent process that the command failed
       process.exit(1);
