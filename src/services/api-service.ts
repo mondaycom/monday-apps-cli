@@ -56,7 +56,6 @@ const handleErrors = (error: any | Error | AxiosError): never => {
     const statusCode = error.response?.status;
     const title = errorAxiosResponse?.title;
     const message = errorAxiosResponse?.message || defaultErrorMessage;
-    logger.error(message);
     const traceId = errorAxiosResponse?.traceId?.toString();
     printTraceIdIfPresent(traceId, statusCode);
     throw new HttpError(message, title, statusCode);
