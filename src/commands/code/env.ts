@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import { Relationship } from '@oclif/core/lib/interfaces/parser';
 
-import { addRegionToFlags, chooseRegionIfNeeded } from 'commands/utils/region';
+import { chooseRegionIfNeeded } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ENV_MANAGEMENT_MODES } from 'consts/manage-app-env';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';

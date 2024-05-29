@@ -1,9 +1,10 @@
 import { AppFeatureType } from 'src/types/services/app-features-service';
 import { LogType, LogsFilterCriteriaArguments } from 'types/commands/logs';
-import { AppId } from 'types/general';
+import { AppId, AppVersionId } from 'types/general';
 import { Region } from 'types/general/region';
 
 const BASE_APPS_URL = '/api/apps';
+const BASE_VERSIONS_URL = '/api/versions';
 const BASE_APP_VERSIONS_URL = '/api/app-versions';
 const BASE_MONDAY_CODE_URL = '/api/code';
 
@@ -71,6 +72,10 @@ export const createAppUrl = (): string => {
 
 export const listAppVersionsByAppIdUrl = (appId: AppId): string => {
   return `${BASE_APPS_URL}/${appId}/versions`;
+};
+
+export const getAppVersionsByAppIdUrl = (appVersionId: AppVersionId): string => {
+  return `${BASE_VERSIONS_URL}/${appVersionId}`;
 };
 
 export const appEnvironmentUrl = (appId: AppId, key: string): string => {

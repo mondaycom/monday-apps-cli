@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 
-import { addRegionToFlags, chooseRegionIfNeeded } from 'commands/utils/region';
+import { chooseRegionIfNeeded } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
@@ -71,8 +71,7 @@ export default class AppDeploy extends AuthenticatedCommand {
       appVersionId = await this.getAppVersionId(appVersionId, appId, force);
 
       const selectedRegion = await chooseRegionIfNeeded(region, {
-        appId,
-        appVersionId,
+        appVersionId: Number(appVersionId),
       });
 
       this.preparePrintCommand(this, { appVersionId: appVersionId, directoryPath: manifestFileData });

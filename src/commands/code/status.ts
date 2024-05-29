@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import { StatusCodes } from 'http-status-codes';
 
-import { addRegionToFlags, chooseRegionIfNeeded } from 'commands/utils/region';
+import { chooseRegionIfNeeded } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_VERSION_ID_TO_ENTER, VAR_UNKNOWN } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
