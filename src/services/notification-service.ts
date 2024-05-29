@@ -9,7 +9,6 @@ import { Region } from 'types/general/region';
 import { HttpMethodTypes } from 'types/services/api-service';
 import { ClientChannel } from 'types/services/notification-service';
 import logger from 'utils/logger';
-import { handelRegionError } from 'utils/region';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
 export const logsStream = async (
@@ -37,7 +36,6 @@ export const logsStream = async (
         error.code === StatusCodes.NOT_FOUND
           ? new Error('monday-code deployment not found for the requested app-version')
           : error;
-      handelRegionError(error);
       throw finalHttpError;
     }
 
