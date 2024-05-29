@@ -9,7 +9,7 @@ import { getMondayCodeBuild } from 'src/services/app-builds-service';
 import { HttpError } from 'types/errors';
 import { AppVersionDeploymentStatus } from 'types/services/push-service';
 import logger from 'utils/logger';
-import { addRegionToFlags, getRegionFromString, handelRegionError } from 'utils/region';
+import { addRegionToFlags, getRegionFromString } from 'utils/region';
 
 const DEBUG_TAG = 'code_status';
 
@@ -77,10 +77,6 @@ export default class Status extends AuthenticatedCommand {
             appVersionId || VAR_UNKNOWN
           }"`,
         );
-      }
-
-      if (error instanceof HttpError) {
-        handelRegionError(error);
       }
 
       process.exit(1);

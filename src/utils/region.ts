@@ -36,11 +36,3 @@ export function addRegionToFlags<T>(flags: T): T {
 
   return flags;
 }
-
-export const handelRegionError = (error: HttpError) => {
-  if (error.code === 400 && error.message === 'Region parameter is required for this app') {
-    logger.error(error.message);
-  }
-
-  return error;
-};
