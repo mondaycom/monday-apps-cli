@@ -1,7 +1,5 @@
 import { Flags } from '@oclif/core';
 
-import logger from 'src/utils/logger';
-import { HttpError } from 'types/errors';
 import { Region } from 'types/general/region';
 import { Permissions } from 'types/utils/permissions';
 import { isPermitted } from 'utils/permissions';
