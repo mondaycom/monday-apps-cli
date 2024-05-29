@@ -1,6 +1,5 @@
 import { Flags } from '@oclif/core';
 
-import { chooseRegionIfNeeded } from 'commands/utils/region';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
@@ -8,7 +7,7 @@ import { getManifestAssetPath, readManifestFile } from 'services/manifest-servic
 import { getTasksForClientSide, getTasksForServerSide } from 'services/share/deploy';
 import { ManifestHostingType } from 'types/services/manifest-service';
 import logger from 'utils/logger';
-import { addRegionToFlags, getRegionFromString } from 'utils/region';
+import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
 const MESSAGES = {
   directory: 'Directory path of you project in your machine. If not included will use the current working directory.',
