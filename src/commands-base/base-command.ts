@@ -8,6 +8,7 @@ export abstract class BaseCommand extends Command {
   protected static _withPrintCommand = true;
   private _printCommandCalled = false;
   private _printContext: PrintCommandContext = { command: this };
+  protected forcefullyExitAfterRun = true;
 
   get printContext(): PrintCommandContext {
     return this._printContext;
@@ -69,6 +70,8 @@ export abstract class BaseCommand extends Command {
       printGeneratedCommand(this._printContext.command, this._printContext.flags, this._printContext.args);
     }
 
-    return process.exit(0);
+    if (this.forcefullyExitAfterRun) {
+      return process.exit(0);
+    }
   }
 }

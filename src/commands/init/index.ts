@@ -19,6 +19,7 @@ const accessTokenPrompt = async () =>
 export default class Init extends BaseCommand {
   static description = `Initialize mapps config file - "${CONFIG_NAME}".`;
   static withPrintCommand = false;
+  forcefullyExitAfterRun = false; // init exists in any case after it's run, so we don't need to forcefully exit
   static examples = ['<%= config.bin %> <%= command.id %> -t SECRET_TOKEN'];
   static flags = Init.serializeFlags({
     token: Flags.string({
