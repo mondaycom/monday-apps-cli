@@ -73,6 +73,8 @@ export default class Status extends AuthenticatedCommand {
       logger.debug({ res: error }, DEBUG_TAG);
       if (error instanceof HttpError && error.code === StatusCodes.NOT_FOUND) {
         logger.error(`No deployment found for provided app version id - "${appVersionId || VAR_UNKNOWN}"`);
+      } else if (error instanceof HttpError && error.code === 400) {
+        logger.error(error.message);
       } else {
         logger.error(
           `An unknown error happened while fetching deployment status for app version id - "${

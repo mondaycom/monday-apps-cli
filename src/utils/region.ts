@@ -46,30 +46,28 @@ export async function chooseRegionIfNeeded(
   region?: Region,
   options?: { appId?: number; appVersionId?: number },
 ): Promise<Region | undefined> {
-  if (region) {
+  if (region || !isPermitted(Permissions.MCODE_MULTI_REGION)) {
     return region;
   }
 
   const { appId, appVersionId } = options || {};
 
   let isMultiRegionApp = false;
-  if (appId && isANumber(appId)) {
-    const isAppSupportMultiRegion = await checkIfAppSupportMultiRegion(appId);
-    if (isAppSupportMultiRegion) {
+
+  let _appId = appId;
+  if (appVersionId && isANumber(appVersionId)) {
+    const appVersion = await getAppVersionById(appVersionId);
+    if (!appVersion) throw new Error(`AppVersion with id ${appVersionId} not found.`);
+    _appId = appVersion.appId;
+    if (appVersion?.mondayCodeConfig?.isMultiRegion) {
       isMultiRegionApp = true;
     }
   }
 
-  if (!isMultiRegionApp && appVersionId && isANumber(appVersionId)) {
-    const appVersion = await getAppVersionById(appVersionId);
-    if (!appVersion) throw new Error(`AppVersion with id ${appVersionId} not found.`);
-    if (appVersion?.mondayCodeConfig?.isMultiRegion) {
+  if (!isMultiRegionApp && _appId && isANumber(_appId)) {
+    const isAppSupportMultiRegion = await checkIfAppSupportMultiRegion(_appId);
+    if (isAppSupportMultiRegion) {
       isMultiRegionApp = true;
-    } else {
-      const isAppSupportMultiRegion = await checkIfAppSupportMultiRegion(appVersion.appId);
-      if (isAppSupportMultiRegion) {
-        isMultiRegionApp = true;
-      }
     }
   }
 
