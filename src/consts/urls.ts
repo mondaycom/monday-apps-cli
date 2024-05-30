@@ -4,7 +4,7 @@ import { AppId, AppVersionId } from 'types/general';
 import { Region } from 'types/general/region';
 
 const BASE_APPS_URL = '/api/apps';
-const BASE_VERSIONS_URL = '/api/versions';
+const BASE_VERSIONS_URL = '/api/app-versions';
 const BASE_APP_VERSIONS_URL = '/api/app-versions';
 const BASE_MONDAY_CODE_URL = '/api/code';
 
