@@ -20,7 +20,7 @@ export const listAppVersionsSchema = z
   })
   .merge(baseResponseHttpMetaDataSchema);
 
-export const appVersionsSchema = z
+export const appVersionHttpSchema = z
   .object({
     appVersion: appVersionSchema,
   })

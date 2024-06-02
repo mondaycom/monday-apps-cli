@@ -1,7 +1,7 @@
 import { APP_VERSION_STATUS } from 'consts/app-versions';
 import { getAppVersionsByAppIdUrl, listAppVersionsByAppIdUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
-import { appVersionsSchema, listAppVersionsSchema } from 'services/schemas/app-versions-schemas';
+import { appVersionHttpSchema, listAppVersionsSchema } from 'services/schemas/app-versions-schemas';
 import logger from 'src/utils/logger';
 import { HttpError } from 'types/errors';
 import { AppId, AppVersionId } from 'types/general';
@@ -63,7 +63,7 @@ export const getAppVersionById = async (appVersionId: AppVersionId): Promise<App
         headers: { Accept: 'application/json' },
         method: HttpMethodTypes.GET,
       },
-      appVersionsSchema,
+      appVersionHttpSchema,
     );
 
     return response.appVersion;
