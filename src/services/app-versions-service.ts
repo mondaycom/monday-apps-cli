@@ -1,12 +1,12 @@
 import { APP_VERSION_STATUS } from 'consts/app-versions';
 import { getAppVersionsByAppIdUrl, listAppVersionsByAppIdUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
-import { appVersionHttpSchema, listAppVersionsSchema } from 'services/schemas/app-versions-schemas';
+import { getAppVersionSchema, listAppVersionsSchema } from 'services/schemas/app-versions-schemas';
 import logger from 'src/utils/logger';
 import { HttpError } from 'types/errors';
 import { AppId, AppVersionId } from 'types/general';
 import { HttpMethodTypes } from 'types/services/api-service';
-import { AppVersion, ListAppVersionsResponse, Version } from 'types/services/app-versions-service';
+import { AppVersion, GetAppVersionResponse, ListAppVersionsResponse } from 'types/services/app-versions-service';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
 export const listAppVersionsByAppId = async (appId: AppId): Promise<Array<AppVersion>> => {
@@ -57,13 +57,13 @@ export const getAppVersionById = async (appVersionId: AppVersionId): Promise<App
     const path = getAppVersionsByAppIdUrl(appVersionId);
     const url = appsUrlBuilder(path);
     logger.debug(`fetching logs url: ${url}`);
-    const response = await execute<Version>(
+    const response = await execute<GetAppVersionResponse>(
       {
         url,
         headers: { Accept: 'application/json' },
         method: HttpMethodTypes.GET,
       },
-      appVersionHttpSchema,
+      getAppVersionSchema,
     );
 
     return response.appVersion;
