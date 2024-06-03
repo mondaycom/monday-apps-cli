@@ -5,6 +5,7 @@ import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getTasksForServerSide } from 'services/share/deploy';
 import logger from 'utils/logger';
+import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
 const MESSAGES = {
   directory: 'Directory path of you project in your machine. If not included will use the current working directory.',
@@ -21,31 +22,35 @@ export default class Push extends AuthenticatedCommand {
     '<%= config.bin %> <%= command.id %> -a APP_ID_TO_PUSH',
   ];
 
-  static flags = Push.serializeFlags({
-    directoryPath: Flags.string({
-      char: 'd',
-      description: MESSAGES.directory,
+  static flags = Push.serializeFlags(
+    addRegionToFlags({
+      directoryPath: Flags.string({
+        char: 'd',
+        description: MESSAGES.directory,
+      }),
+      appId: Flags.string({
+        char: 'a',
+        description: MESSAGES.appId,
+      }),
+      appVersionId: Flags.integer({
+        char: 'i',
+        aliases: ['v'],
+        description: MESSAGES.appVersionId,
+      }),
+      force: Flags.boolean({
+        char: 'f',
+        description: MESSAGES.force,
+      }),
     }),
-    appId: Flags.string({
-      char: 'a',
-      description: MESSAGES.appId,
-    }),
-    appVersionId: Flags.integer({
-      char: 'i',
-      aliases: ['v'],
-      description: MESSAGES.appVersionId,
-    }),
-    force: Flags.boolean({
-      char: 'f',
-      description: MESSAGES.force,
-    }),
-  });
+  );
 
   static args = {};
   DEBUG_TAG = 'code_push';
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Push);
+    const { directoryPath, region: strRegion } = flags;
+    const region = getRegionFromString(strRegion);
     let appVersionId = flags.appVersionId;
 
     try {
@@ -60,10 +65,12 @@ export default class Push extends AuthenticatedCommand {
         appVersionId = appAndAppVersion.appVersionId;
       }
 
-      logger.debug(`push code to appVersionId: ${appVersionId}`, this.DEBUG_TAG);
-      this.preparePrintCommand(this, { appVersionId, directoryPath: flags.directoryPath });
+      const selectedRegion = await chooseRegionIfNeeded(region, { appVersionId });
 
-      const tasks = getTasksForServerSide(appVersionId, flags.directoryPath);
+      logger.debug(`push code to appVersionId: ${appVersionId}`, this.DEBUG_TAG);
+      this.preparePrintCommand(this, { appVersionId, directoryPath: directoryPath });
+
+      const tasks = getTasksForServerSide(appVersionId, directoryPath, selectedRegion);
 
       await tasks.run();
     } catch (error: any) {

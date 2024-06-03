@@ -1,3 +1,5 @@
+import { Region } from 'types/general/region';
+
 export type PushCommandTasksContext = {
   signedCloudStorageUrl?: string;
   archiveContent?: Buffer;
@@ -7,4 +9,5 @@ export type PushCommandTasksContext = {
   showUploadAssetTask?: boolean;
   showHandleDeploymentTask?: boolean;
   directoryPath?: string;
+  region?: Region;
 };

@@ -6,9 +6,11 @@ import { execute } from 'services/api-service';
 import { listAppEnvironmentKeysResponseSchema } from 'services/schemas/manage-app-env-service-schemas';
 import { HttpError } from 'types/errors';
 import { AppId } from 'types/general';
+import { Region } from 'types/general/region';
 import { HttpMethodTypes } from 'types/services/api-service';
 import { ListAppEnvironmentKeysResponse } from 'types/services/manage-app-env-service';
 import logger from 'utils/logger';
+import { addRegionToQuery } from 'utils/region';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
 const handleHttpErrors = (error: HttpError) => {
@@ -27,12 +29,15 @@ const handleHttpErrors = (error: HttpError) => {
   }
 };
 
-export const listAppEnvKeys = async (appId: AppId): Promise<Array<string>> => {
+export const listAppEnvKeys = async (appId: AppId, region?: Region): Promise<Array<string>> => {
   try {
     const path = appEnvironmentKeysUrl(appId);
     const url = appsUrlBuilder(path);
+    const query = addRegionToQuery({}, region);
+
     const response = await execute<ListAppEnvironmentKeysResponse>(
       {
+        query,
         url,
         headers: { Accept: 'application/json' },
         method: HttpMethodTypes.GET,
@@ -50,11 +55,14 @@ export const listAppEnvKeys = async (appId: AppId): Promise<Array<string>> => {
   }
 };
 
-export const setEnv = async (appId: AppId, key: string, value: string) => {
+export const setEnv = async (appId: AppId, key: string, value: string, region?: Region) => {
   try {
     const path = appEnvironmentUrl(appId, key);
     const url = appsUrlBuilder(path);
+    const query = addRegionToQuery({}, region);
+
     await execute({
+      query,
       url,
       headers: { Accept: 'application/json' },
       method: HttpMethodTypes.PUT,
@@ -69,11 +77,14 @@ export const setEnv = async (appId: AppId, key: string, value: string) => {
   }
 };
 
-export const deleteEnv = async (appId: AppId, key: string) => {
+export const deleteEnv = async (appId: AppId, key: string, region?: Region) => {
   try {
     const path = appEnvironmentUrl(appId, key);
     const url = appsUrlBuilder(path);
+    const query = addRegionToQuery({}, region);
+
     await execute({
+      query,
       url,
       headers: { Accept: 'application/json' },
       method: HttpMethodTypes.DELETE,
@@ -89,26 +100,26 @@ export const deleteEnv = async (appId: AppId, key: string) => {
   }
 };
 
-const handleEnvironmentSet = async (appId: AppId, key: string, value: string) => {
+const handleEnvironmentSet = async (appId: AppId, region: Region | undefined, key: string, value: string) => {
   if (!key || !value) {
     throw new Error('key and value are required');
   }
 
-  await setEnv(appId, key, value);
+  await setEnv(appId, key, value, region);
   logger.info(`Environment variable connected to key: "${key}", was set`);
 };
 
-const handleEnvironmentDelete = async (appId: AppId, key: string) => {
+const handleEnvironmentDelete = async (appId: AppId, region: Region | undefined, key: string) => {
   if (!key) {
     throw new Error('key is required');
   }
 
-  await deleteEnv(appId, key);
+  await deleteEnv(appId, key, region);
   logger.info(`Environment variable connected to key: "${key}", was deleted`);
 };
 
-const handleEnvironmentListKeys = async (appId: AppId) => {
-  const response = await listAppEnvKeys(appId);
+const handleEnvironmentListKeys = async (appId: AppId, region: Region | undefined) => {
+  const response = await listAppEnvKeys(appId, region);
   if (response?.length === 0) {
     logger.info('No environment variables found');
     return;
@@ -120,7 +131,7 @@ const handleEnvironmentListKeys = async (appId: AppId) => {
 
 const MAP_MODE_TO_HANDLER: Record<
   APP_ENV_MANAGEMENT_MODES,
-  (appId: AppId, key: string, value: string) => Promise<void>
+  (appId: AppId, region: Region | undefined, key: string, value: string) => Promise<void>
 > = {
   [APP_ENV_MANAGEMENT_MODES.SET]: handleEnvironmentSet,
   [APP_ENV_MANAGEMENT_MODES.DELETE]: handleEnvironmentDelete,
@@ -132,6 +143,7 @@ export const handleEnvironmentRequest = async (
   mode: APP_ENV_MANAGEMENT_MODES,
   key?: string,
   value?: string,
+  region?: Region,
 ) => {
   if (!appId || !mode) {
     throw new Error('appId and mode are required');
@@ -142,5 +154,5 @@ export const handleEnvironmentRequest = async (
     throw new Error('invalid mode');
   }
 
-  await modeHandler(appId, key!, value!);
+  await modeHandler(appId, region, key!, value!);
 };

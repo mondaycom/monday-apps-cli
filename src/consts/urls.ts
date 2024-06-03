@@ -1,8 +1,10 @@
 import { AppFeatureType } from 'src/types/services/app-features-service';
 import { LogType, LogsFilterCriteriaArguments } from 'types/commands/logs';
-import { AppId } from 'types/general';
+import { AppId, AppVersionId } from 'types/general';
+import { Region } from 'types/general/region';
 
 const BASE_APPS_URL = '/api/apps';
+const BASE_VERSIONS_URL = '/api/app-versions';
 const BASE_APP_VERSIONS_URL = '/api/app-versions';
 const BASE_MONDAY_CODE_URL = '/api/code';
 
@@ -48,13 +50,16 @@ export const getLogsStreamForAppVersionIdUrl = (
   appVersionId: number,
   logsType: LogType,
   logsFilterCriteria?: LogsFilterCriteriaArguments | null,
+  region?: Region,
 ): string => {
   const logsFilterCriteriaParams = logsFilterCriteria
     ? `&fromDate=${logsFilterCriteria.fromDate.getTime()}&toDate=${logsFilterCriteria.toDate.getTime()}&text=${encodeURIComponent(
         logsFilterCriteria.text || '',
       )}`
     : '';
-  return `${appVersionIdBaseUrl(appVersionId)}/logs?type=${logsType}${logsFilterCriteriaParams}`;
+  return `${appVersionIdBaseUrl(appVersionId)}/logs?type=${logsType}${logsFilterCriteriaParams}${
+    region ? `&region=${region}` : ''
+  }`;
 };
 
 export const listAppsUrl = (): string => {
@@ -67,6 +72,10 @@ export const createAppUrl = (): string => {
 
 export const listAppVersionsByAppIdUrl = (appId: AppId): string => {
   return `${BASE_APPS_URL}/${appId}/versions`;
+};
+
+export const getAppVersionsByAppIdUrl = (appVersionId: AppVersionId): string => {
+  return `${BASE_VERSIONS_URL}/${appVersionId}`;
 };
 
 export const appEnvironmentUrl = (appId: AppId, key: string): string => {

@@ -9,6 +9,7 @@ import { PromptService } from 'services/prompt-service';
 import { ManageAppEnvFlags } from 'types/commands/manage-app-env';
 import { AppId } from 'types/general';
 import logger from 'utils/logger';
+import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
 const MODES_WITH_KEYS: Array<APP_ENV_MANAGEMENT_MODES> = [
   APP_ENV_MANAGEMENT_MODES.SET,
@@ -68,46 +69,52 @@ export default class Env extends AuthenticatedCommand {
 
   static examples = ['<%= config.bin %> <%= command.id %>'];
 
-  static flags = Env.serializeFlags({
-    appId: Flags.integer({
-      char: 'i',
-      aliases: ['a'],
-      description: 'The id of the app to manage environment variables for',
+  static flags = Env.serializeFlags(
+    addRegionToFlags({
+      appId: Flags.integer({
+        char: 'i',
+        aliases: ['a'],
+        description: 'The id of the app to manage environment variables for',
+      }),
+      mode: Flags.string({
+        char: 'm',
+        description: 'management mode',
+        options: Object.values(APP_ENV_MANAGEMENT_MODES),
+      }),
+      key: Flags.string({
+        char: 'k',
+        description: 'variable key [required for set and delete]]',
+        relationships: [flagsWithModeRelationships],
+      }),
+      value: Flags.string({
+        char: 'v',
+        description: 'variable value [required for set]',
+        relationships: [flagsWithModeRelationships],
+      }),
     }),
-    mode: Flags.string({
-      char: 'm',
-      description: 'management mode',
-      options: Object.values(APP_ENV_MANAGEMENT_MODES),
-    }),
-    key: Flags.string({
-      char: 'k',
-      description: 'variable key [required for set and delete]]',
-      relationships: [flagsWithModeRelationships],
-    }),
-    value: Flags.string({
-      char: 'v',
-      description: 'variable value [required for set]',
-      relationships: [flagsWithModeRelationships],
-    }),
-  });
+  );
 
   static args = {};
   DEBUG_TAG = 'env';
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(Env);
+      const { region: strRegion } = flags;
+      const region = getRegionFromString(strRegion);
       let { mode, key, value, appId } = flags as ManageAppEnvFlags;
 
       if (!appId) {
         appId = Number(await DynamicChoicesService.chooseApp());
       }
 
+      const selectedRegion = await chooseRegionIfNeeded(region, { appId });
+
       mode = await promptForModeIfNotProvided(mode);
       key = await promptForKeyIfNotProvided(mode, appId, key);
       value = await promptForValueIfNotProvided(mode, value);
-      this.preparePrintCommand(this, { appId, mode, key, value });
+      this.preparePrintCommand(this, { appId, mode, key, value, region: selectedRegion });
 
-      await handleEnvironmentRequest(appId, mode, key, value);
+      await handleEnvironmentRequest(appId, mode, key, value, selectedRegion);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
 

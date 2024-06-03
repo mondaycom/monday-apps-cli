@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { AppReleaseCategory } from 'consts/app-release';
 import { baseResponseHttpMetaDataSchema } from 'services/schemas/api-service-schemas';
 import { appReleaseIdSchema, appVersionIdSchema } from 'services/schemas/general-schemas';
+import { Region } from 'types/general/region';
 
 export const appReleaseSchema = z.object({
   id: appReleaseIdSchema,
@@ -11,6 +12,7 @@ export const appReleaseSchema = z.object({
   kind: z.string(),
   category: z.nativeEnum(AppReleaseCategory),
   state: z.string(),
+  region: z.nativeEnum(Region),
   data: z
     .object({
       url: z.string().optional(),

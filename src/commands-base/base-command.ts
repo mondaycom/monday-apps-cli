@@ -38,7 +38,7 @@ export abstract class BaseCommand extends Command {
     } as typeof flags & typeof this.sharedFlags;
   }
 
-  static sharedFlags? = {
+  static sharedFlags = {
     verbose: Flags.boolean({
       description: 'Print advanced logs (optional).',
       default: false,
