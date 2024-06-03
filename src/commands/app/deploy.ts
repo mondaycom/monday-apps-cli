@@ -7,7 +7,7 @@ import { getManifestAssetPath, readManifestFile } from 'services/manifest-servic
 import { getTasksForClientSide, getTasksForServerSide } from 'services/share/deploy';
 import { ManifestHostingType } from 'types/services/manifest-service';
 import logger from 'utils/logger';
-import { addRegionToFlags, getRegionFromString } from 'utils/region';
+import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
 const MESSAGES = {
   directory: 'Directory path of you project in your machine. If not included will use the current working directory.',
@@ -68,6 +68,11 @@ export default class AppDeploy extends AuthenticatedCommand {
       appId = appId || manifestFileData.app.id;
 
       appVersionId = await this.getAppVersionId(appVersionId, appId, force);
+
+      const selectedRegion = await chooseRegionIfNeeded(region, {
+        appVersionId: Number(appVersionId),
+      });
+
       this.preparePrintCommand(this, { appVersionId: appVersionId, directoryPath: manifestFileData });
 
       const { cdn, server } = manifestFileData.app?.hosting || {};
@@ -76,7 +81,7 @@ export default class AppDeploy extends AuthenticatedCommand {
         await getTasksForClientSide(
           Number(appVersionId),
           getManifestAssetPath(manifestFileDir, cdn.path),
-          region,
+          selectedRegion,
         ).run();
       }
 
@@ -85,7 +90,7 @@ export default class AppDeploy extends AuthenticatedCommand {
         await getTasksForServerSide(
           Number(appVersionId),
           getManifestAssetPath(manifestFileDir, server.path),
-          region,
+          selectedRegion,
         ).run();
       }
     } catch (error) {

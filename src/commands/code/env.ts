@@ -9,7 +9,7 @@ import { PromptService } from 'services/prompt-service';
 import { ManageAppEnvFlags } from 'types/commands/manage-app-env';
 import { AppId } from 'types/general';
 import logger from 'utils/logger';
-import { addRegionToFlags, getRegionFromString } from 'utils/region';
+import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
 const MODES_WITH_KEYS: Array<APP_ENV_MANAGEMENT_MODES> = [
   APP_ENV_MANAGEMENT_MODES.SET,
@@ -107,12 +107,14 @@ export default class Env extends AuthenticatedCommand {
         appId = Number(await DynamicChoicesService.chooseApp());
       }
 
+      const selectedRegion = await chooseRegionIfNeeded(region, { appId });
+
       mode = await promptForModeIfNotProvided(mode);
       key = await promptForKeyIfNotProvided(mode, appId, key);
       value = await promptForValueIfNotProvided(mode, value);
-      this.preparePrintCommand(this, { appId, mode, key, value });
+      this.preparePrintCommand(this, { appId, mode, key, value, region: selectedRegion });
 
-      await handleEnvironmentRequest(appId, mode, key, value, region);
+      await handleEnvironmentRequest(appId, mode, key, value, selectedRegion);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
 

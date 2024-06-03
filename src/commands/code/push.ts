@@ -5,7 +5,7 @@ import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getTasksForServerSide } from 'services/share/deploy';
 import logger from 'utils/logger';
-import { addRegionToFlags, getRegionFromString } from 'utils/region';
+import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
 const MESSAGES = {
   directory: 'Directory path of you project in your machine. If not included will use the current working directory.',
@@ -65,10 +65,12 @@ export default class Push extends AuthenticatedCommand {
         appVersionId = appAndAppVersion.appVersionId;
       }
 
+      const selectedRegion = await chooseRegionIfNeeded(region, { appVersionId });
+
       logger.debug(`push code to appVersionId: ${appVersionId}`, this.DEBUG_TAG);
       this.preparePrintCommand(this, { appVersionId, directoryPath: directoryPath });
 
-      const tasks = getTasksForServerSide(appVersionId, directoryPath, region);
+      const tasks = getTasksForServerSide(appVersionId, directoryPath, selectedRegion);
 
       await tasks.run();
     } catch (error: any) {

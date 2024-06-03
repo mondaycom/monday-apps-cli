@@ -10,7 +10,7 @@ import { PromptService } from 'services/prompt-service';
 import { EventSource, LogType, LogsCommandArguments, LogsFilterCriteriaArguments } from 'types/commands/logs';
 import { isDefined } from 'utils/guards';
 import logger from 'utils/logger';
-import { addRegionToFlags, getRegionFromString } from 'utils/region';
+import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 import { TIME_IN_MILLISECONDS } from 'utils/time-enum';
 import { getDayDiff, isDate } from 'utils/validations';
 
@@ -89,7 +89,7 @@ export default class Logs extends AuthenticatedCommand {
       const { logsStartDate, logsEndDate, logSearchFromText, region: strRegion } = flags;
       const region = getRegionFromString(strRegion);
       const appVersionId = await this.getAppVersionId(flags.appVersionId);
-
+      const selectedRegion = await chooseRegionIfNeeded(region, { appVersionId });
       const eventSource = (flags.eventSource || (await eventSourcePrompt())) as EventSource;
       const logsType = await this.getLogType(eventSource, flags.logsType);
       const logsFilterCriteria = await this.getLogsFilterCriteria(
@@ -114,7 +114,7 @@ export default class Logs extends AuthenticatedCommand {
         logSearchFromText: logsFilterCriteria?.text,
       });
 
-      const clientChannel = await logsStream(args.appVersionId, args.logsType, logsFilterCriteria, region);
+      const clientChannel = await logsStream(args.appVersionId, args.logsType, logsFilterCriteria, selectedRegion);
       await streamMessages(clientChannel);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);

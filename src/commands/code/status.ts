@@ -9,7 +9,7 @@ import { getMondayCodeBuild } from 'src/services/app-builds-service';
 import { HttpError } from 'types/errors';
 import { AppVersionDeploymentStatus } from 'types/services/push-service';
 import logger from 'utils/logger';
-import { addRegionToFlags, getRegionFromString } from 'utils/region';
+import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
 const DEBUG_TAG = 'code_status';
 
@@ -58,9 +58,11 @@ export default class Status extends AuthenticatedCommand {
         appVersionId = appAndAppVersion.appVersionId;
       }
 
+      const selectedRegion = await chooseRegionIfNeeded(region, { appVersionId });
+
       this.preparePrintCommand(this, { appVersionId });
-      const deploymentStatus = await getAppVersionDeploymentStatus(appVersionId, region);
-      const mondayCodeRelease = await getMondayCodeBuild(appVersionId, region);
+      const deploymentStatus = await getAppVersionDeploymentStatus(appVersionId, selectedRegion);
+      const mondayCodeRelease = await getMondayCodeBuild(appVersionId, selectedRegion);
 
       if (deploymentStatus.deployment) {
         deploymentStatus.deployment.liveUrl = mondayCodeRelease?.data?.liveUrl;
@@ -71,6 +73,8 @@ export default class Status extends AuthenticatedCommand {
       logger.debug({ res: error }, DEBUG_TAG);
       if (error instanceof HttpError && error.code === StatusCodes.NOT_FOUND) {
         logger.error(`No deployment found for provided app version id - "${appVersionId || VAR_UNKNOWN}"`);
+      } else if (error instanceof HttpError && error.code === 400) {
+        logger.error(error.message);
       } else {
         logger.error(
           `An unknown error happened while fetching deployment status for app version id - "${
