@@ -18,6 +18,7 @@ import { pollPromise } from 'services/polling-service';
 import { appVersionDeploymentStatusSchema, signedUrlSchema } from 'services/schemas/push-service-schemas';
 import { PushCommandTasksContext } from 'types/commands/push';
 import { HttpError } from 'types/errors';
+import { Region } from 'types/general/region';
 import { TimeInMs } from 'types/general/time';
 import { HttpMethodTypes } from 'types/services/api-service';
 import {
@@ -28,15 +29,19 @@ import {
 } from 'types/services/push-service';
 import logger from 'utils/logger';
 import { createProgressBarString } from 'utils/progress-bar';
+import { addRegionToQuery } from 'utils/region';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
-export const getSignedStorageUrl = async (appVersionId: number): Promise<string> => {
+export const getSignedStorageUrl = async (appVersionId: number, region?: Region): Promise<string> => {
   const DEBUG_TAG = 'get_signed_storage_url';
   try {
     const baseSignUrl = getDeploymentSignedUrl(appVersionId);
     const url = appsUrlBuilder(baseSignUrl);
+    const query = addRegionToQuery({}, region);
+
     const response = await execute<SignedUrl>(
       {
+        query,
         url,
         headers: { Accept: 'application/json' },
         method: HttpMethodTypes.POST,
@@ -68,12 +73,15 @@ export const uploadClientZipFile = async (appVersionId: number, buffer: Buffer) 
   return response.data;
 };
 
-export const getAppVersionDeploymentStatus = async (appVersionId: number) => {
+export const getAppVersionDeploymentStatus = async (appVersionId: number, region?: Region) => {
   try {
     const baseAppVersionIdStatusUrl = getAppVersionDeploymentStatusUrl(appVersionId);
     const url = appsUrlBuilder(baseAppVersionIdStatusUrl);
+    const query = addRegionToQuery({}, region);
+
     const response = await execute<AppVersionDeploymentStatus>(
       {
+        query,
         url,
         headers: { Accept: 'application/json' },
         method: HttpMethodTypes.GET,
@@ -90,6 +98,7 @@ export const getAppVersionDeploymentStatus = async (appVersionId: number) => {
 export const pollForDeploymentStatus = async (
   appVersionId: number,
   retryAfter: number,
+  region?: Region,
   options: {
     ttl?: number;
     progressLogger?: (message: keyof typeof DeploymentStatusTypesSchema, tip?: string) => void;
@@ -107,7 +116,7 @@ export const pollForDeploymentStatus = async (
         DeploymentStatusTypesSchema['building-app'],
         DeploymentStatusTypesSchema['deploying-app'],
       ];
-      const response = await getAppVersionDeploymentStatus(appVersionId);
+      const response = await getAppVersionDeploymentStatus(appVersionId, region);
       if (statusesToKeepPolling.includes(response.status)) {
         if (progressLogger) {
           progressLogger(response.status, response.tip);
@@ -121,7 +130,7 @@ export const pollForDeploymentStatus = async (
     retryAfter,
     ttl || retryAfter * 60,
   );
-  const response = await getAppVersionDeploymentStatus(appVersionId);
+  const response = await getAppVersionDeploymentStatus(appVersionId, region);
   return response;
 };
 
@@ -195,7 +204,7 @@ export const buildAssetToDeployTask = async (
 
 export const prepareEnvironmentTask = async (ctx: PushCommandTasksContext) => {
   try {
-    const signedCloudStorageUrl = await getSignedStorageUrl(ctx.appVersionId);
+    const signedCloudStorageUrl = await getSignedStorageUrl(ctx.appVersionId, ctx.region);
     const archiveContent = readFileData(ctx.archivePath!);
     ctx.signedCloudStorageUrl = signedCloudStorageUrl;
     ctx.archiveContent = archiveContent;
@@ -281,7 +290,7 @@ export const handleDeploymentTask = async (
   const now = Date.now();
   const retryAfter = TimeInMs.second * 5;
   const ttl = TimeInMs.minute * 30;
-  const deploymentStatus = await pollForDeploymentStatus(ctx.appVersionId, retryAfter, {
+  const deploymentStatus = await pollForDeploymentStatus(ctx.appVersionId, retryAfter, ctx.region, {
     ttl,
     progressLogger: (message: keyof typeof DeploymentStatusTypesSchema, tip?: string) => {
       const deltaInSeconds = (Date.now() - now) / TimeInMs.second;

@@ -7,6 +7,7 @@ import { getManifestAssetPath, readManifestFile } from 'services/manifest-servic
 import { getTasksForClientSide, getTasksForServerSide } from 'services/share/deploy';
 import { ManifestHostingType } from 'types/services/manifest-service';
 import logger from 'utils/logger';
+import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
 const MESSAGES = {
   directory: 'Directory path of you project in your machine. If not included will use the current working directory.',
@@ -19,27 +20,29 @@ export default class AppDeploy extends AuthenticatedCommand {
   static description = 'Deploy an app using manifest file.';
   static withPrintCommand = false;
   static examples = ['<%= config.bin %> <%= command.id %>'];
-  static flags = AppDeploy.serializeFlags({
-    directoryPath: Flags.string({
-      char: 'd',
-      description: MESSAGES.directory,
+  static flags = AppDeploy.serializeFlags(
+    addRegionToFlags({
+      directoryPath: Flags.string({
+        char: 'd',
+        description: MESSAGES.directory,
+      }),
+      appId: Flags.string({
+        char: 'a',
+        aliases: ['appId'],
+        description: MESSAGES.appId,
+      }),
+      appVersionId: Flags.string({
+        char: 'v',
+        aliases: ['versionId'],
+        description: MESSAGES.appVersionId,
+      }),
+      force: Flags.boolean({
+        char: 'f',
+        aliases: ['force'],
+        description: MESSAGES.force,
+      }),
     }),
-    appId: Flags.string({
-      char: 'a',
-      aliases: ['appId'],
-      description: MESSAGES.appId,
-    }),
-    appVersionId: Flags.string({
-      char: 'v',
-      aliases: ['versionId'],
-      description: MESSAGES.appVersionId,
-    }),
-    force: Flags.boolean({
-      char: 'f',
-      aliases: ['force'],
-      description: MESSAGES.force,
-    }),
-  });
+  );
 
   DEBUG_TAG = 'app_deploy';
 
@@ -57,26 +60,37 @@ export default class AppDeploy extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(AppDeploy);
-
-      const manifestFileDir = flags.directoryPath || getCurrentWorkingDirectory();
+      const { directoryPath, force } = flags;
+      let { appId, appVersionId } = flags;
+      const region = getRegionFromString(flags?.region);
+      const manifestFileDir = directoryPath || getCurrentWorkingDirectory();
       const manifestFileData = readManifestFile(manifestFileDir);
-      flags.appId = flags.appId || manifestFileData.app.id;
+      appId = appId || manifestFileData.app.id;
 
-      flags.appVersionId = await this.getAppVersionId(flags.appVersionId, flags.appId, flags.force);
+      appVersionId = await this.getAppVersionId(appVersionId, appId, force);
 
-      this.preparePrintCommand(this, { appVersionId: flags.appVersionId, directoryPath: manifestFileData });
+      const selectedRegion = await chooseRegionIfNeeded(region, {
+        appVersionId: Number(appVersionId),
+      });
+
+      this.preparePrintCommand(this, { appVersionId: appVersionId, directoryPath: manifestFileData });
 
       const { cdn, server } = manifestFileData.app?.hosting || {};
       if (cdn && cdn.type === ManifestHostingType.Upload) {
         logger.info('Deploying files to cdn...');
-        await getTasksForClientSide(Number(flags.appVersionId), getManifestAssetPath(manifestFileDir, cdn.path)).run();
+        await getTasksForClientSide(
+          Number(appVersionId),
+          getManifestAssetPath(manifestFileDir, cdn.path),
+          selectedRegion,
+        ).run();
       }
 
       if (server && server.type === ManifestHostingType.Upload) {
         logger.info('Deploying server side files...');
         await getTasksForServerSide(
-          Number(flags.appVersionId),
+          Number(appVersionId),
           getManifestAssetPath(manifestFileDir, server.path),
+          selectedRegion,
         ).run();
       }
     } catch (error) {

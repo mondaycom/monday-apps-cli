@@ -9,8 +9,10 @@ import {
   uploadAssetTask,
 } from 'services/push-service';
 import { PushCommandTasksContext } from 'types/commands/push';
+import { Region } from 'types/general/region';
 
-export const getTasksForClientSide = (appVersionId: number, directoryPath?: string) => {
+export const getTasksForClientSide = (appVersionId: number, directoryPath?: string, region?: Region) => {
+  const ctx = { appVersionId, directoryPath, region };
   return new Listr<PushCommandTasksContext>(
     [
       { title: 'Build asset to deploy', task: buildClientZip },
@@ -20,12 +22,13 @@ export const getTasksForClientSide = (appVersionId: number, directoryPath?: stri
       },
     ],
     {
-      ctx: { appVersionId, directoryPath },
+      ctx,
     },
   );
 };
 
-export const getTasksForServerSide = (appVersionId: number, directoryPath?: string) => {
+export const getTasksForServerSide = (appVersionId: number, directoryPath?: string, region?: Region) => {
+  const ctx = { appVersionId, directoryPath, region };
   return new Listr<PushCommandTasksContext>(
     [
       { title: 'Build asset to deploy', task: buildAssetToDeployTask },
@@ -45,6 +48,6 @@ export const getTasksForServerSide = (appVersionId: number, directoryPath?: stri
         enabled: ctx => Boolean(ctx.showHandleDeploymentTask),
       },
     ],
-    { ctx: { appVersionId, directoryPath } },
+    { ctx },
   );
 };

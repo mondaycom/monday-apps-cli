@@ -9,6 +9,9 @@ import { getMondayCodeBuild } from 'src/services/app-builds-service';
 import { HttpError } from 'types/errors';
 import { AppVersionDeploymentStatus } from 'types/services/push-service';
 import logger from 'utils/logger';
+import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
+
+const DEBUG_TAG = 'code_status';
 
 const printDeploymentStatus = (
   appVersionId: number,
@@ -34,16 +37,20 @@ export default class Status extends AuthenticatedCommand {
 
   static examples = ['<%= config.bin %> <%= command.id %> -i APP_VERSION_ID'];
 
-  static flags = Status.serializeFlags({
-    appVersionId: Flags.integer({
-      char: 'i',
-      aliases: ['v'],
-      description: APP_VERSION_ID_TO_ENTER,
+  static flags = Status.serializeFlags(
+    addRegionToFlags({
+      appVersionId: Flags.integer({
+        char: 'i',
+        aliases: ['v'],
+        description: APP_VERSION_ID_TO_ENTER,
+      }),
     }),
-  });
+  );
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Status);
+    const { region: strRegion } = flags;
+    const region = getRegionFromString(strRegion);
     let appVersionId = flags.appVersionId;
     try {
       if (!appVersionId) {
@@ -51,9 +58,11 @@ export default class Status extends AuthenticatedCommand {
         appVersionId = appAndAppVersion.appVersionId;
       }
 
+      const selectedRegion = await chooseRegionIfNeeded(region, { appVersionId });
+
       this.preparePrintCommand(this, { appVersionId });
-      const deploymentStatus = await getAppVersionDeploymentStatus(appVersionId);
-      const mondayCodeRelease = await getMondayCodeBuild(appVersionId);
+      const deploymentStatus = await getAppVersionDeploymentStatus(appVersionId, selectedRegion);
+      const mondayCodeRelease = await getMondayCodeBuild(appVersionId, selectedRegion);
 
       if (deploymentStatus.deployment) {
         deploymentStatus.deployment.liveUrl = mondayCodeRelease?.data?.liveUrl;
@@ -61,8 +70,11 @@ export default class Status extends AuthenticatedCommand {
 
       printDeploymentStatus(appVersionId, deploymentStatus);
     } catch (error: unknown) {
+      logger.debug({ res: error }, DEBUG_TAG);
       if (error instanceof HttpError && error.code === StatusCodes.NOT_FOUND) {
         logger.error(`No deployment found for provided app version id - "${appVersionId || VAR_UNKNOWN}"`);
+      } else if (error instanceof HttpError && error.code === 400) {
+        logger.error(error.message);
       } else {
         logger.error(
           `An unknown error happened while fetching deployment status for app version id - "${

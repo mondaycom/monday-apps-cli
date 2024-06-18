@@ -4,7 +4,10 @@ import { App } from 'types/services/apps-service';
 import logger from 'utils/logger';
 
 const printApps = (apps: Array<App>) => {
-  logger.table(apps);
+  const cleanedApps = apps.map(app => {
+    return { id: app.id, name: app.name };
+  });
+  logger.table(cleanedApps);
 };
 
 export default class AppList extends AuthenticatedCommand {
