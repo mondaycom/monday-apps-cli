@@ -15,7 +15,3 @@ export const initCurrentWorkingDirectory = (): string => {
 export const getCurrentWorkingDirectory = (): string => {
   return process.env.CURRENT_WORKING_DIRECTORY!;
 };
-
-export const getIsSupportMultiRegion = (): boolean => {
-  return Boolean(process.env.MCDOE_SUPPRT_MULTIREGION);
-};

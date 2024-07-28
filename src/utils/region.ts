@@ -4,8 +4,6 @@ import { getAppVersionById } from 'services/app-versions-service';
 import { checkIfAppSupportMultiRegion } from 'services/apps-service';
 import { PromptService } from 'services/prompt-service';
 import { Region } from 'types/general/region';
-import { Permissions } from 'types/utils/permissions';
-import { isPermitted } from 'utils/permissions';
 import { isANumber } from 'utils/validations';
 
 export const addRegionToQuery = (query: object | undefined, region?: Region) => {
@@ -29,14 +27,10 @@ export const regionFlag = {
 };
 
 export function addRegionToFlags<T>(flags: T): T {
-  if (isPermitted(Permissions.MCODE_MULTI_REGION)) {
-    return {
-      ...flags,
-      ...regionFlag,
-    };
-  }
-
-  return flags;
+  return {
+    ...flags,
+    ...regionFlag,
+  };
 }
 
 const regionsPrompt = async () =>
@@ -46,7 +40,7 @@ export async function chooseRegionIfNeeded(
   region?: Region,
   options?: { appId?: number; appVersionId?: number },
 ): Promise<Region | undefined> {
-  if (region || !isPermitted(Permissions.MCODE_MULTI_REGION)) {
+  if (region) {
     return region;
   }
 

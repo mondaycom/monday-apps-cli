@@ -1,4 +1,3 @@
-import { getIsSupportMultiRegion } from 'services/env-service';
 import { Permissions } from 'types/utils/permissions';
 
 export const isPermitted = (permission: Permissions): boolean => {
@@ -6,9 +5,7 @@ export const isPermitted = (permission: Permissions): boolean => {
     return false;
   }
 
-  if (permission === Permissions.MCODE_MULTI_REGION) {
-    return getIsSupportMultiRegion();
-  }
+  // add granular permission check here
 
   return false;
 };
