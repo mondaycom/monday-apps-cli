@@ -8,6 +8,7 @@ import { handleEnvironmentRequest, listAppEnvKeys } from 'services/manage-app-en
 import { PromptService } from 'services/prompt-service';
 import { ManageAppEnvFlags } from 'types/commands/manage-app-env';
 import { AppId } from 'types/general';
+import { Region } from 'types/general/region';
 import logger from 'utils/logger';
 import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
@@ -30,9 +31,14 @@ const promptForModeIfNotProvided = async (mode?: APP_ENV_MANAGEMENT_MODES) => {
   return mode;
 };
 
-const promptForKeyIfNotProvided = async (mode: APP_ENV_MANAGEMENT_MODES, appId: AppId, key?: string) => {
+const promptForKeyIfNotProvided = async (
+  mode: APP_ENV_MANAGEMENT_MODES,
+  appId: AppId,
+  key?: string,
+  region?: Region,
+) => {
   if (!key && isKeyRequired(mode)) {
-    const existingKeys = await listAppEnvKeys(appId);
+    const existingKeys = await listAppEnvKeys(appId, region);
     key = await PromptService.promptSelectionWithAutoComplete('Enter key for environment variable', existingKeys, {
       includeInputInSelection: true,
     });
@@ -110,7 +116,7 @@ export default class Env extends AuthenticatedCommand {
       const selectedRegion = await chooseRegionIfNeeded(region, { appId });
 
       mode = await promptForModeIfNotProvided(mode);
-      key = await promptForKeyIfNotProvided(mode, appId, key);
+      key = await promptForKeyIfNotProvided(mode, appId, key, selectedRegion);
       value = await promptForValueIfNotProvided(mode, value);
       this.preparePrintCommand(this, { appId, mode, key, value, region: selectedRegion });
 

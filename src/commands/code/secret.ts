@@ -8,6 +8,7 @@ import { handleSecretRequest, listAppSecretKeys } from 'services/manage-app-secr
 import { PromptService } from 'services/prompt-service';
 import { ManageAppSecretFlags } from 'types/commands/manage-app-secret';
 import { AppId } from 'types/general';
+import { Region } from 'types/general/region';
 import logger from 'utils/logger';
 import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
@@ -30,9 +31,14 @@ const promptForModeIfNotProvided = async (mode?: APP_SECRET_MANAGEMENT_MODES) =>
   return mode;
 };
 
-const promptForKeyIfNotProvided = async (mode: APP_SECRET_MANAGEMENT_MODES, appId: AppId, key?: string) => {
+const promptForKeyIfNotProvided = async (
+  mode: APP_SECRET_MANAGEMENT_MODES,
+  appId: AppId,
+  key?: string,
+  region?: Region,
+) => {
   if (!key && isKeyRequired(mode)) {
-    const existingKeys = await listAppSecretKeys(appId);
+    const existingKeys = await listAppSecretKeys(appId, region);
     key = await PromptService.promptSelectionWithAutoComplete('Enter key for secret variable', existingKeys, {
       includeInputInSelection: true,
     });
@@ -108,15 +114,11 @@ export default class Secret extends AuthenticatedCommand {
       }
 
       const selectedRegion = await chooseRegionIfNeeded(region, { appId });
-
       mode = await promptForModeIfNotProvided(mode);
-      key = await promptForKeyIfNotProvided(mode, appId, key);
+      key = await promptForKeyIfNotProvided(mode, appId, key, selectedRegion);
       value = await promptForValueIfNotProvided(mode, value);
       this.preparePrintCommand(this, { appId, mode, key, value, region: selectedRegion });
-      console.log("1")
-
       await handleSecretRequest(appId, mode, key, value, selectedRegion);
-      console.log("4")
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
 
