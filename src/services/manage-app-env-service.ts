@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 
-import { APP_ENV_MANAGEMENT_MODES } from 'consts/manage-app-env';
+import { APP_VARIABLE_MANAGEMENT_MODES } from 'consts/manage-app-variables';
 import { appEnvironmentKeysUrl, appEnvironmentUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
 import { listAppEnvironmentKeysResponseSchema } from 'services/schemas/manage-app-env-service-schemas';
@@ -130,17 +130,17 @@ const handleEnvironmentListKeys = async (appId: AppId, region: Region | undefine
 };
 
 const MAP_MODE_TO_HANDLER: Record<
-  APP_ENV_MANAGEMENT_MODES,
+  APP_VARIABLE_MANAGEMENT_MODES,
   (appId: AppId, region: Region | undefined, key: string, value: string) => Promise<void>
 > = {
-  [APP_ENV_MANAGEMENT_MODES.SET]: handleEnvironmentSet,
-  [APP_ENV_MANAGEMENT_MODES.DELETE]: handleEnvironmentDelete,
-  [APP_ENV_MANAGEMENT_MODES.LIST_KEYS]: handleEnvironmentListKeys,
+  [APP_VARIABLE_MANAGEMENT_MODES.SET]: handleEnvironmentSet,
+  [APP_VARIABLE_MANAGEMENT_MODES.DELETE]: handleEnvironmentDelete,
+  [APP_VARIABLE_MANAGEMENT_MODES.LIST_KEYS]: handleEnvironmentListKeys,
 };
 
 export const handleEnvironmentRequest = async (
   appId: AppId,
-  mode: APP_ENV_MANAGEMENT_MODES,
+  mode: APP_VARIABLE_MANAGEMENT_MODES,
   key?: string,
   value?: string,
   region?: Region,

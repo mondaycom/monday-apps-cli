@@ -2,37 +2,43 @@ import { Flags } from '@oclif/core';
 import { Relationship } from '@oclif/core/lib/interfaces/parser';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
-import { APP_SECRET_MANAGEMENT_MODES } from 'consts/manage-app-secret';
+import { APP_VARIABLE_MANAGEMENT_MODES } from 'consts/manage-app-variables';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { handleSecretRequest, listAppSecretKeys } from 'services/manage-app-secret-service';
 import { PromptService } from 'services/prompt-service';
-import { ManageAppSecretFlags } from 'types/commands/manage-app-secret';
+import { ManageAppVariableFlags } from 'types/commands/manage-app-variable';
 import { AppId } from 'types/general';
+import { Region } from 'types/general/region';
 import logger from 'utils/logger';
 import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
-const MODES_WITH_KEYS: Array<APP_SECRET_MANAGEMENT_MODES> = [
-  APP_SECRET_MANAGEMENT_MODES.SET,
-  APP_SECRET_MANAGEMENT_MODES.DELETE,
+const MODES_WITH_KEYS: Array<APP_VARIABLE_MANAGEMENT_MODES> = [
+  APP_VARIABLE_MANAGEMENT_MODES.SET,
+  APP_VARIABLE_MANAGEMENT_MODES.DELETE,
 ];
 
-const isKeyRequired = (mode: APP_SECRET_MANAGEMENT_MODES) => MODES_WITH_KEYS.includes(mode);
-const isValueRequired = (mode: APP_SECRET_MANAGEMENT_MODES) => mode === APP_SECRET_MANAGEMENT_MODES.SET;
+const isKeyRequired = (mode: APP_VARIABLE_MANAGEMENT_MODES) => MODES_WITH_KEYS.includes(mode);
+const isValueRequired = (mode: APP_VARIABLE_MANAGEMENT_MODES) => mode === APP_VARIABLE_MANAGEMENT_MODES.SET;
 
-const promptForModeIfNotProvided = async (mode?: APP_SECRET_MANAGEMENT_MODES) => {
+const promptForModeIfNotProvided = async (mode?: APP_VARIABLE_MANAGEMENT_MODES) => {
   if (!mode) {
-    mode = await PromptService.promptSelectionWithAutoComplete<APP_SECRET_MANAGEMENT_MODES>(
+    mode = await PromptService.promptSelectionWithAutoComplete<APP_VARIABLE_MANAGEMENT_MODES>(
       'Select app secret variables management mode',
-      Object.values(APP_SECRET_MANAGEMENT_MODES),
+      Object.values(APP_VARIABLE_MANAGEMENT_MODES),
     );
   }
 
   return mode;
 };
 
-const promptForKeyIfNotProvided = async (mode: APP_SECRET_MANAGEMENT_MODES, appId: AppId, key?: string) => {
+const promptForKeyIfNotProvided = async (
+  mode: APP_VARIABLE_MANAGEMENT_MODES,
+  appId: AppId,
+  key?: string,
+  region?: Region,
+) => {
   if (!key && isKeyRequired(mode)) {
-    const existingKeys = await listAppSecretKeys(appId);
+    const existingKeys = await listAppSecretKeys(appId, region);
     key = await PromptService.promptSelectionWithAutoComplete('Enter key for secret variable', existingKeys, {
       includeInputInSelection: true,
     });
@@ -41,12 +47,12 @@ const promptForKeyIfNotProvided = async (mode: APP_SECRET_MANAGEMENT_MODES, appI
   return key;
 };
 
-const promptForValueIfNotProvided = async (mode: APP_SECRET_MANAGEMENT_MODES, value?: string) => {
+const promptForValueIfNotProvided = async (mode: APP_VARIABLE_MANAGEMENT_MODES, value?: string) => {
   if (!value && isValueRequired(mode)) {
     value = await PromptService.promptForHiddenInput(
       'value',
       'Enter value for secret variable',
-      'You must enter a value value',
+      'You must enter a value',
     );
   }
 
@@ -79,7 +85,7 @@ export default class Secret extends AuthenticatedCommand {
       mode: Flags.string({
         char: 'm',
         description: 'management mode',
-        options: Object.values(APP_SECRET_MANAGEMENT_MODES),
+        options: Object.values(APP_VARIABLE_MANAGEMENT_MODES),
       }),
       key: Flags.string({
         char: 'k',
@@ -101,22 +107,18 @@ export default class Secret extends AuthenticatedCommand {
       const { flags } = await this.parse(Secret);
       const { region: strRegion } = flags;
       const region = getRegionFromString(strRegion);
-      let { mode, key, value, appId } = flags as ManageAppSecretFlags;
+      let { mode, key, value, appId } = flags as ManageAppVariableFlags;
 
       if (!appId) {
         appId = Number(await DynamicChoicesService.chooseApp());
       }
 
       const selectedRegion = await chooseRegionIfNeeded(region, { appId });
-
       mode = await promptForModeIfNotProvided(mode);
-      key = await promptForKeyIfNotProvided(mode, appId, key);
+      key = await promptForKeyIfNotProvided(mode, appId, key, selectedRegion);
       value = await promptForValueIfNotProvided(mode, value);
       this.preparePrintCommand(this, { appId, mode, key, value, region: selectedRegion });
-      console.log("1")
-
       await handleSecretRequest(appId, mode, key, value, selectedRegion);
-      console.log("4")
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
 
