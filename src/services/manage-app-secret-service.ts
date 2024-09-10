@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 
-import { APP_SECRET_MANAGEMENT_MODES } from 'consts/manage-app-secret';
+import { APP_VARIABLE_MANAGEMENT_MODES } from 'consts/manage-app-variables';
 import { appSecretKeysUrl, appSecretUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
 import { listAppSecretKeysResponseSchema } from 'services/schemas/manage-app-secret-service-schemas';
@@ -34,7 +34,6 @@ export const listAppSecretKeys = async (appId: AppId, region?: Region): Promise<
     const path = appSecretKeysUrl(appId);
     const url = appsUrlBuilder(path);
     const query = addRegionToQuery({}, region);
-
     const response = await execute<ListAppSecretKeysResponse>(
       {
         query,
@@ -129,17 +128,17 @@ const handleSecretListKeys = async (appId: AppId, region: Region | undefined) =>
 };
 
 const MAP_MODE_TO_HANDLER: Record<
-  APP_SECRET_MANAGEMENT_MODES,
+  APP_VARIABLE_MANAGEMENT_MODES,
   (appId: AppId, region: Region | undefined, key: string, value: string) => Promise<void>
 > = {
-  [APP_SECRET_MANAGEMENT_MODES.SET]: handleSecretSet,
-  [APP_SECRET_MANAGEMENT_MODES.DELETE]: handleSecretDelete,
-  [APP_SECRET_MANAGEMENT_MODES.LIST_KEYS]: handleSecretListKeys,
+  [APP_VARIABLE_MANAGEMENT_MODES.SET]: handleSecretSet,
+  [APP_VARIABLE_MANAGEMENT_MODES.DELETE]: handleSecretDelete,
+  [APP_VARIABLE_MANAGEMENT_MODES.LIST_KEYS]: handleSecretListKeys,
 };
 
 export const handleSecretRequest = async (
   appId: AppId,
-  mode: APP_SECRET_MANAGEMENT_MODES,
+  mode: APP_VARIABLE_MANAGEMENT_MODES,
   key?: string,
   value?: string,
   region?: Region,

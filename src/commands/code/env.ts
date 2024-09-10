@@ -2,29 +2,29 @@ import { Flags } from '@oclif/core';
 import { Relationship } from '@oclif/core/lib/interfaces/parser';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
-import { APP_ENV_MANAGEMENT_MODES } from 'consts/manage-app-env';
+import { APP_VARIABLE_MANAGEMENT_MODES } from 'consts/manage-app-variables';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { handleEnvironmentRequest, listAppEnvKeys } from 'services/manage-app-env-service';
 import { PromptService } from 'services/prompt-service';
-import { ManageAppEnvFlags } from 'types/commands/manage-app-env';
+import { ManageAppVariableFlags } from 'types/commands/manage-app-variable';
 import { AppId } from 'types/general';
 import { Region } from 'types/general/region';
 import logger from 'utils/logger';
 import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
-const MODES_WITH_KEYS: Array<APP_ENV_MANAGEMENT_MODES> = [
-  APP_ENV_MANAGEMENT_MODES.SET,
-  APP_ENV_MANAGEMENT_MODES.DELETE,
+const MODES_WITH_KEYS: Array<APP_VARIABLE_MANAGEMENT_MODES> = [
+  APP_VARIABLE_MANAGEMENT_MODES.SET,
+  APP_VARIABLE_MANAGEMENT_MODES.DELETE,
 ];
 
-const isKeyRequired = (mode: APP_ENV_MANAGEMENT_MODES) => MODES_WITH_KEYS.includes(mode);
-const isValueRequired = (mode: APP_ENV_MANAGEMENT_MODES) => mode === APP_ENV_MANAGEMENT_MODES.SET;
+const isKeyRequired = (mode: APP_VARIABLE_MANAGEMENT_MODES) => MODES_WITH_KEYS.includes(mode);
+const isValueRequired = (mode: APP_VARIABLE_MANAGEMENT_MODES) => mode === APP_VARIABLE_MANAGEMENT_MODES.SET;
 
-const promptForModeIfNotProvided = async (mode?: APP_ENV_MANAGEMENT_MODES) => {
+const promptForModeIfNotProvided = async (mode?: APP_VARIABLE_MANAGEMENT_MODES) => {
   if (!mode) {
-    mode = await PromptService.promptSelectionWithAutoComplete<APP_ENV_MANAGEMENT_MODES>(
+    mode = await PromptService.promptSelectionWithAutoComplete<APP_VARIABLE_MANAGEMENT_MODES>(
       'Select app environment variables management mode',
-      Object.values(APP_ENV_MANAGEMENT_MODES),
+      Object.values(APP_VARIABLE_MANAGEMENT_MODES),
     );
   }
 
@@ -32,7 +32,7 @@ const promptForModeIfNotProvided = async (mode?: APP_ENV_MANAGEMENT_MODES) => {
 };
 
 const promptForKeyIfNotProvided = async (
-  mode: APP_ENV_MANAGEMENT_MODES,
+  mode: APP_VARIABLE_MANAGEMENT_MODES,
   appId: AppId,
   key?: string,
   region?: Region,
@@ -47,12 +47,12 @@ const promptForKeyIfNotProvided = async (
   return key;
 };
 
-const promptForValueIfNotProvided = async (mode: APP_ENV_MANAGEMENT_MODES, value?: string) => {
+const promptForValueIfNotProvided = async (mode: APP_VARIABLE_MANAGEMENT_MODES, value?: string) => {
   if (!value && isValueRequired(mode)) {
     value = await PromptService.promptForHiddenInput(
       'value',
       'Enter value for environment variable',
-      'You must enter a value value',
+      'You must enter a value',
     );
   }
 
@@ -64,7 +64,6 @@ const flagsWithModeRelationships: Relationship = {
   flags: [
     {
       name: 'mode',
-
       when: async (flags: Record<string, unknown>) => isValueRequired(flags.mode as (typeof MODES_WITH_KEYS)[number]),
     },
   ],
@@ -85,7 +84,7 @@ export default class Env extends AuthenticatedCommand {
       mode: Flags.string({
         char: 'm',
         description: 'management mode',
-        options: Object.values(APP_ENV_MANAGEMENT_MODES),
+        options: Object.values(APP_VARIABLE_MANAGEMENT_MODES),
       }),
       key: Flags.string({
         char: 'k',
@@ -107,7 +106,7 @@ export default class Env extends AuthenticatedCommand {
       const { flags } = await this.parse(Env);
       const { region: strRegion } = flags;
       const region = getRegionFromString(strRegion);
-      let { mode, key, value, appId } = flags as ManageAppEnvFlags;
+      let { mode, key, value, appId } = flags as ManageAppVariableFlags;
 
       if (!appId) {
         appId = Number(await DynamicChoicesService.chooseApp());
