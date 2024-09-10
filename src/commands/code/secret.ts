@@ -4,7 +4,7 @@ import { Relationship } from '@oclif/core/lib/interfaces/parser';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_VARIABLE_MANAGEMENT_MODES } from 'consts/manage-app-variables';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
-import { handleEnvironmentRequest, listAppEnvKeys } from 'services/manage-app-env-service';
+import { handleSecretRequest, listAppSecretKeys } from 'services/manage-app-secret-service';
 import { PromptService } from 'services/prompt-service';
 import { ManageAppVariableFlags } from 'types/commands/manage-app-variable';
 import { AppId } from 'types/general';
@@ -23,7 +23,7 @@ const isValueRequired = (mode: APP_VARIABLE_MANAGEMENT_MODES) => mode === APP_VA
 const promptForModeIfNotProvided = async (mode?: APP_VARIABLE_MANAGEMENT_MODES) => {
   if (!mode) {
     mode = await PromptService.promptSelectionWithAutoComplete<APP_VARIABLE_MANAGEMENT_MODES>(
-      'Select app environment variables management mode',
+      'Select app secret variables management mode',
       Object.values(APP_VARIABLE_MANAGEMENT_MODES),
     );
   }
@@ -38,8 +38,8 @@ const promptForKeyIfNotProvided = async (
   region?: Region,
 ) => {
   if (!key && isKeyRequired(mode)) {
-    const existingKeys = await listAppEnvKeys(appId, region);
-    key = await PromptService.promptSelectionWithAutoComplete('Enter key for environment variable', existingKeys, {
+    const existingKeys = await listAppSecretKeys(appId, region);
+    key = await PromptService.promptSelectionWithAutoComplete('Enter key for secret variable', existingKeys, {
       includeInputInSelection: true,
     });
   }
@@ -51,7 +51,7 @@ const promptForValueIfNotProvided = async (mode: APP_VARIABLE_MANAGEMENT_MODES, 
   if (!value && isValueRequired(mode)) {
     value = await PromptService.promptForHiddenInput(
       'value',
-      'Enter value for environment variable',
+      'Enter value for secret variable',
       'You must enter a value',
     );
   }
@@ -69,17 +69,17 @@ const flagsWithModeRelationships: Relationship = {
   ],
 };
 
-export default class Env extends AuthenticatedCommand {
-  static description = 'Manage environment variables for your app hosted on monday-code.';
+export default class Secret extends AuthenticatedCommand {
+  static description = 'Manage secret variables for your app hosted on monday-code.';
 
   static examples = ['<%= config.bin %> <%= command.id %>'];
 
-  static flags = Env.serializeFlags(
+  static flags = Secret.serializeFlags(
     addRegionToFlags({
       appId: Flags.integer({
         char: 'i',
         aliases: ['a'],
-        description: 'The id of the app to manage environment variables for',
+        description: 'The id of the app to manage secret variables for',
       }),
       mode: Flags.string({
         char: 'm',
@@ -100,10 +100,10 @@ export default class Env extends AuthenticatedCommand {
   );
 
   static args = {};
-  DEBUG_TAG = 'env';
+  DEBUG_TAG = 'secret';
   public async run(): Promise<void> {
     try {
-      const { flags } = await this.parse(Env);
+      const { flags } = await this.parse(Secret);
       const { region: strRegion } = flags;
       const region = getRegionFromString(strRegion);
       let { mode, key, value, appId } = flags as ManageAppVariableFlags;
@@ -113,13 +113,11 @@ export default class Env extends AuthenticatedCommand {
       }
 
       const selectedRegion = await chooseRegionIfNeeded(region, { appId });
-
       mode = await promptForModeIfNotProvided(mode);
       key = await promptForKeyIfNotProvided(mode, appId, key, selectedRegion);
       value = await promptForValueIfNotProvided(mode, value);
       this.preparePrintCommand(this, { appId, mode, key, value, region: selectedRegion });
-
-      await handleEnvironmentRequest(appId, mode, key, value, selectedRegion);
+      await handleSecretRequest(appId, mode, key, value, selectedRegion);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
 
