@@ -64,7 +64,6 @@ const flagsWithModeRelationships: Relationship = {
   flags: [
     {
       name: 'mode',
-
       when: async (flags: Record<string, unknown>) => isValueRequired(flags.mode as (typeof MODES_WITH_KEYS)[number]),
     },
   ],
