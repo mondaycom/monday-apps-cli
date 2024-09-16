@@ -33,7 +33,11 @@ export const listAppVersionsByAppId = async (appId: AppId): Promise<Array<AppVer
   }
 };
 
-export const defaultVersionByAppId = async (appId: AppId, useLiveVersion = false): Promise<AppVersion | undefined> => {
+export const defaultVersionByAppId = async (
+  appId: AppId,
+  customLogMessage?: string,
+  useLiveVersion = false,
+): Promise<AppVersion | undefined> => {
   logger.info(`Getting the latest valid version for app id - ${appId}`);
 
   const appVersions = await listAppVersionsByAppId(appId);
@@ -46,7 +50,7 @@ export const defaultVersionByAppId = async (appId: AppId, useLiveVersion = false
   if (validVersion) {
     logger.info(`Using version - ${validVersion?.id} for app id - ${appId}`);
   } else {
-    logger.error(`No valid version found for app id - ${appId}`);
+    logger.info(customLogMessage || `No valid version found for app id - ${appId}`);
   }
 
   return validVersion;
