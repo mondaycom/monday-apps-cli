@@ -60,7 +60,7 @@ export const DynamicChoicesService = {
     if (appId && autoSelectVersion) {
       const defaultVersion = await defaultVersionByAppId(appId, {
         customLogMessage: LIVE_VERSION_ERROR_LOG,
-        useLiveVersion: useLiveVersion,
+        useLiveVersion,
       });
       if (!defaultVersion) throw new Error(`No default version found for app id - ${appId}`);
 

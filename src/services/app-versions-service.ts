@@ -43,7 +43,7 @@ export const defaultVersionByAppId = async (
 
   const appVersions = await listAppVersionsByAppId(appId);
   const latestVersion = appVersions.sort((a, b) => b.id - a.id)[0];
-  const allowedStatuses = options.useLiveVersion
+  const allowedStatuses = options?.useLiveVersion
     ? [APP_VERSION_STATUS.LIVE, APP_VERSION_STATUS.DRAFT]
     : [APP_VERSION_STATUS.DRAFT];
 
