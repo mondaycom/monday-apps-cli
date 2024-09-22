@@ -5,6 +5,7 @@ import { listAppFeaturesByAppVersionId } from 'services/app-features-service';
 import { defaultVersionByAppId, listAppVersionsByAppId } from 'services/app-versions-service';
 import { listApps } from 'services/apps-service';
 import { PromptService } from 'services/prompt-service';
+import { LIVE_VERSION_ERROR_LOG } from 'src/consts/messages';
 import { AppFeature, AppFeatureType } from 'src/types/services/app-features-service';
 
 export const DynamicChoicesService = {
@@ -57,7 +58,10 @@ export const DynamicChoicesService = {
     if (useLiveVersion) filterByStatus.push(APP_VERSION_STATUS.LIVE);
 
     if (appId && autoSelectVersion) {
-      const defaultVersion = await defaultVersionByAppId(appId, useLiveVersion);
+      const defaultVersion = await defaultVersionByAppId(appId, {
+        customLogMessage: LIVE_VERSION_ERROR_LOG,
+        useLiveVersion,
+      });
       if (!defaultVersion) throw new Error(`No default version found for app id - ${appId}`);
 
       return { appId, appVersionId: defaultVersion.id };

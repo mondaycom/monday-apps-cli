@@ -11,3 +11,6 @@ export const VAR_UNKNOWN = 'unknown';
 export const APP_FEATURE_ID_TO_ENTER = 'Please enter the app feature id of your app:';
 
 export const BUILD_ID_TO_ENTER = 'Please enter the build id of your app:';
+
+export const LIVE_VERSION_ERROR_LOG =
+  'Operation failed: The latest app version is live. Create a new draft version or use --force to override';
