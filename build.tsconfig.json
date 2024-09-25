@@ -31,9 +31,6 @@
       ],
       "commands-base/*": [
         "./src/commands-base/*"
-      ],
-      "assets/*": [
-        "./src/assets/*"
       ]
     }
   },

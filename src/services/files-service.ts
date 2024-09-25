@@ -2,13 +2,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import Ajv from 'ajv';
 import archiver from 'archiver';
 import glob from 'glob';
 import parseGitIgnore from 'parse-gitignore';
 
-import rcFileSchema from 'assets/mondaycodercSchema.json';
 import { CONFIG_NAME } from 'services/config-service';
+import { mondaycodercSchema } from 'services/schemas/mondaycoderc-schema';
 
 import logger from '../utils/logger.js';
 
@@ -133,12 +132,7 @@ export const validateIfCanBuild = (directoryPath: string): void => {
       RUNTIME: string;
       RUNTIME_VERSION: string;
     };
-    const ajv = new Ajv();
-    const validate = ajv.compile(rcFileSchema);
-    const isValid = validate(rcFileContent);
-    if (!isValid) {
-      throw new Error('Invalid .mondaycoderc file');
-    }
+    mondaycodercSchema.parse(rcFileContent);
   }
 };
 
