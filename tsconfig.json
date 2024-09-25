@@ -15,6 +15,7 @@
     "baseUrl": ".",
     "strict": true,
     "target": "ESNext",
+    "resolveJsonModule": true,
     "lib": [
       "ES2022",
       "DOM"
@@ -46,6 +47,9 @@
       ],
       "commands-base/*": [
         "./src/commands-base/*"
+      ],
+      "assets/*": [
+        "./src/assets/*"
       ]
     }
   },

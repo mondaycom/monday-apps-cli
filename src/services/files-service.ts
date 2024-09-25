@@ -2,10 +2,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+import Ajv from 'ajv';
 import archiver from 'archiver';
 import glob from 'glob';
 import parseGitIgnore from 'parse-gitignore';
 
+import rcFileSchema from 'assets/mondaycodercSchema.json';
 import { CONFIG_NAME } from 'services/config-service';
 
 import logger from '../utils/logger.js';
@@ -113,18 +115,30 @@ export const createGitignoreAndAppendConfigFileIfNeeded = (directoryPath: string
  **/
 export const validateIfCanBuild = (directoryPath: string): void => {
   const filePath = path.join(directoryPath, 'yarn.lock');
-  if (!checkIfFileExists(filePath)) {
-    return;
+  if (checkIfFileExists(filePath)) {
+    const packageJsonPath = path.join(directoryPath, 'package.json');
+    const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf8');
+    const packageJson = JSON.parse(packageJsonContent) as { scripts?: { build?: string } };
+    const hasBuildCommand = packageJson?.scripts?.build;
+    if (hasBuildCommand) {
+      throw new Error(
+        'monday-code does not support yarn projects with a build command. If you need a build step, use npm instead',
+      );
+    }
   }
 
-  const packageJsonPath = path.join(directoryPath, 'package.json');
-  const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf8');
-  const packageJson = JSON.parse(packageJsonContent) as { scripts?: { build?: string } };
-  const hasBuildCommand = packageJson?.scripts?.build;
-  if (hasBuildCommand) {
-    throw new Error(
-      'monday-code does not support yarn projects with a build command. If you need a build step, use npm instead',
-    );
+  const rcFilePath = path.join(directoryPath, '.mondaycoderc');
+  if (checkIfFileExists(rcFilePath)) {
+    const rcFileContent = JSON.parse(fs.readFileSync(rcFilePath, 'utf8')) as {
+      RUNTIME: string;
+      RUNTIME_VERSION: string;
+    };
+    const ajv = new Ajv();
+    const validate = ajv.compile(rcFileSchema);
+    const isValid = validate(rcFileContent);
+    if (!isValid) {
+      throw new Error('Invalid .mondaycoderc file');
+    }
   }
 };
 
