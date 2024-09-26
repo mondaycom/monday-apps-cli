@@ -2,7 +2,13 @@ import { z } from 'zod';
 
 export const mondaycodercSchema = z
   .object({
-    RUNTIME: z.enum(['Python', 'Java', 'Go', 'PHP', 'Ruby', 'Nodejs', 'NETCore']).optional(),
+    RUNTIME: z
+      .enum(['Python', 'Java', 'Go', 'PHP', 'Ruby', 'Nodejs', 'NETCore'], {
+        errorMap: () => ({
+          message: 'Invalid Runtime. Supported runtimes are Python, Java, Go, PHP, Ruby, Nodejs, NETCore',
+        }),
+      })
+      .optional(),
     RUNTIME_VERSION: z.string().optional(),
   })
   .refine(
@@ -36,8 +42,6 @@ export const mondaycodercSchema = z
           return /^(6|7)\.\d+$/.test(data.RUNTIME_VERSION || '');
         }
       }
-
-      return true;
     },
     {
       message: 'Invalid RUNTIME_VERSION for the specified RUNTIME',

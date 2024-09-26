@@ -30,4 +30,9 @@ describe('mondaycodercSchema Validation', () => {
     const data = { RUNTIME: 'Go', RUNTIME_VERSION: '2.0.0' };
     expect(() => mondaycodercSchema.parse(data)).toThrow('Invalid RUNTIME_VERSION for the specified RUNTIME');
   });
+
+  it('should invalidate an Unsupported Runtime', () => {
+    const data = { RUNTIME: 'Invalid', RUNTIME_VERSION: '1.0.0' };
+    expect(() => mondaycodercSchema.parse(data)).toThrow('Invalid Runtime');
+  });
 });
