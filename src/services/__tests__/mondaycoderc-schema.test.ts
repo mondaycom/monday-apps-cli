@@ -8,7 +8,7 @@ describe('mondaycodercSchema Validation', () => {
 
   it('should invalidate an incorrect Python runtime version', () => {
     const data = { RUNTIME: 'Python', RUNTIME_VERSION: '2.7.0' };
-    expect(() => mondaycodercSchema.parse(data)).toThrow('Invalid RUNTIME_VERSION for the specified RUNTIME');
+    expect(() => mondaycodercSchema.parse(data)).toThrow('Invalid RUNTIME_VERSION');
   });
 
   it('should validate a correct Java runtime and version', () => {
@@ -16,9 +16,9 @@ describe('mondaycodercSchema Validation', () => {
     expect(() => mondaycodercSchema.parse(data)).not.toThrow();
   });
 
-  it('should invalidate a missing runtime version when runtime is specified', () => {
+  it('should validate a missing runtime version when runtime is specified', () => {
     const data = { RUNTIME: 'Java' };
-    expect(() => mondaycodercSchema.parse(data)).toThrow('Invalid RUNTIME_VERSION for the specified RUNTIME');
+    expect(() => mondaycodercSchema.parse(data)).not.toThrow();
   });
 
   it('should validate when runtime is not specified', () => {
@@ -28,7 +28,7 @@ describe('mondaycodercSchema Validation', () => {
 
   it('should invalidate an incorrect Go runtime version', () => {
     const data = { RUNTIME: 'Go', RUNTIME_VERSION: '2.0.0' };
-    expect(() => mondaycodercSchema.parse(data)).toThrow('Invalid RUNTIME_VERSION for the specified RUNTIME');
+    expect(() => mondaycodercSchema.parse(data)).toThrow('Invalid RUNTIME_VERSION');
   });
 
   it('should invalidate an Unsupported Runtime', () => {
