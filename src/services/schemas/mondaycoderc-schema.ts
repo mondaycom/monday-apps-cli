@@ -42,6 +42,8 @@ export const mondaycodercSchema = z
           return /^(6|7)\.\d+$/.test(data.RUNTIME_VERSION || '');
         }
       }
+
+      return true;
     },
     {
       message: 'Invalid RUNTIME_VERSION for the specified RUNTIME',
