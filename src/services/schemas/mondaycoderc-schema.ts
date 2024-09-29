@@ -11,6 +11,7 @@ export const mondaycodercSchema = z
       .optional(),
     RUNTIME_VERSION: z.string().optional(),
   })
+  .strict()
   .refine(
     data => {
       if (data.RUNTIME) {
