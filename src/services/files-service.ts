@@ -5,6 +5,7 @@ import path from 'node:path';
 import archiver from 'archiver';
 import glob from 'glob';
 import parseGitIgnore from 'parse-gitignore';
+import { ZodError } from 'zod';
 
 import { CONFIG_NAME } from 'services/config-service';
 import { mondaycodercSchema } from 'services/schemas/mondaycoderc-schema';
@@ -132,7 +133,15 @@ export const validateIfCanBuild = (directoryPath: string): void => {
       RUNTIME: string;
       RUNTIME_VERSION: string;
     };
-    mondaycodercSchema.parse(rcFileContent);
+    try {
+      mondaycodercSchema.parse(rcFileContent);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new TypeError(error.errors[0].message);
+      }
+
+      throw error;
+    }
   }
 };
 

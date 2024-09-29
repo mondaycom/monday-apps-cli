@@ -3,6 +3,8 @@ import { Flags } from '@oclif/core';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
+import { getCurrentWorkingDirectory } from 'services/env-service';
+import { validateIfCanBuild } from 'services/files-service';
 import { getTasksForServerSide } from 'services/share/deploy';
 import logger from 'utils/logger';
 import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
@@ -52,6 +54,7 @@ export default class Push extends AuthenticatedCommand {
     const { directoryPath, region: strRegion } = flags;
     const region = getRegionFromString(strRegion);
     let appVersionId = flags.appVersionId;
+    validateIfCanBuild(directoryPath || getCurrentWorkingDirectory());
 
     try {
       if (!appVersionId) {
