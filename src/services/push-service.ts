@@ -11,7 +11,6 @@ import {
   createTarGzArchive,
   readFileData,
   readZipFileAsBuffer,
-  validateIfCanBuild,
   verifyClientDirectory,
 } from 'services/files-service';
 import { pollPromise } from 'services/polling-service';
@@ -192,7 +191,6 @@ export const buildAssetToDeployTask = async (
     }
 
     task.output = `Building asset to deploy from "${ctx.directoryPath}" directory`;
-    validateIfCanBuild(ctx.directoryPath);
     const archivePath = await createTarGzArchive(ctx.directoryPath, 'code');
     ctx.archivePath = archivePath;
     ctx.showPrepareEnvironmentTask = true;
