@@ -3,10 +3,10 @@ import { z } from 'zod';
 export const mondaycodercSchema = z
   .object({
     RUNTIME: z
-      .enum(['Python', 'Java', 'Go', 'PHP', 'Ruby', 'Nodejs', 'NETCore'], {
+      .enum(['Python', 'Java', 'Go', 'PHP', 'Ruby', 'Node.js', 'NETCore'], {
         errorMap: () => ({
           message:
-            'Invalid Runtime in .mondaycoderc. Supported runtimes are Python, Java, Go, PHP, Ruby, Nodejs, NETCore',
+            'Invalid Runtime in .mondaycoderc. Supported runtimes are Python, Java, Go, PHP, Ruby, Node.js, NETCore',
         }),
       })
       .optional(),
@@ -57,7 +57,7 @@ export const mondaycodercSchema = z
         return true;
       }
 
-      if (data.RUNTIME === 'Nodejs') {
+      if (data.RUNTIME === 'Node.js') {
         if (!/^(12|14|16|18|20)\.\d+\.\d+$/.test(data.RUNTIME_VERSION || '')) {
           throw new Error(
             'Invalid RUNTIME_VERSION for Node.js  in .mondaycoderc. Allowed versions are 12.x.x, 14.x.x, 16.x.x, 18.x.x, 20.x.x',
