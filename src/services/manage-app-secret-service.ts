@@ -1,14 +1,14 @@
 import { StatusCodes } from 'http-status-codes';
 
 import { APP_VARIABLE_MANAGEMENT_MODES } from 'consts/manage-app-variables';
-import { appEnvironmentKeysUrl, appEnvironmentUrl } from 'consts/urls';
+import { appSecretKeysUrl, appSecretUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
-import { listAppEnvironmentKeysResponseSchema } from 'services/schemas/manage-app-env-service-schemas';
+import { listAppSecretKeysResponseSchema } from 'services/schemas/manage-app-secret-service-schemas';
 import { HttpError } from 'types/errors';
 import { AppId } from 'types/general';
 import { Region } from 'types/general/region';
 import { HttpMethodTypes } from 'types/services/api-service';
-import { ListAppEnvironmentKeysResponse } from 'types/services/manage-app-env-service';
+import { ListAppSecretKeysResponse } from 'types/services/manage-app-secret-service';
 import logger from 'utils/logger';
 import { addRegionToQuery } from 'utils/region';
 import { appsUrlBuilder } from 'utils/urls-builder';
@@ -29,20 +29,19 @@ const handleHttpErrors = (error: HttpError) => {
   }
 };
 
-export const listAppEnvKeys = async (appId: AppId, region?: Region): Promise<Array<string>> => {
+export const listAppSecretKeys = async (appId: AppId, region?: Region): Promise<Array<string>> => {
   try {
-    const path = appEnvironmentKeysUrl(appId);
+    const path = appSecretKeysUrl(appId);
     const url = appsUrlBuilder(path);
     const query = addRegionToQuery({}, region);
-
-    const response = await execute<ListAppEnvironmentKeysResponse>(
+    const response = await execute<ListAppSecretKeysResponse>(
       {
         query,
         url,
         headers: { Accept: 'application/json' },
         method: HttpMethodTypes.GET,
       },
-      listAppEnvironmentKeysResponseSchema,
+      listAppSecretKeysResponseSchema,
     );
 
     return response.keys;
@@ -51,16 +50,15 @@ export const listAppEnvKeys = async (appId: AppId, region?: Region): Promise<Arr
       handleHttpErrors(error);
     }
 
-    throw new Error('failed to list app environment keys');
+    throw new Error('failed to list app secret keys');
   }
 };
 
-export const setEnv = async (appId: AppId, key: string, value: string, region?: Region) => {
+export const setSecret = async (appId: AppId, key: string, value: string, region?: Region) => {
   try {
-    const path = appEnvironmentUrl(appId, key);
+    const path = appSecretUrl(appId, key);
     const url = appsUrlBuilder(path);
     const query = addRegionToQuery({}, region);
-
     await execute({
       query,
       url,
@@ -73,13 +71,13 @@ export const setEnv = async (appId: AppId, key: string, value: string, region?: 
       handleHttpErrors(error);
     }
 
-    throw new Error('failed to set environment variable');
+    throw new Error('failed to set secret variable');
   }
 };
 
-export const deleteEnv = async (appId: AppId, key: string, region?: Region) => {
+export const deleteSecret = async (appId: AppId, key: string, region?: Region) => {
   try {
-    const path = appEnvironmentUrl(appId, key);
+    const path = appSecretUrl(appId, key);
     const url = appsUrlBuilder(path);
     const query = addRegionToQuery({}, region);
 
@@ -96,36 +94,36 @@ export const deleteEnv = async (appId: AppId, key: string, region?: Region) => {
       handleHttpErrors(error);
     }
 
-    throw new Error('failed to delete environment variable');
+    throw new Error('failed to delete secret variable');
   }
 };
 
-const handleEnvironmentSet = async (appId: AppId, region: Region | undefined, key: string, value: string) => {
+const handleSecretSet = async (appId: AppId, region: Region | undefined, key: string, value: string) => {
   if (!key || !value) {
     throw new Error('key and value are required');
   }
 
-  await setEnv(appId, key, value, region);
-  logger.info(`Environment variable connected to key: "${key}", was set`);
+  await setSecret(appId, key, value, region);
+  logger.info(`Secret variable connected to key: "${key}", was set`);
 };
 
-const handleEnvironmentDelete = async (appId: AppId, region: Region | undefined, key: string) => {
+const handleSecretDelete = async (appId: AppId, region: Region | undefined, key: string) => {
   if (!key) {
     throw new Error('key is required');
   }
 
-  await deleteEnv(appId, key, region);
-  logger.info(`Environment variable connected to key: "${key}", was deleted`);
+  await deleteSecret(appId, key, region);
+  logger.info(`Secret variable connected to key: "${key}", was deleted`);
 };
 
-const handleEnvironmentListKeys = async (appId: AppId, region: Region | undefined) => {
-  const response = await listAppEnvKeys(appId, region);
+const handleSecretListKeys = async (appId: AppId, region: Region | undefined) => {
+  const response = await listAppSecretKeys(appId, region);
   if (response?.length === 0) {
-    logger.info('No environment variables found');
+    logger.info('No secret variables found');
     return;
   }
 
-  logger.info('App environment variable keys:');
+  logger.info('App secret variable keys:');
   logger.table(response.map(key => ({ keys: key })));
 };
 
@@ -133,12 +131,12 @@ const MAP_MODE_TO_HANDLER: Record<
   APP_VARIABLE_MANAGEMENT_MODES,
   (appId: AppId, region: Region | undefined, key: string, value: string) => Promise<void>
 > = {
-  [APP_VARIABLE_MANAGEMENT_MODES.SET]: handleEnvironmentSet,
-  [APP_VARIABLE_MANAGEMENT_MODES.DELETE]: handleEnvironmentDelete,
-  [APP_VARIABLE_MANAGEMENT_MODES.LIST_KEYS]: handleEnvironmentListKeys,
+  [APP_VARIABLE_MANAGEMENT_MODES.SET]: handleSecretSet,
+  [APP_VARIABLE_MANAGEMENT_MODES.DELETE]: handleSecretDelete,
+  [APP_VARIABLE_MANAGEMENT_MODES.LIST_KEYS]: handleSecretListKeys,
 };
 
-export const handleEnvironmentRequest = async (
+export const handleSecretRequest = async (
   appId: AppId,
   mode: APP_VARIABLE_MANAGEMENT_MODES,
   key?: string,

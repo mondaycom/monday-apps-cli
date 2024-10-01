@@ -77,7 +77,7 @@ export const cloneAppTemplateAndLoadManifest = async (
 };
 
 export const createFeatures = async (ctx: AppCreateCommandTasksContext) => {
-  const defaultVersion = await defaultVersionByAppId(ctx.appId!, false);
+  const defaultVersion = await defaultVersionByAppId(ctx.appId!);
   const baseUrl = await getTunnelingDomain();
   if (!defaultVersion) throw new Error(`No default version found for app id - ${ctx.appId}`);
   ctx.appVersionId = defaultVersion.id;
