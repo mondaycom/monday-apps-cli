@@ -16,9 +16,10 @@ export const mondaycodercSchema = z
   .refine(data => {
     if (data.RUNTIME_VERSION) {
       if (data.RUNTIME === 'Python') {
-        if (!/^3\.(10|11|12)\.\d+$/.test(data.RUNTIME_VERSION || '')) {
+        // See status of python versions https://devguide.python.org/versions/
+        if (!/^3\.(10|11|12|13)\.\d+$/.test(data.RUNTIME_VERSION || '')) {
           throw new Error(
-            'Invalid RUNTIME_VERSION for Python in .mondaycoderc. Allowed versions are 3.10.x, 3.11.x, 3.12.x',
+            'Invalid RUNTIME_VERSION for Python in .mondaycoderc. Allowed versions are 3.10.x, 3.11.x, 3.12.x, 3.13.x',
           );
         }
 
@@ -26,14 +27,16 @@ export const mondaycodercSchema = z
       }
 
       if (data.RUNTIME === 'Java') {
-        if (!['11', '17', '18'].includes(data.RUNTIME_VERSION || '')) {
-          throw new Error('Invalid RUNTIME_VERSION for Java in .mondaycoderc. Allowed versions are 11, 17, 18');
+        // 8, 11, 17, 21 are the only LTS versions, see https://www.oracle.com/eg/java/technologies/java-se-support-roadmap.html
+        if (!['8', '11', '17', '21'].includes(data.RUNTIME_VERSION || '')) {
+          throw new Error('Invalid RUNTIME_VERSION for Java in .mondaycoderc. Allowed versions are 8, 11, 17, 21');
         }
 
         return true;
       }
 
       if (data.RUNTIME === 'Go') {
+        // See here https://go.dev/doc/devel/release
         if (!/^1\.\d+\.\d+$/.test(data.RUNTIME_VERSION || '')) {
           throw new Error('Invalid RUNTIME_VERSION for Go in .mondaycoderc. Allowed versions are 1.x.x');
         }
@@ -42,25 +45,30 @@ export const mondaycodercSchema = z
       }
 
       if (data.RUNTIME === 'PHP') {
-        if (!/^8\.(1|2)\.\d+$/.test(data.RUNTIME_VERSION || '')) {
-          throw new Error('Invalid RUNTIME_VERSION for PHP in .mondaycoderc. Allowed versions are 8.1.x, 8.2.x');
+        // See here https://www.php.net/supported-versions.php
+        if (!/^8\.([1-3])\.\d+$/.test(data.RUNTIME_VERSION || '')) {
+          throw new Error('Invalid RUNTIME_VERSION for PHP in .mondaycoderc. Allowed versions are 8.1.x, 8.2.x, 8.3.x');
         }
 
         return true;
       }
 
       if (data.RUNTIME === 'Ruby') {
-        if (!/^3\.(1|2)\.\d+$/.test(data.RUNTIME_VERSION || '')) {
-          throw new Error('Invalid RUNTIME_VERSION for Ruby in .mondaycoderc. Allowed versions are 3.1.x, 3.2.x');
+        // See here https://www.ruby-lang.org/en/downloads/releases/
+        if (!/^3\.([0-3])\.\d+$/.test(data.RUNTIME_VERSION || '')) {
+          throw new Error(
+            'Invalid RUNTIME_VERSION for Ruby in .mondaycoderc. Allowed versions are 3.0.x, 3.1.x, 3.2.x and 3.3.x',
+          );
         }
 
         return true;
       }
 
       if (data.RUNTIME === 'Node.js') {
-        if (!/^(12|14|16|18|20)\.\d+\.\d+$/.test(data.RUNTIME_VERSION || '')) {
+        // See here https://nodejs.org/en/about/previous-releases
+        if (!/^(18|20|22)\.\d+\.\d+$/.test(data.RUNTIME_VERSION || '')) {
           throw new Error(
-            'Invalid RUNTIME_VERSION for Node.js  in .mondaycoderc. Allowed versions are 12.x.x, 14.x.x, 16.x.x, 18.x.x, 20.x.x',
+            'Invalid RUNTIME_VERSION for Node.js  in .mondaycoderc. Allowed versions are 18.x.x, 20.x.x, 22.x.x',
           );
         }
 
@@ -68,8 +76,9 @@ export const mondaycodercSchema = z
       }
 
       if (data.RUNTIME === 'NETCore') {
-        if (!/^(6|7)\.\d+$/.test(data.RUNTIME_VERSION || '')) {
-          throw new Error('Invalid RUNTIME_VERSION for NETCore in .mondaycoderc. Allowed versions are 6.x, 7.x');
+        // See here https://dotnet.microsoft.com/en-us/download/dotnet
+        if (!/^(6|8)\.\d+$/.test(data.RUNTIME_VERSION || '')) {
+          throw new Error('Invalid RUNTIME_VERSION for NETCore in .mondaycoderc. Allowed versions are 6.x, 8.x');
         }
 
         return true;
