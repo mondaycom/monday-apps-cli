@@ -3,6 +3,7 @@ import chalk from 'chalk';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ID_TO_ENTER } from 'consts/messages';
+import { removeAppStorageDataForAccount } from 'services/apps-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { PromptService } from 'services/prompt-service';
 import { HttpError } from 'types/errors';
@@ -60,7 +61,7 @@ export default class RemoveData extends AuthenticatedCommand {
       }
 
       logger.log(MESSAGES.removingData);
-      // TODO: Maor - invoke apps backend here
+      await removeAppStorageDataForAccount(appId, clientAccountId);
 
       this.preparePrintCommand(this, { appId, clientAccountId, force });
     } catch (error: unknown) {

@@ -1,15 +1,17 @@
 import { ListrTaskWrapper } from 'listr2';
 
-import { createAppUrl, listAppsUrl } from 'consts/urls';
+import { createAppUrl, listAppsUrl, removeAppStorageDataForAccountUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
 import { createAppFeatureWithRelease } from 'services/app-features-service';
 import { defaultVersionByAppId } from 'services/app-versions-service';
 import { cloneFolderFromGitRepo } from 'services/git-service';
 import { buildTypeManifestFormatMap, readManifestFile } from 'services/manifest-service';
+import { baseResponseHttpMetaDataSchema } from 'services/schemas/api-service-schemas';
 import { createAppSchema, listAppSchema } from 'services/schemas/apps-service-schemas';
 import { getTunnelingDomain } from 'services/tunnel-service';
 import { AppCreateCommandTasksContext } from 'types/commands/app-create';
 import { HttpError } from 'types/errors';
+import { AccountId, AppId } from 'types/general';
 import { HttpMethodTypes } from 'types/services/api-service';
 import { App, CreateAppResponse, ListAppResponse } from 'types/services/apps-service';
 import { appsUrlBuilder } from 'utils/urls-builder';
@@ -103,4 +105,25 @@ export const checkIfAppSupportMultiRegion = async (appId: number): Promise<boole
   const app = apps.find(app => app.id === appId);
   if (!app) throw new Error(`App with id ${appId} not found.`);
   return Boolean(app.mondayCodeConfig?.isMultiRegion);
+};
+
+export const removeAppStorageDataForAccount = async (appId: AppId, targetAccountId: AccountId): Promise<void> => {
+  try {
+    const path = removeAppStorageDataForAccountUrl(appId, targetAccountId);
+    const url = appsUrlBuilder(path);
+    await execute(
+      {
+        url,
+        headers: { Accept: 'application/json' },
+        method: HttpMethodTypes.DELETE,
+      },
+      baseResponseHttpMetaDataSchema,
+    );
+  } catch (error: any) {
+    if (error instanceof HttpError) {
+      throw error;
+    }
+
+    throw new Error('Failed to remove app storage data for account.');
+  }
 };
