@@ -116,6 +116,7 @@ export const removeAppStorageDataForAccount = async (appId: AppId, targetAccount
         url,
         headers: { Accept: 'application/json' },
         method: HttpMethodTypes.DELETE,
+        timeout: 60 * 1000,
       },
       baseResponseHttpMetaDataSchema,
     );
