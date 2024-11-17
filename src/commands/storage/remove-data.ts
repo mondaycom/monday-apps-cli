@@ -26,7 +26,7 @@ export default class RemoveData extends AuthenticatedCommand {
   static flags = RemoveData.serializeFlags({
     appId: Flags.integer({
       char: 'a',
-      description: 'Select the app that you wish to retrieve the key for',
+      description: 'Select the app that you wish to remove account data for',
     }),
     clientAccountId: Flags.integer({
       char: 'c',
