@@ -1,6 +1,6 @@
 import { AppFeatureType } from 'src/types/services/app-features-service';
 import { LogType, LogsFilterCriteriaArguments } from 'types/commands/logs';
-import { AppId, AppVersionId } from 'types/general';
+import { AccountId, AppId, AppVersionId } from 'types/general';
 import { Region } from 'types/general/region';
 
 const BASE_APPS_URL = '/api/apps';
@@ -9,7 +9,7 @@ const BASE_APP_VERSIONS_URL = '/api/app-versions';
 const BASE_MONDAY_CODE_URL = '/api/code';
 
 export const appVersionIdBaseUrl = (appVersionId: number): string => {
-  return `/api/code/${appVersionId}`;
+  return `${BASE_MONDAY_CODE_URL}/${appVersionId}`;
 };
 
 export const getAppVersionDeploymentStatusUrl = (appVersionId: number): string => {
@@ -79,19 +79,19 @@ export const getAppVersionsByAppIdUrl = (appVersionId: AppVersionId): string => 
 };
 
 export const appEnvironmentUrl = (appId: AppId, key: string): string => {
-  return `/api/code/${appId}/env/${key}`;
+  return `${BASE_MONDAY_CODE_URL}/${appId}/env/${key}`;
 };
 
 export const appEnvironmentKeysUrl = (appId: AppId): string => {
-  return `/api/code/${appId}/env-keys`;
+  return `${BASE_MONDAY_CODE_URL}/${appId}/env-keys`;
 };
 
 export const appSecretUrl = (appId: AppId, key: string): string => {
-  return `/api/code/${appId}/secrets/${key}`;
+  return `${BASE_MONDAY_CODE_URL}/${appId}/secrets/${key}`;
 };
 
 export const appSecretKeysUrl = (appId: AppId): string => {
-  return `/api/code/${appId}/secret-keys`;
+  return `${BASE_MONDAY_CODE_URL}/${appId}/secret-keys`;
 };
 
 export const appReleasesUrl = (appVersionId: AppId): string => {
@@ -104,4 +104,8 @@ export const generateTunnelingTokenUrl = (): string => {
 
 export const getTunnelingDomainUrl = (): string => {
   return `${BASE_MONDAY_CODE_URL}/tunnel-domain`;
+};
+
+export const removeAppStorageDataForAccountUrl = (appId: AppId, targetAccountId: AccountId): string => {
+  return `${BASE_APPS_URL}/${appId}/accounts/${targetAccountId}`;
 };
