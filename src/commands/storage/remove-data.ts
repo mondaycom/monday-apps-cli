@@ -13,7 +13,7 @@ const MESSAGES = {
   clientAccountNumber: 'Client account id (number)',
   appId: APP_ID_TO_ENTER,
   areYouSurePrompt: 'Are you sure you want to remove this account data? -= this operation cannot be undone =- (yes/no)',
-  force: 'Force push to live version',
+  force: 'Skip the confirmation step',
   operationAborted: 'Operation aborted',
   removingData: 'Removing data...',
 };
