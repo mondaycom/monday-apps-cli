@@ -4,3 +4,5 @@ import { appIdSchema, appVersionIdSchema } from 'services/schemas/general-schema
 
 export type AppId = z.infer<typeof appIdSchema>;
 export type AppVersionId = z.infer<typeof appVersionIdSchema>;
+export type AccountId = number;
+export type UserId = number;
