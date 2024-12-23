@@ -4,7 +4,7 @@ import { importAppManifestUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
 import { compressFilesToZip, readZipFileAsBuffer } from 'services/files-service';
 import { PromptService } from 'services/prompt-service';
-import { ImportCommandTasksContext } from 'types/commands/app-import';
+import { ImportCommandTasksContext } from 'types/commands/manifest-import';
 import { AppId, AppVersionId } from 'types/general';
 import { HttpMethodTypes } from 'types/services/api-service';
 import { appsUrlBuilder } from 'utils/urls-builder';

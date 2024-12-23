@@ -3,9 +3,9 @@ import { Listr } from 'listr2';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
-import * as importService from 'services/import-app-service';
+import * as importService from 'services/import-manifest-service';
 import { PromptService } from 'services/prompt-service';
-import { ImportCommandTasksContext } from 'types/commands/app-import';
+import { ImportCommandTasksContext } from 'types/commands/manifest-import';
 import logger from 'utils/logger';
 
 const MESSAGES = {
@@ -15,11 +15,11 @@ const MESSAGES = {
   newApp: 'Create new app',
 };
 
-export default class AppImport extends AuthenticatedCommand {
+export default class ManifestImport extends AuthenticatedCommand {
   static description = 'Import manifest.';
   static withPrintCommand = false;
   static examples = ['<%= config.bin %> <%= command.id %>'];
-  static flags = AppImport.serializeFlags({
+  static flags = ManifestImport.serializeFlags({
     manifestPath: Flags.string({
       char: 'p',
       description: MESSAGES.path,
@@ -42,7 +42,7 @@ export default class AppImport extends AuthenticatedCommand {
     }),
   });
 
-  DEBUG_TAG = 'app_import';
+  DEBUG_TAG = 'manifest_import';
 
   async getAppVersionId(appVersionId: number | undefined, appId: number | undefined): Promise<number> {
     if (appVersionId) return appVersionId;
@@ -57,7 +57,7 @@ export default class AppImport extends AuthenticatedCommand {
 
   public async run(): Promise<void> {
     try {
-      const { flags } = await this.parse(AppImport);
+      const { flags } = await this.parse(ManifestImport);
       let { manifestPath } = flags;
       const { appId: appIdAsString, appVersionId: appVersionIdAsString, newApp } = flags;
       let appId = appIdAsString ? Number(appIdAsString) : undefined;

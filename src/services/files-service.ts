@@ -260,3 +260,17 @@ const compressDirectoryToTarGz = async (
 
   return archivePath;
 };
+
+/**
+ * Writes a buffer to a file at the specified path.
+ * @param filePath - The path where the file will be created.
+ * @param dataBuffer - The buffer containing the file data.
+ */
+export const writeBufferToFile = (filePath: string, dataBuffer: Buffer): void => {
+  try {
+    fs.writeFileSync(filePath, dataBuffer);
+  } catch (error) {
+    logger.error(`Failed to write file to ${filePath}:`, error);
+    throw new Error(`Failed to write file to ${filePath}`);
+  }
+};
