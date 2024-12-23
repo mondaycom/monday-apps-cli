@@ -109,3 +109,7 @@ export const getTunnelingDomainUrl = (): string => {
 export const removeAppStorageDataForAccountUrl = (appId: AppId, targetAccountId: AccountId): string => {
   return `${BASE_APPS_URL}/${appId}/accounts/${targetAccountId}`;
 };
+
+export const importAppManifestUrl = (): string => {
+  return `${BASE_APPS_URL}/manifest`;
+};

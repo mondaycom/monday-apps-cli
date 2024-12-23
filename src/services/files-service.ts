@@ -25,6 +25,24 @@ export const readZipFileAsBuffer = (filePath: string): Buffer => {
   return fs.readFileSync(filePath);
 };
 
+export const compressFilesToZip = async (files: string[]): Promise<string> => {
+  const tempZipPath = 'temp.zip';
+  const output = fs.createWriteStream(tempZipPath);
+  const archive = archiver('zip', { zlib: { level: 9 } });
+
+  archive.pipe(output);
+  for (const file of files) {
+    const fileName = path.basename(file);
+    archive.file(file, { name: fileName });
+  }
+
+  await archive.finalize();
+  await new Promise<void>(resolve => {
+    output.on('close', () => resolve());
+  });
+  return tempZipPath;
+};
+
 export const compressBuildToZip = async (dirPath: string) => {
   const fileName = `${dirPath}.zip`;
 
