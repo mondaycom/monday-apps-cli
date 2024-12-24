@@ -110,8 +110,12 @@ export const removeAppStorageDataForAccountUrl = (appId: AppId, targetAccountId:
   return `${BASE_APPS_URL}/${appId}/accounts/${targetAccountId}`;
 };
 
-export const importAppManifestUrl = (): string => {
+export const createAppFromManifestUrl = (): string => {
   return `${BASE_APPS_URL}/manifest`;
+};
+
+export const updateAppFromManifestUrl = (appId: AppId): string => {
+  return `${BASE_APPS_URL}/${appId}/manifest`;
 };
 
 export const exportAppManifestUrl = (appId: AppId): string => {

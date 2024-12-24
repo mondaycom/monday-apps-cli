@@ -1,6 +1,6 @@
 import { ListrTaskWrapper } from 'listr2';
 
-import { importAppManifestUrl } from 'consts/urls';
+import { createAppFromManifestUrl, updateAppFromManifestUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
 import { compressFilesToZip, readZipFileAsBuffer } from 'services/files-service';
 import { PromptService } from 'services/prompt-service';
@@ -57,12 +57,19 @@ export const shouldCreateNewAppVersion = async (flags: {
 
 export const uploadZippedManifest = async (
   buffer: Buffer,
-  options?: {
-    appId?: AppId;
-    appVersionId?: AppVersionId;
-  },
+  options?: { appId?: AppId; appVersionId?: AppVersionId },
 ) => {
-  const baseUrl = importAppManifestUrl();
+  const { appId, appVersionId } = options || {};
+
+  if (appId) {
+    return updateAppFromManifest(buffer, appId, appVersionId);
+  }
+
+  return createAppFromManifest(buffer);
+};
+
+const updateAppFromManifest = async (buffer: Buffer, appId: AppId, appVersionId?: AppVersionId) => {
+  const baseUrl = updateAppFromManifestUrl(appId);
   const url = appsUrlBuilder(baseUrl);
   const formData = new FormData();
   formData.append('zipfile', new Blob([buffer]));
@@ -72,10 +79,22 @@ export const uploadZippedManifest = async (
     headers: { Accept: 'application/json', 'Content-Type': 'multipart/form-data' },
     method: HttpMethodTypes.PUT,
     body: formData,
-    query: {
-      ...(options?.appId && { appId: options.appId }),
-      ...(options?.appVersionId && { appVersionId: options.appVersionId }),
-    },
+    query: { ...(appVersionId && { appVersionId }) },
+  });
+  return response;
+};
+
+const createAppFromManifest = async (buffer: Buffer) => {
+  const baseUrl = createAppFromManifestUrl();
+  const url = appsUrlBuilder(baseUrl);
+  const formData = new FormData();
+  formData.append('zipfile', new Blob([buffer]));
+
+  const response = await execute({
+    url,
+    headers: { Accept: 'application/json', 'Content-Type': 'multipart/form-data' },
+    method: HttpMethodTypes.POST,
+    body: formData,
   });
   return response;
 };

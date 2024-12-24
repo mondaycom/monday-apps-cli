@@ -81,6 +81,11 @@ export default class ManifestImport extends AuthenticatedCommand {
         appVersionId = await this.getAppVersionId(appVersionId, appId);
       }
 
+      if (appVersionId && !appId) {
+        logger.error('App id is required when app version id is provided', this.DEBUG_TAG);
+        process.exit(1);
+      }
+
       this.preparePrintCommand(this, { appVersionId, manifestPath, appId, newApp: shouldCreateNewApp });
 
       const ctx = { appVersionId, appId, manifestFilePath: manifestPath };
