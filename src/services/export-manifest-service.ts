@@ -22,10 +22,11 @@ export const downloadManifest = async (appId: AppId, appVersionId?: AppVersionId
   const baseUrl = exportAppManifestUrl(appId);
   const url = appsUrlBuilder(baseUrl);
 
-  const response = await execute({
+  const response = (await execute({
     url,
     method: HttpMethodTypes.GET,
     query: { ...(appVersionId && { appVersionId }) },
-  });
-  return response.data as string;
+  })) as any as { data: string };
+
+  return response.data;
 };

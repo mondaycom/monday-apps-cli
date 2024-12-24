@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 export const baseResponseHttpMetaDataSchema = z.object({
-  data: z.any().optional(),
   statusCode: z.number(),
   headers: z.record(z.string(), z.array(z.string()).or(z.string())),
 });
