@@ -27,9 +27,9 @@ export const shouldCreateNewApp = async (flags: { appId?: AppId; appVersionId?: 
   }
 
   const CREATE_NEW_APP = 'Create new app';
-  const IMPORT_TO_EXISTING_APP = 'Import to existing app';
+  const IMPORT_TO_EXISTING_APP = 'Import to override an existing app';
   const userChoice = await PromptService.promptList(
-    'How you want to import your app',
+    'How do you want to import your app',
     [IMPORT_TO_EXISTING_APP, CREATE_NEW_APP],
     IMPORT_TO_EXISTING_APP,
   );
@@ -45,10 +45,10 @@ export const shouldCreateNewAppVersion = async (flags: {
     return false;
   }
 
-  const CREATE_NEW_VERSION = 'Create new version';
-  const OVERRIDE_EXISTING_VERSION = 'Override existing version';
+  const CREATE_NEW_VERSION = 'Create a new version';
+  const OVERRIDE_EXISTING_VERSION = 'Override an existing version';
   const userChoice = await PromptService.promptList(
-    'How you want to import your app',
+    'How do you want to import your app',
     [OVERRIDE_EXISTING_VERSION, CREATE_NEW_VERSION],
     OVERRIDE_EXISTING_VERSION,
   );

@@ -13,18 +13,17 @@ const MESSAGES = {
 };
 
 export default class ManifestExport extends AuthenticatedCommand {
-  static description = 'export manifest.';
+  static description = 'export app manifest.';
   static withPrintCommand = false;
   static examples = ['<%= config.bin %> <%= command.id %>'];
   static flags = ManifestExport.serializeFlags({
     appId: Flags.string({
       char: 'a',
-      aliases: ['appId'],
       description: MESSAGES.appId,
     }),
-    appVersionId: Flags.string({
-      char: 'v',
-      aliases: ['versionId'],
+    appVersionId: Flags.integer({
+      char: 'i',
+      aliases: ['v'],
       description: MESSAGES.appVersionId,
     }),
   });

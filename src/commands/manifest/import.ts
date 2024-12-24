@@ -9,8 +9,8 @@ import { ImportCommandTasksContext } from 'types/commands/manifest-import';
 import logger from 'utils/logger';
 
 const MESSAGES = {
-  path: 'Path of you manifest file in your machine',
-  appId: 'App id (will create new draft version)',
+  path: 'Path to your app manifest file on your machine',
+  appId: 'App id (will create a new draft version)',
   appVersionId: 'App version id to override',
   newApp: 'Create new app',
 };
@@ -26,12 +26,11 @@ export default class ManifestImport extends AuthenticatedCommand {
     }),
     appId: Flags.string({
       char: 'a',
-      aliases: ['appId'],
       description: MESSAGES.appId,
     }),
-    appVersionId: Flags.string({
-      char: 'v',
-      aliases: ['versionId'],
+    appVersionId: Flags.integer({
+      char: 'i',
+      aliases: ['v'],
       description: MESSAGES.appVersionId,
     }),
     newApp: Flags.boolean({
