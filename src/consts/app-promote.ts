@@ -1,0 +1,1 @@
+export const DEFAULT_DELAY_POLLING_MS = 4000;
