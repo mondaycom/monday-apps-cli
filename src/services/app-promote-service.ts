@@ -7,6 +7,8 @@ import { execute } from 'services/api-service';
 import { PromoteCommandTasksContext } from 'types/commands/promote';
 import { HttpMethodTypes } from 'types/services/api-service';
 import { PromoteStatusResponse } from 'types/services/promote-service';
+import logger from 'utils/logger';
+import { TIME_IN_MILLISECONDS, sleep } from 'utils/time-utils';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
 import { PromptService } from './prompt-service';
@@ -33,17 +35,22 @@ export const promoteAppTask = async (ctx: PromoteCommandTasksContext): Promise<v
     method: HttpMethodTypes.POST,
     body: { ...(appVersionId && { appVersionId: appVersionId.toString() }) },
   });
-  ctx.retryAfter = Number(response.headers['retry-after']) || DEFAULT_DELAY_POLLING_MS / 1000;
-  ctx.urlToPull = appsUrlBuilder(pullPromoteStatusUrl(response.headers.location as string));
+  const location = response.headers.location as string;
+  const retryAfter = response.headers['retry-after'];
+  if (!location) {
+    logger.error(
+      'The promotion was triggered, ' +
+        'but we encountered an issue and are unable to display the promotion status. ' +
+        `Please use the following command to check the application status: mapps app-version:list -i ${appId}`,
+    );
+    throw new Error('Invalid response headers');
+  }
+
+  ctx.retryAfter = Number(retryAfter) || DEFAULT_DELAY_POLLING_MS / TIME_IN_MILLISECONDS.SECOND;
+  ctx.urlToPull = appsUrlBuilder(pullPromoteStatusUrl(location));
 };
 
-const sleep = (ms: number): Promise<void> =>
-  new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-
 const fetchPromotionStatus = async (urlToPull: string): Promise<PromoteStatusResponse> => {
-  console.log(urlToPull);
   return execute<PromoteStatusResponse>({
     url: urlToPull,
     headers: { Accept: 'application/json' },
@@ -57,7 +64,7 @@ const handleStatusUpdate = (
 ): void => {
   switch (status) {
     case APP_VERSION_STATUS.DRAFT: {
-      task.title = 'Failed to promote the app, back to draft status';
+      task.title = 'Failed to promote the app, rolling back to a draft version';
       process.exit(1);
       break;
     }
@@ -92,6 +99,6 @@ export const pullPromoteStatusTask = async (
   task: ListrTaskWrapper<PromoteCommandTasksContext, any>,
 ): Promise<void> => {
   const { urlToPull, retryAfter } = ctx;
-  await sleep(retryAfter! * 1000);
+  await sleep(retryAfter! * TIME_IN_MILLISECONDS.SECOND);
   await pollPromotionStatus(urlToPull!, task);
 };
