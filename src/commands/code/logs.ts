@@ -11,7 +11,7 @@ import { EventSource, LogType, LogsCommandArguments, LogsFilterCriteriaArguments
 import { isDefined } from 'utils/guards';
 import logger from 'utils/logger';
 import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
-import { TIME_IN_MILLISECONDS } from 'utils/time-enum';
+import { TIME_IN_MILLISECONDS } from 'utils/time-utils';
 import { getDayDiff, isDate } from 'utils/validations';
 
 const SUPPORTED_HISTORY_FLAGS = ' [supported only if eventSource=live]';
