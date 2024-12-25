@@ -22,10 +22,7 @@ export const shouldPromoteLatestDraftVersion = async () => {
   return userChoice === PROMOTE_LATEST_DRAFT_VERSION;
 };
 
-export const promoteAppTask = async (
-  ctx: PromoteCommandTasksContext,
-  task: ListrTaskWrapper<PromoteCommandTasksContext, any>,
-): Promise<void> => {
+export const promoteAppTask = async (ctx: PromoteCommandTasksContext): Promise<void> => {
   const { appId, appVersionId } = ctx;
   const path = promoteAppUrl(appId);
   const url = appsUrlBuilder(path);
