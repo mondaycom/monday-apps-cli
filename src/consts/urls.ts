@@ -3,6 +3,7 @@ import { LogType, LogsFilterCriteriaArguments } from 'types/commands/logs';
 import { AccountId, AppId, AppVersionId } from 'types/general';
 import { Region } from 'types/general/region';
 
+const BASE_URL = '/api';
 const BASE_APPS_URL = '/api/apps';
 const BASE_VERSIONS_URL = '/api/app-versions';
 const BASE_APP_VERSIONS_URL = '/api/app-versions';
@@ -108,6 +109,14 @@ export const getTunnelingDomainUrl = (): string => {
 
 export const removeAppStorageDataForAccountUrl = (appId: AppId, targetAccountId: AccountId): string => {
   return `${BASE_APPS_URL}/${appId}/accounts/${targetAccountId}`;
+};
+
+export const promoteAppUrl = (appId: AppId): string => {
+  return `${BASE_APPS_URL}/${appId}/promote`;
+};
+
+export const pullPromoteStatusUrl = (path: string): string => {
+  return `${BASE_URL}/${path}`;
 };
 
 export const createAppFromManifestUrl = (): string => {

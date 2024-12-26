@@ -1,4 +1,4 @@
-import { TIME_IN_MILLISECONDS } from 'utils/time-enum';
+import { TIME_IN_MILLISECONDS } from 'utils/time-utils';
 
 export const isDate = (value: string | null | undefined): boolean => {
   if (!value) {
