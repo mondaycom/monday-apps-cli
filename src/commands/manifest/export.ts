@@ -46,7 +46,7 @@ export default class ManifestExport extends AuthenticatedCommand {
       const { flags } = await this.parse(ManifestExport);
       const { appId: appIdAsString, appVersionId: appVersionIdAsString } = flags;
 
-      const appId = appIdAsString ? Number(appIdAsString) : undefined;
+      let appId = appIdAsString ? Number(appIdAsString) : undefined;
       let appVersionId = appVersionIdAsString ? Number(appVersionIdAsString) : undefined;
 
       if (appVersionId && !appId) {
@@ -55,10 +55,8 @@ export default class ManifestExport extends AuthenticatedCommand {
       }
 
       if (!appId && !appVersionId) {
-        const appId = await DynamicChoicesService.chooseApp();
-        appVersionId = appVersionIdAsString
-          ? Number(appVersionIdAsString)
-          : await this.getAppVersionId(undefined, appId);
+        appId = Number(await DynamicChoicesService.chooseApp());
+        appVersionId = await this.getAppVersionId(undefined, appId);
       }
 
       this.preparePrintCommand(this, flags);
