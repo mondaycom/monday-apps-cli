@@ -33,7 +33,7 @@ export default class ManifestExport extends AuthenticatedCommand {
   async getAppVersionId(appVersionId: number | undefined, appId: number | undefined): Promise<number> {
     if (appVersionId) return appVersionId;
 
-    const latestDraftVersion = await DynamicChoicesService.chooseAppAndAppVersion(false, false, {
+    const latestDraftVersion = await DynamicChoicesService.chooseAppAndAppVersion(false, true, {
       appId: Number(appId),
       autoSelectVersion: false,
     });
@@ -46,16 +46,26 @@ export default class ManifestExport extends AuthenticatedCommand {
       const { flags } = await this.parse(ManifestExport);
       const { appId: appIdAsString, appVersionId: appVersionIdAsString } = flags;
 
-      const appId = appIdAsString ? Number(appIdAsString) : await DynamicChoicesService.chooseApp();
-      const appVersionId = appVersionIdAsString
-        ? Number(appVersionIdAsString)
-        : await this.getAppVersionId(undefined, appId);
+      const appId = appIdAsString ? Number(appIdAsString) : undefined;
+      let appVersionId = appVersionIdAsString ? Number(appVersionIdAsString) : undefined;
+
+      if (appVersionId && !appId) {
+        logger.error('App id is required when app version id is provided');
+        process.exit(1);
+      }
+
+      if (!appId && !appVersionId) {
+        const appId = await DynamicChoicesService.chooseApp();
+        appVersionId = appVersionIdAsString
+          ? Number(appVersionIdAsString)
+          : await this.getAppVersionId(undefined, appId);
+      }
 
       this.preparePrintCommand(this, flags);
 
       const tasks = new Listr<ExportCommandTasksContext>(
         [{ title: 'Export app manifest', task: exportService.downloadManifestTask }],
-        { ctx: { appVersionId, appId } },
+        { ctx: { appVersionId, appId: appId! } },
       );
 
       await tasks.run();
