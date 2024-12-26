@@ -2,7 +2,7 @@ import { ListrTaskWrapper } from 'listr2';
 
 import { exportAppManifestUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
-import { writeBufferToFile } from 'services/files-service';
+import { decompressZipBufferToFiles } from 'services/files-service';
 import { ExportCommandTasksContext } from 'types/commands/manifest-export';
 import { AppId, AppVersionId } from 'types/general';
 import { HttpMethodTypes } from 'types/services/api-service';
@@ -14,8 +14,9 @@ export const downloadManifestTask = async (
 ) => {
   task.output = `downloading manifest for app ${ctx.appId}`;
   const appManifest = await downloadManifest(ctx.appId, ctx.appVersionId);
-  writeBufferToFile(`manifest-${ctx.appId}.zip`, Buffer.from(appManifest, 'base64'));
-  task.title = `manifest saved to manifest.zip`;
+  await decompressZipBufferToFiles(Buffer.from(appManifest, 'base64'), `${ctx.appId}`);
+  const currentWorkingDirectory = process.cwd();
+  task.title = `your manifest files are downloaded at ${currentWorkingDirectory}/${ctx.appId}`;
 };
 
 export const downloadManifest = async (appId: AppId, appVersionId?: AppVersionId) => {

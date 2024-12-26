@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+import AdmZip from 'adm-zip';
 import archiver from 'archiver';
 import glob from 'glob';
 import parseGitIgnore from 'parse-gitignore';
@@ -23,6 +24,23 @@ export const readFileData = (filePath: string): Buffer => {
 
 export const readZipFileAsBuffer = (filePath: string): Buffer => {
   return fs.readFileSync(filePath);
+};
+
+/**
+ * Decompress a ZIP buffer and extract files to the output directory.
+ * @param buffer - The ZIP buffer.
+ * @param outputDir - The directory where files should be extracted.
+ */
+export const decompressZipBufferToFiles = async (buffer: Buffer, outputDir: string): Promise<void> => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+  const zip = new AdmZip(buffer);
+
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
+  zip.extractAllTo(outputDir, true);
 };
 
 export const compressFilesToZip = async (files: string[]): Promise<string> => {
