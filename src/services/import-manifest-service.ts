@@ -7,6 +7,7 @@ import { PromptService } from 'services/prompt-service';
 import { ImportCommandTasksContext } from 'types/commands/manifest-import';
 import { AppId, AppVersionId } from 'types/general';
 import { HttpMethodTypes } from 'types/services/api-service';
+import { TIME_IN_MILLISECONDS } from 'utils/time-utils';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
 export const uploadManifestTsk = async (
@@ -80,6 +81,7 @@ const updateAppFromManifest = async (buffer: Buffer, appId: AppId, appVersionId?
     method: HttpMethodTypes.PUT,
     body: formData,
     query: { ...(appVersionId && { appVersionId }) },
+    timeout: TIME_IN_MILLISECONDS.SECOND * 30,
   });
   return response;
 };
@@ -95,6 +97,7 @@ const createAppFromManifest = async (buffer: Buffer) => {
     headers: { Accept: 'application/json', 'Content-Type': 'multipart/form-data' },
     method: HttpMethodTypes.POST,
     body: formData,
+    timeout: TIME_IN_MILLISECONDS.SECOND * 30,
   });
   return response;
 };
