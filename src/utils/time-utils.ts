@@ -22,3 +22,8 @@ export enum TIME_IN_MILLISECONDS {
   MINUTE = Number(60 * SECOND_IN_MILLISECOND),
   SECOND = SECOND_IN_MILLISECOND,
 }
+
+export const sleep = (ms: number): Promise<void> =>
+  new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
