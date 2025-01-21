@@ -24,7 +24,7 @@ export default class ApiGenerate extends BaseCommand {
 
   runSetupApi() {
     return new Promise<void>((resolve, reject) => {
-      const setupApiProcess = spawn('npx', ['@mondaydotcomorg/setup-api@^1.3.1'], { stdio: 'inherit' });
+      const setupApiProcess = spawn('npx', ['@mondaydotcomorg/setup-api@^1.3.6'], { stdio: 'inherit' });
 
       setupApiProcess.on('close', code => {
         if (code === 0) {
