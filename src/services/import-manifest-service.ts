@@ -81,7 +81,7 @@ const updateAppFromManifest = async (buffer: Buffer, appId: AppId, appVersionId?
     method: HttpMethodTypes.PUT,
     body: formData,
     query: { ...(appVersionId && { appVersionId }) },
-    timeout: TIME_IN_MILLISECONDS.MINUTE * 5,
+    timeout: TIME_IN_MILLISECONDS.MINUTE,
   });
   return response;
 };
@@ -97,7 +97,7 @@ const createAppFromManifest = async (buffer: Buffer) => {
     headers: { Accept: 'application/json', 'Content-Type': 'multipart/form-data' },
     method: HttpMethodTypes.POST,
     body: formData,
-    timeout: TIME_IN_MILLISECONDS.MINUTE * 5,
+    timeout: TIME_IN_MILLISECONDS.MINUTE,
   });
   return response;
 };
