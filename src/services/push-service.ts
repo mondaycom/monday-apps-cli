@@ -63,7 +63,7 @@ export const uploadClientZipFile = async (appVersionId: number, buffer: Buffer) 
   const url = appsUrlBuilder(baseUrl);
   const formData = new FormData();
   formData.append('zipfile', new Blob([buffer]));
-  const response = await execute<uploadClient>({
+  const { data: response } = await execute<uploadClient>({
     url,
     headers: { Accept: 'application/json', 'Content-Type': 'multipart/form-data' },
     method: HttpMethodTypes.POST,
@@ -175,7 +175,7 @@ export const deployClientZip = async (
   task.output = `Deploying client zip (${ctx.archivePath!}) to cdn`;
   const buffer = readZipFileAsBuffer(ctx.archivePath!);
   const data = await uploadClientZipFile(ctx.appVersionId, buffer);
-  task.title = `your project is live at: ${data.url}, use ${data.sourceUrl} for download your source`;
+  task.title = `Your project is live at: ${data.url}\n Use ${data.sourceUrl} for download your source`;
 };
 
 export const buildAssetToDeployTask = async (
