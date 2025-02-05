@@ -175,7 +175,7 @@ export const deployClientZip = async (
   task.output = `Deploying client zip (${ctx.archivePath!}) to cdn`;
   const buffer = readZipFileAsBuffer(ctx.archivePath!);
   const data = await uploadClientZipFile(ctx.appVersionId, buffer);
-  task.title = `your project is live at: ${data.url}, use ${data.sourceUrl} for download your source`;
+  task.title = `Your project is live at: ${data.url}\n You can download your source code here: ${data.sourceUrl}`;
 };
 
 export const buildAssetToDeployTask = async (
