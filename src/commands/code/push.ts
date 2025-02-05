@@ -5,7 +5,7 @@ import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import { validateIfCanBuild } from 'services/files-service';
-import { getTasksForServerSide } from 'services/share/deploy';
+import { getTasksForClientSide, getTasksForServerSide } from 'services/share/deploy';
 import logger from 'utils/logger';
 import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
@@ -43,6 +43,9 @@ export default class Push extends AuthenticatedCommand {
         char: 'f',
         description: MESSAGES.force,
       }),
+      cdn: Flags.boolean({
+        char: 'c',
+      }),
     }),
   );
 
@@ -51,9 +54,19 @@ export default class Push extends AuthenticatedCommand {
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Push);
-    const { directoryPath, region: strRegion } = flags;
+    const { directoryPath, region: strRegion, cdn } = flags;
     const region = getRegionFromString(strRegion);
     let appVersionId = flags.appVersionId;
+
+    if (cdn) {
+      const { appVersionId } = await DynamicChoicesService.chooseAppAndAppVersion(false, false, {
+        autoSelectVersion: true,
+      });
+      logger.info('Deploying server side files...');
+      await getTasksForClientSide(Number(appVersionId), directoryPath || getCurrentWorkingDirectory()).run();
+      process.exit(0);
+    }
+
     validateIfCanBuild(directoryPath || getCurrentWorkingDirectory());
 
     try {
