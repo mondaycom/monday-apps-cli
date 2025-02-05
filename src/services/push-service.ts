@@ -63,13 +63,13 @@ export const uploadClientZipFile = async (appVersionId: number, buffer: Buffer) 
   const url = appsUrlBuilder(baseUrl);
   const formData = new FormData();
   formData.append('zipfile', new Blob([buffer]));
-  const { data: response } = await execute<uploadClient>({
+  const response = await execute<uploadClient>({
     url,
     headers: { Accept: 'application/json', 'Content-Type': 'multipart/form-data' },
     method: HttpMethodTypes.POST,
     body: formData,
   });
-  return response;
+  return response.data;
 };
 
 export const getAppVersionDeploymentStatus = async (appVersionId: number, region?: Region) => {
