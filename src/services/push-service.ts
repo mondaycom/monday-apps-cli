@@ -69,7 +69,7 @@ export const uploadClientZipFile = async (appVersionId: number, buffer: Buffer) 
     method: HttpMethodTypes.POST,
     body: formData,
   });
-  return response.data;
+  return response;
 };
 
 export const getAppVersionDeploymentStatus = async (appVersionId: number, region?: Region) => {
@@ -175,7 +175,7 @@ export const deployClientZip = async (
   task.output = `Deploying client zip (${ctx.archivePath!}) to cdn`;
   const buffer = readZipFileAsBuffer(ctx.archivePath!);
   const data = await uploadClientZipFile(ctx.appVersionId, buffer);
-  task.title = `Your project is live at: ${data.url}\n Use ${data.sourceUrl} for download your source`;
+  task.title = `Your project is live at: ${data.url}\n You can download your source code here: ${data.sourceUrl}`;
 };
 
 export const buildAssetToDeployTask = async (

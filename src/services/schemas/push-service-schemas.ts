@@ -11,10 +11,8 @@ export const signedUrlSchema = z
 export const uploadClientSchema = z
   .object({
     data: z.object({
-      data: z.object({
-        url: z.string(),
-        sourceUrl: z.string(),
-      }),
+      url: z.string(),
+      sourceUrl: z.string(),
     }),
   })
   .merge(baseResponseHttpMetaDataSchema);
