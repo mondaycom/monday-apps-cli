@@ -7,18 +7,26 @@ import * as importService from 'services/import-manifest-service';
 import { PromptService } from 'services/prompt-service';
 import { ImportCommandTasksContext } from 'types/commands/manifest-import';
 import logger from 'utils/logger';
+import { parseTemplateVars } from 'utils/template-vars';
 
 const MESSAGES = {
   path: 'Path to your app manifest file on your machine',
   appId: 'App id (will create a new draft version)',
   appVersionId: 'App version id to override',
   newApp: 'Create new app',
+  templateVars: 'Template variables in format KEY=VALUE,KEY2=VALUE2',
 };
 
 export default class ManifestImport extends AuthenticatedCommand {
-  static description = 'Import manifest.';
+  static description = 'Import manifest with optional template variables.';
   static withPrintCommand = false;
-  static examples = ['<%= config.bin %> <%= command.id %>'];
+  static examples = [
+    '<%= config.bin %> <%= command.id %>',
+    '<%= config.bin %> <%= command.id %> -p ./manifest.json',
+    '<%= config.bin %> <%= command.id %> --manifestPath ./manifest.json --templateVars "THANKS_GOD=thanks_goda"',
+    '<%= config.bin %> <%= command.id %> -p ./manifest.json -t "MY_KEY=MY_VALUE"',
+  ];
+
   static flags = ManifestImport.serializeFlags({
     manifestPath: Flags.string({
       char: 'p',
@@ -39,6 +47,10 @@ export default class ManifestImport extends AuthenticatedCommand {
       aliases: ['new'],
       default: false,
     }),
+    templateVars: Flags.string({
+      char: 't',
+      description: MESSAGES.templateVars,
+    }),
   });
 
   DEBUG_TAG = 'manifest_import';
@@ -57,14 +69,17 @@ export default class ManifestImport extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(ManifestImport);
-      let { manifestPath } = flags;
+      const { manifestPath: initialManifestPath, templateVars } = flags;
       const { appId: appIdAsString, appVersionId: appVersionIdAsString, newApp } = flags;
+      let manifestPath = initialManifestPath;
       let appId = appIdAsString ? Number(appIdAsString) : undefined;
       let appVersionId = appVersionIdAsString ? Number(appVersionIdAsString) : undefined;
 
       if (!manifestPath) {
         manifestPath = await PromptService.promptFile(MESSAGES.path, ['json', 'yaml']);
       }
+
+      const parsedTemplateVars = parseTemplateVars(templateVars);
 
       const shouldCreateNewApp = await importService.shouldCreateNewApp({ appId, appVersionId, newApp });
       if (!shouldCreateNewApp) {
@@ -88,7 +103,12 @@ export default class ManifestImport extends AuthenticatedCommand {
 
       this.preparePrintCommand(this, { appVersionId, manifestPath, appId, newApp: shouldCreateNewApp });
 
-      const ctx = { appVersionId, appId, manifestFilePath: manifestPath };
+      const ctx = {
+        appVersionId,
+        appId,
+        manifestFilePath: manifestPath,
+        templateVars: parsedTemplateVars,
+      };
       const tasks = new Listr<ImportCommandTasksContext>(
         [{ title: 'Importing app manifest', task: importService.uploadManifestTsk }],
         { ctx },
