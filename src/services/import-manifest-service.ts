@@ -29,10 +29,10 @@ export const uploadManifestTsk = async (
   task.output = `your app manifest has been uploaded successfully`;
 };
 
-const processManifestTemplate = async (manifestFilePath: string, templateVars: Record<string, string>) => {
+const processManifestTemplate = async (manifestFilePath: string, templateVars?: Record<string, string>) => {
   const manifestJson = await loadFile(manifestFilePath);
   const parsedManifest = JSON.parse(manifestJson) as Record<string, any>;
-  const processedManifest = processTemplate(parsedManifest, templateVars, {
+  const processedManifest = processTemplate(parsedManifest, templateVars || {}, {
     failOnMissingVariable: true,
   });
   return processedManifest;
