@@ -1,16 +1,17 @@
-monday-apps-cli
-=================
+# monday-apps-cli
 
 monday.com cli tool for monday apps management.
 
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @mondaycom/apps-cli
 $ mapps COMMAND
@@ -22,34 +23,37 @@ USAGE
   $ mapps COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`mapps api:generate`](#mapps-apigenerate)
-* [`mapps app-features:build`](#mapps-app-featuresbuild)
-* [`mapps app-features:create`](#mapps-app-featurescreate)
-* [`mapps app-features:list`](#mapps-app-featureslist)
-* [`mapps app-version:builds`](#mapps-app-versionbuilds)
-* [`mapps app-version:list`](#mapps-app-versionlist)
-* [`mapps app:create`](#mapps-appcreate)
-* [`mapps app:deploy`](#mapps-appdeploy)
-* [`mapps app:list`](#mapps-applist)
-* [`mapps autocomplete [SHELL]`](#mapps-autocomplete-shell)
-* [`mapps code:env`](#mapps-codeenv)
-* [`mapps code:logs`](#mapps-codelogs)
-* [`mapps code:push`](#mapps-codepush)
-* [`mapps code:secret`](#mapps-codesecret)
-* [`mapps code:status`](#mapps-codestatus)
-* [`mapps help [COMMANDS]`](#mapps-help-commands)
-* [`mapps init`](#mapps-init)
-* [`mapps manifest:export`](#mapps-manifestexport)
-* [`mapps manifest:import`](#mapps-manifestimport)
-* [`mapps storage:export`](#mapps-storageexport)
-* [`mapps storage:remove-data`](#mapps-storageremove-data)
-* [`mapps storage:search`](#mapps-storagesearch)
-* [`mapps tunnel:create`](#mapps-tunnelcreate)
+
+- [`mapps api:generate`](#mapps-apigenerate)
+- [`mapps app-features:build`](#mapps-app-featuresbuild)
+- [`mapps app-features:create`](#mapps-app-featurescreate)
+- [`mapps app-features:list`](#mapps-app-featureslist)
+- [`mapps app-version:builds`](#mapps-app-versionbuilds)
+- [`mapps app-version:list`](#mapps-app-versionlist)
+- [`mapps app:create`](#mapps-appcreate)
+- [`mapps app:deploy`](#mapps-appdeploy)
+- [`mapps app:list`](#mapps-applist)
+- [`mapps autocomplete [SHELL]`](#mapps-autocomplete-shell)
+- [`mapps code:env`](#mapps-codeenv)
+- [`mapps code:logs`](#mapps-codelogs)
+- [`mapps code:push`](#mapps-codepush)
+- [`mapps code:secret`](#mapps-codesecret)
+- [`mapps code:secret`](#mapps-codesecret)
+- [`mapps code:status`](#mapps-codestatus)
+- [`mapps help [COMMANDS]`](#mapps-help-commands)
+- [`mapps init`](#mapps-init)
+- [`mapps manifest:export`](#mapps-manifestexport)
+- [`mapps manifest:import`](#mapps-manifestimport)
+- [`mapps storage:export`](#mapps-storageexport)
+- [`mapps storage:remove-data`](#mapps-storageremove-data)
+- [`mapps storage:search`](#mapps-storagesearch)
+- [`mapps tunnel:create`](#mapps-tunnelcreate)
 
 ## `mapps api:generate`
 
@@ -61,7 +65,7 @@ USAGE
 
 DESCRIPTION
   Prepares your environment for custom queries development. run it from your root directory!
-  Creates all neccesary files and scripts
+  Creates all necessary files and scripts
   to start working with custom api queries and mutations.
   Read the documentation at
   [@mondaydotcomorg/setup-api](https://github.com/mondaycom/monday-graphql-api/tree/main/packages/setup-api)
@@ -233,6 +237,7 @@ Deploy an app using manifest file.
 ```
 USAGE
   $ mapps app:deploy [--verbose] [--print-command] [-d <value>] [-a <value>] [-v <value>] [-f] [-z us|eu|au]
+  $ mapps app:deploy [--verbose] [--print-command] [-d <value>] [-a <value>] [-v <value>] [-f] [-z us|eu|au]
 
 FLAGS
   -a, --appId=<value>          App id (will use the latest draft version)
@@ -240,6 +245,8 @@ FLAGS
                                working directory.
   -f, --force                  Force push to latest version (draft or live)
   -v, --appVersionId=<value>   App version id
+  -z, --region=<option>        Region to use
+                               <options: us|eu|au>
   -z, --region=<option>        Region to use
                                <options: us|eu|au>
 
@@ -316,8 +323,16 @@ Manage environment variables for your app hosted on monday-code.
 USAGE
   $ mapps code:env [--verbose] [--print-command] [-i <value>] [-m list-keys|set|delete] [-k <value>] [-v
     <value>] [-z us|eu|au]
+    <value>] [-z us|eu|au]
 
 FLAGS
+  -i, --appId=<value>    The id of the app to manage environment variables for
+  -k, --key=<value>      variable key [required for set and delete]]
+  -m, --mode=<option>    management mode
+                         <options: list-keys|set|delete>
+  -v, --value=<value>    variable value [required for set]
+  -z, --region=<option>  Region to use
+                         <options: us|eu|au>
   -i, --appId=<value>    The id of the app to manage environment variables for
   -k, --key=<value>      variable key [required for set and delete]]
   -m, --mode=<option>    management mode
@@ -347,6 +362,7 @@ Stream logs
 USAGE
   $ mapps code:logs [--verbose] [--print-command] [-i <value>] [-t <value>] [-s <value>] [-f <value>] [-e
     <value>] [-r <value>] [-z us|eu|au]
+    <value>] [-r <value>] [-z us|eu|au]
 
 FLAGS
   -e, --logsEndDate=<value>        End date (MM/DD/YYYY HH:mm) e.g. "03/25/1983 16:45" [supported only if
@@ -358,6 +374,8 @@ FLAGS
                                    eventSource=live]
   -s, --eventSource=<value>        Source: "live" for live events, "History" for fetching events from the past
   -t, --logsType=<value>           Logs type: "http" for http events, "console" for stdout
+  -z, --region=<option>            Region to use
+                                   <options: us|eu|au>
   -z, --region=<option>            Region to use
                                    <options: us|eu|au>
 
@@ -381,6 +399,7 @@ Push your project to get hosted on monday-code.
 ```
 USAGE
   $ mapps code:push [--verbose] [--print-command] [-d <value>] [-a <value>] [-i <value>] [-f] [-z us|eu|au]
+  $ mapps code:push [--verbose] [--print-command] [-d <value>] [-a <value>] [-i <value>] [-f] [-z us|eu|au]
 
 FLAGS
   -a, --appId=<value>          Please enter app id:
@@ -388,6 +407,8 @@ FLAGS
                                working directory.
   -f, --force                  Force push to live version
   -i, --appVersionId=<value>   Please enter the app version id of your app:
+  -z, --region=<option>        Region to use
+                               <options: us|eu|au>
   -z, --region=<option>        Region to use
                                <options: us|eu|au>
 
@@ -446,9 +467,12 @@ Status of a specific project hosted on monday-code.
 ```
 USAGE
   $ mapps code:status [--verbose] [--print-command] [-i <value>] [-z us|eu|au]
+  $ mapps code:status [--verbose] [--print-command] [-i <value>] [-z us|eu|au]
 
 FLAGS
   -i, --appVersionId=<value>  Please enter the app version id of your app:
+  -z, --region=<option>       Region to use
+                              <options: us|eu|au>
   -z, --region=<option>       Region to use
                               <options: us|eu|au>
 
@@ -671,4 +695,5 @@ EXAMPLES
 ```
 
 _See code: [src/commands/tunnel/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.3.2/src/commands/tunnel/create.ts)_
+
 <!-- commandsstop -->
