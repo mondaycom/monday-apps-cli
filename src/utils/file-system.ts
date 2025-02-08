@@ -25,3 +25,7 @@ export const loadFile = (filePath: string) => {
     throw new FSError(`Failed to load file, please check if this file path "${filePath}" is correct.`);
   }
 };
+
+export const unlink = async (path: string): Promise<void> => {
+  await fs.unlink(path);
+};

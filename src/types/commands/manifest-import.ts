@@ -4,5 +4,4 @@ export type ImportCommandTasksContext = {
   appId?: AppId;
   appVersionId?: AppVersionId;
   manifestFilePath: string;
-  templateVars?: Record<string, string>;
 };

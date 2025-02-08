@@ -43,8 +43,6 @@ USAGE
 - [`mapps code:env`](#mapps-codeenv)
 - [`mapps code:logs`](#mapps-codelogs)
 - [`mapps code:push`](#mapps-codepush)
-- [`mapps code:secret`](#mapps-codesecret)
-- [`mapps code:secret`](#mapps-codesecret)
 - [`mapps code:status`](#mapps-codestatus)
 - [`mapps help [COMMANDS]`](#mapps-help-commands)
 - [`mapps init`](#mapps-init)

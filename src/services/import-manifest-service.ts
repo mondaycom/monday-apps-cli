@@ -7,7 +7,7 @@ import { PromptService } from 'services/prompt-service';
 import { ImportCommandTasksContext } from 'types/commands/manifest-import';
 import { AppId, AppVersionId } from 'types/general';
 import { HttpMethodTypes } from 'types/services/api-service';
-import { loadFile, saveToFile } from 'utils/file-system';
+import { loadFile, saveToFile, unlink } from 'utils/file-system';
 import { processTemplate } from 'utils/templating';
 import { TIME_IN_MILLISECONDS } from 'utils/time-utils';
 import { appsUrlBuilder } from 'utils/urls-builder';
@@ -16,8 +16,7 @@ export const uploadManifestTsk = async (
   ctx: ImportCommandTasksContext,
   task: ListrTaskWrapper<ImportCommandTasksContext, any>,
 ) => {
-  task.output = `Processing manifest templating`;
-  const processedManifest = await processManifestTemplate(ctx.manifestFilePath, ctx.templateVars);
+  const processedManifest = await processManifestTemplate(ctx.manifestFilePath);
   ctx.manifestFilePath = `${ctx.manifestFilePath}.processed`;
   await saveToFile(ctx.manifestFilePath, JSON.stringify(processedManifest, null, 2));
 
@@ -27,12 +26,15 @@ export const uploadManifestTsk = async (
   task.output = `Uploading your app manifest`;
   await uploadZippedManifest(buffer, { appId: ctx.appId, appVersionId: ctx.appVersionId });
   task.output = `your app manifest has been uploaded successfully`;
+
+  await unlink(ctx.manifestFilePath);
 };
 
-const processManifestTemplate = async (manifestFilePath: string, templateVars?: Record<string, string>) => {
+const processManifestTemplate = async (manifestFilePath: string) => {
   const manifestJson = await loadFile(manifestFilePath);
   const parsedManifest = JSON.parse(manifestJson) as Record<string, any>;
-  const processedManifest = processTemplate(parsedManifest, templateVars || {}, {
+
+  const processedManifest = processTemplate(parsedManifest, process.env, {
     failOnMissingVariable: true,
   });
   return processedManifest;
