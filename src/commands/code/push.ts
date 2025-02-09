@@ -14,7 +14,7 @@ const MESSAGES = {
   appVersionId: APP_VERSION_ID_TO_ENTER,
   appId: APP_ID_TO_ENTER,
   force: 'Force push to live version',
-  cdn: 'Push to CDN',
+  cdn: 'Push files to CDN',
 };
 
 export default class Push extends AuthenticatedCommand {
@@ -54,6 +54,14 @@ export default class Push extends AuthenticatedCommand {
   static args = {};
   DEBUG_TAG = 'code_push';
 
+  private async handleCdnUpload(directoryPath?: string): Promise<void> {
+    const { appVersionId } = await DynamicChoicesService.chooseAppAndAppVersion(false, false, {
+      autoSelectVersion: true,
+    });
+    logger.info('Deploying build to CDN...');
+    await getTasksForClientSide(Number(appVersionId), directoryPath || getCurrentWorkingDirectory()).run();
+  }
+
   public async run(): Promise<void> {
     const { flags } = await this.parse(Push);
     const { directoryPath, region: strRegion, cdn } = flags;
@@ -61,11 +69,7 @@ export default class Push extends AuthenticatedCommand {
     let appVersionId = flags.appVersionId;
 
     if (cdn) {
-      const { appVersionId } = await DynamicChoicesService.chooseAppAndAppVersion(false, false, {
-        autoSelectVersion: true,
-      });
-      logger.info('Deploying server side files...');
-      await getTasksForClientSide(Number(appVersionId), directoryPath || getCurrentWorkingDirectory()).run();
+      await this.handleCdnUpload(directoryPath);
       process.exit(0);
     }
 
