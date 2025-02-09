@@ -17,9 +17,10 @@ export const uploadManifestTsk = async (
   ctx: ImportCommandTasksContext,
   task: ListrTaskWrapper<ImportCommandTasksContext, any>,
 ) => {
+  const processedManifest = await processManifestTemplate(ctx.manifestFilePath);
+  ctx.manifestFilePath = `${ctx.manifestFilePath}.processed`;
+
   try {
-    const processedManifest = await processManifestTemplate(ctx.manifestFilePath);
-    ctx.manifestFilePath = `${ctx.manifestFilePath}.processed`;
     await saveToFile(ctx.manifestFilePath, JSON.stringify(processedManifest));
 
     task.output = `Zipping your manifest file`;
