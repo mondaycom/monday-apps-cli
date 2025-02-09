@@ -54,7 +54,7 @@ export default class Push extends AuthenticatedCommand {
   static args = {};
   DEBUG_TAG = 'code_push';
 
-  private async handleCdnUpload(directoryPath?: string): Promise<void> {
+  public async handleCdnUpload(directoryPath?: string): Promise<void> {
     const { appVersionId } = await DynamicChoicesService.chooseAppAndAppVersion(false, false, {
       autoSelectVersion: true,
     });
