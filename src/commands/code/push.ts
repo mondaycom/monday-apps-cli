@@ -58,7 +58,6 @@ export default class Push extends AuthenticatedCommand {
     const { appVersionId } = await DynamicChoicesService.chooseAppAndAppVersion(false, false, {
       autoSelectVersion: true,
     });
-
     logger.info('Deploying build to CDN...');
     await getTasksForClientSide(Number(appVersionId), directoryPath || getCurrentWorkingDirectory()).run();
   }
