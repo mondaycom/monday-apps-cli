@@ -16,9 +16,14 @@ const MESSAGES = {
 };
 
 export default class ManifestImport extends AuthenticatedCommand {
-  static description = 'Import manifest.';
+  static description = 'Import manifest with optional template variables.';
   static withPrintCommand = false;
-  static examples = ['<%= config.bin %> <%= command.id %>'];
+  static examples = [
+    '<%= config.bin %> <%= command.id %>',
+    '<%= config.bin %> <%= command.id %> -p ./manifest.json',
+    '<%= config.bin %> <%= command.id %> --manifestPath ./manifest.json',
+  ];
+
   static flags = ManifestImport.serializeFlags({
     manifestPath: Flags.string({
       char: 'p',
@@ -57,8 +62,9 @@ export default class ManifestImport extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(ManifestImport);
-      let { manifestPath } = flags;
+      const { manifestPath: initialManifestPath } = flags;
       const { appId: appIdAsString, appVersionId: appVersionIdAsString, newApp } = flags;
+      let manifestPath = initialManifestPath;
       let appId = appIdAsString ? Number(appIdAsString) : undefined;
       let appVersionId = appVersionIdAsString ? Number(appVersionIdAsString) : undefined;
 
@@ -88,7 +94,11 @@ export default class ManifestImport extends AuthenticatedCommand {
 
       this.preparePrintCommand(this, { appVersionId, manifestPath, appId, newApp: shouldCreateNewApp });
 
-      const ctx = { appVersionId, appId, manifestFilePath: manifestPath };
+      const ctx = {
+        appVersionId,
+        appId,
+        manifestFilePath: manifestPath,
+      };
       const tasks = new Listr<ImportCommandTasksContext>(
         [{ title: 'Importing app manifest', task: importService.uploadManifestTsk }],
         { ctx },

@@ -32,26 +32,24 @@ export const readZipFileAsBuffer = (filePath: string): Buffer => {
  * @param outputDir - The directory where files should be extracted.
  */
 export const decompressZipBufferToFiles = async (buffer: Buffer, outputDir: string): Promise<void> => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
   const zip = new AdmZip(buffer);
 
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
   zip.extractAllTo(outputDir, true);
 };
 
-export const compressFilesToZip = async (files: string[]): Promise<string> => {
+export const compressFilesToZip = async (files: { path: string; replaceName?: string }[]): Promise<string> => {
   const tempZipPath = 'temp.zip';
   const output = fs.createWriteStream(tempZipPath);
   const archive = archiver('zip', { zlib: { level: 9 } });
 
   archive.pipe(output);
   for (const file of files) {
-    const fileName = path.basename(file);
-    archive.file(file, { name: fileName });
+    const fileName = file.replaceName || path.basename(file.path);
+    archive.file(file.path, { name: fileName });
   }
 
   await archive.finalize();
