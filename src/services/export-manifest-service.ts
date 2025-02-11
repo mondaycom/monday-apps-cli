@@ -1,6 +1,6 @@
 import { ListrTaskWrapper } from 'listr2';
 
-import { exportAppManifestUrl, validateAppManifestUrl } from 'consts/urls';
+import { exportAppManifestUrl, makeAppManifestExportableUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
 import { decompressZipBufferToFiles } from 'services/files-service';
 import { ExportCommandTasksContext } from 'types/commands/manifest-export';
@@ -42,9 +42,8 @@ export const validateManifestTask = async (
 };
 
 export const validateManifest = async (appId: AppId, appVersionId?: AppVersionId) => {
-  const baseUrl = validateAppManifestUrl(appId);
+  const baseUrl = makeAppManifestExportableUrl(appId);
   const url = appsUrlBuilder(baseUrl);
-  console.log('url:', url);
 
   await execute({
     url,
