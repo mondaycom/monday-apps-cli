@@ -1,6 +1,6 @@
 import { ListrTaskWrapper } from 'listr2';
 
-import { exportAppManifestUrl } from 'consts/urls';
+import { exportAppManifestUrl, validateAppManifestUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
 import { decompressZipBufferToFiles } from 'services/files-service';
 import { ExportCommandTasksContext } from 'types/commands/manifest-export';
@@ -30,4 +30,25 @@ export const downloadManifest = async (appId: AppId, appVersionId?: AppVersionId
   })) as any as { data: string };
 
   return response.data;
+};
+
+export const validateManifestTask = async (
+  ctx: ExportCommandTasksContext,
+  task: ListrTaskWrapper<ExportCommandTasksContext, any>,
+) => {
+  task.output = `validating manifest for app ${ctx.appId}`;
+  await validateManifest(ctx.appId, ctx.appVersionId);
+  task.title = 'Manifest validation successful';
+};
+
+export const validateManifest = async (appId: AppId, appVersionId?: AppVersionId) => {
+  const baseUrl = validateAppManifestUrl(appId);
+  const url = appsUrlBuilder(baseUrl);
+  console.log('url:', url);
+
+  await execute({
+    url,
+    method: HttpMethodTypes.PUT,
+    query: { ...(appVersionId && { appVersionId }) },
+  });
 };
