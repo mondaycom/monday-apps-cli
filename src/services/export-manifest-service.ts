@@ -47,7 +47,7 @@ export const validateManifest = async (appId: AppId, appVersionId?: AppVersionId
 
   await execute({
     url,
-    method: HttpMethodTypes.PUT,
+    method: HttpMethodTypes.POST,
     query: { ...(appVersionId && { appVersionId }) },
   });
 };
