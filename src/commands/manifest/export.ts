@@ -63,7 +63,7 @@ export default class ManifestExport extends AuthenticatedCommand {
 
       const tasks = new Listr<ExportCommandTasksContext>(
         [
-          { title: 'Validate manifest', task: exportService.validateManifestTask },
+          { title: 'Validate app before exporting manifest', task: exportService.validateManifestTask },
           { title: 'Export app manifest', task: exportService.downloadManifestTask },
         ],
         { ctx: { appVersionId, appId: appId! } },
