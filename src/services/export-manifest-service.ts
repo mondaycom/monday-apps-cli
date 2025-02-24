@@ -1,8 +1,9 @@
 import { ListrTaskWrapper } from 'listr2';
 
-import { exportAppManifestUrl } from 'consts/urls';
+import { exportAppManifestUrl, makeAppManifestExportableUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
 import { decompressZipBufferToFiles } from 'services/files-service';
+import { HttpError } from 'src/types/errors';
 import { ExportCommandTasksContext } from 'types/commands/manifest-export';
 import { AppId, AppVersionId } from 'types/general';
 import { HttpMethodTypes } from 'types/services/api-service';
@@ -30,4 +31,30 @@ export const downloadManifest = async (appId: AppId, appVersionId?: AppVersionId
   })) as any as { data: string };
 
   return response.data;
+};
+
+export const validateManifestTask = async (
+  ctx: ExportCommandTasksContext,
+  task: ListrTaskWrapper<ExportCommandTasksContext, any>,
+) => {
+  task.output = `validating manifest for app ${ctx.appId}`;
+  await validateManifest(ctx.appId, ctx.appVersionId);
+  task.title = 'The app is valid for export';
+};
+
+export const validateManifest = async (appId: AppId, appVersionId?: AppVersionId) => {
+  try {
+    const baseUrl = makeAppManifestExportableUrl(appId);
+    const url = appsUrlBuilder(baseUrl);
+
+    await execute({
+      url,
+      method: HttpMethodTypes.POST,
+      query: { ...(appVersionId && { appVersionId }) },
+    });
+  } catch (error) {
+    if (error instanceof HttpError && error.message.includes('Cannot create slugs for live version')) {
+      throw new Error(error.message);
+    }
+  }
 };

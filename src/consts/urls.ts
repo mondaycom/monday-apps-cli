@@ -130,3 +130,7 @@ export const updateAppFromManifestUrl = (appId: AppId): string => {
 export const exportAppManifestUrl = (appId: AppId): string => {
   return `${BASE_APPS_URL}/${appId}/manifest?zipBase64=true`;
 };
+
+export const makeAppManifestExportableUrl = (appId: AppId): string => {
+  return `${BASE_APPS_URL}/${appId}/manifest/exportability`;
+};
