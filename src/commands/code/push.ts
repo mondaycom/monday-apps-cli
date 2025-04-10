@@ -14,7 +14,7 @@ const MESSAGES = {
   appVersionId: APP_VERSION_ID_TO_ENTER,
   appId: APP_ID_TO_ENTER,
   force: 'Force push to live version',
-  cdn: 'Push files to CDN',
+  'client-side': 'Push files to CDN',
 };
 
 export default class Push extends AuthenticatedCommand {
@@ -44,9 +44,9 @@ export default class Push extends AuthenticatedCommand {
         char: 'f',
         description: MESSAGES.force,
       }),
-      cdn: Flags.boolean({
+      'client-side': Flags.boolean({
         char: 'c',
-        description: MESSAGES.cdn,
+        description: MESSAGES['client-side'],
       }),
     }),
   );
@@ -64,11 +64,11 @@ export default class Push extends AuthenticatedCommand {
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Push);
-    const { directoryPath, region: strRegion, cdn } = flags;
+    const { directoryPath, region: strRegion, 'client-side': clientSide } = flags;
     const region = getRegionFromString(strRegion);
     let appVersionId = flags.appVersionId;
 
-    if (cdn) {
+    if (clientSide) {
       await this.handleCdnUpload(directoryPath);
       process.exit(0);
     }
