@@ -14,14 +14,12 @@ export default class SchedulerList extends AuthenticatedCommand {
   static description = 'List all scheduler jobs for an app';
   static examples = ['<%= config.bin %> <%= command.id %> -a APP_ID'];
 
-  static flags = {
-    appId: Flags.string({
+  static flags = SchedulerList.serializeFlags({
+    appId: Flags.integer({
       char: 'a',
       description: MESSAGES.appId,
     }),
-  };
-
-  static args = {};
+  });
 
   DEBUG_TAG = 'scheduler_list';
 
