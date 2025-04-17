@@ -118,3 +118,7 @@ export const promoteAppUrl = (appId: AppId): string => {
 export const pullPromoteStatusUrl = (path: string): string => {
   return `${BASE_URL}/${path}`;
 };
+
+export const appSchedulerUrl = (appId: AppId): string => {
+  return `${BASE_MONDAY_CODE_URL}/${appId}/scheduler`;
+};
