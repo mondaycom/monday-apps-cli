@@ -33,27 +33,7 @@ export default class SchedulerList extends AuthenticatedCommand {
       this.preparePrintCommand(this, { appId });
 
       const jobs = await SchedulerService.listJobs(appId);
-
-      if (jobs.length === 0) {
-        this.log('No scheduler jobs found.');
-        return;
-      }
-
-      this.log('\nScheduler Jobs:');
-      for (const job of jobs) {
-        this.log(`\nName: ${job.name}`);
-        this.log(`Schedule: ${job.schedule}`);
-        this.log(`Target URL: ${job.targetUrl}`);
-        if (job.retryConfig) {
-          this.log(
-            `Retry Config: ${job.retryConfig.maxRetries} retries, ${job.retryConfig.minBackoffDuration}s backoff`,
-          );
-        }
-
-        if (job.timeout) {
-          this.log(`Timeout: ${job.timeout}s`);
-        }
-      }
+      SchedulerService.printJobs(jobs, this.log.bind(this));
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
       process.exit(1);

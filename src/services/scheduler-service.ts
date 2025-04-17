@@ -60,6 +60,66 @@ export const listJobs = async (appId: AppId): Promise<SchedulerJob[]> => {
   }
 };
 
+export type CreateJobRequest = {
+  schedule: string;
+  targetUrl: string;
+  retryConfig?: {
+    maxRetries?: number;
+    minBackoffDuration?: number;
+  };
+  timeout?: number;
+};
+
+export type CreateJobResponse = {
+  job: SchedulerJob;
+} & BaseResponseHttpMetaData;
+
+export const createJob = async (appId: AppId, job: CreateJobRequest): Promise<SchedulerJob> => {
+  try {
+    const path = appSchedulerUrl(appId);
+    const url = appsUrlBuilder(path);
+
+    const response = await execute<CreateJobResponse>({
+      url,
+      headers: { Accept: 'application/json' },
+      method: HttpMethodTypes.POST,
+      body: job,
+    });
+
+    return response.job;
+  } catch (error: any) {
+    if (error instanceof HttpError) {
+      handleHttpErrors(error);
+    }
+
+    throw new Error('failed to create scheduler job');
+  }
+};
+
+export const printJobs = (jobs: SchedulerJob[], logger = console.log): void => {
+  if (jobs.length === 0) {
+    logger('No scheduler jobs found.');
+    return;
+  }
+
+  logger('\nScheduler Jobs:');
+  for (const job of jobs) {
+    logger(`\n-----------------`);
+    logger(`Name: ${job.name}`);
+    logger(`Schedule: ${job.schedule}`);
+    logger(`Target URL: ${job.targetUrl}`);
+    if (job.retryConfig) {
+      logger(`Retry Config: ${job.retryConfig.maxRetries} retries, ${job.retryConfig.minBackoffDuration}s backoff`);
+    }
+
+    if (job.timeout) {
+      logger(`Timeout: ${job.timeout}s`);
+    }
+  }
+};
+
 export const SchedulerService = {
   listJobs,
+  createJob,
+  printJobs,
 };
