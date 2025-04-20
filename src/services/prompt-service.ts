@@ -21,11 +21,18 @@ function validateIfRequired(input: string, message: string, isRequired = false):
   return true;
 }
 
-function validateIfValueIsANumber(input: string, message: string, isRequired = false): boolean | string {
+export function validateIfValueIsANumber(input: string, message: string, isRequired = false): boolean | string {
+  // If not required and input is empty, it's valid
+  if (!isRequired && !input) {
+    return true;
+  }
+
+  // If required and input is empty, return error
   if (isRequired && !input) {
     return message;
   }
 
+  // Check if it's a valid non-negative integer (including 0)
   const isNumber = /^\d+$/.test(input);
   if (!isNumber) {
     return message;
