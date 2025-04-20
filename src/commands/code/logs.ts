@@ -8,11 +8,10 @@ import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { logsStream } from 'services/notification-service';
 import { PromptService } from 'services/prompt-service';
 import { EventSource, LogType, LogsCommandArguments, LogsFilterCriteriaArguments } from 'types/commands/logs';
-import { isDefined } from 'utils/guards';
 import logger from 'utils/logger';
 import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 import { TIME_IN_MILLISECONDS } from 'utils/time-utils';
-import { getDayDiff, isDate } from 'utils/validations';
+import { getDayDiff, isDate, isDefined } from 'utils/validations';
 
 const SUPPORTED_HISTORY_FLAGS = ' [supported only if eventSource=live]';
 const DAY_IN_MS = Number(TIME_IN_MILLISECONDS.DAY);
