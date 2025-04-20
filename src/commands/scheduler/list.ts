@@ -1,5 +1,7 @@
 import { Flags } from '@oclif/core';
 
+import { printJobs } from 'src/services/scheduler-service.utils';
+
 import { AuthenticatedCommand } from '../../commands-base/authenticated-command';
 import { APP_ID_TO_ENTER } from '../../consts/messages';
 import { DynamicChoicesService } from '../../services/dynamic-choices-service';
@@ -33,7 +35,7 @@ export default class SchedulerList extends AuthenticatedCommand {
       this.preparePrintCommand(this, { appId });
 
       const jobs = await SchedulerService.listJobs(appId);
-      SchedulerService.printJobs(jobs, this.log.bind(this));
+      printJobs(jobs);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
       process.exit(1);
