@@ -122,7 +122,7 @@ export const PromptService = {
     return this.promptForHiddenInput('password', 'Please enter your password', 'You must enter a password');
   },
 
-  async promptInput(message: string, required = false) {
+  async promptInput(message: string, required = false, allowUndefined = false) {
     const res = await inquirer.prompt<{ input: string }>([
       {
         name: 'input',
@@ -134,10 +134,14 @@ export const PromptService = {
       },
     ]);
 
+    if (allowUndefined && (!res.input || (typeof res.input === 'string' && res.input === ''))) {
+      return;
+    }
+
     return res.input;
   },
 
-  async promptInputNumber(message: string, required = false) {
+  async promptInputNumber(message: string, required = false, allowUndefined = false) {
     const res = await inquirer.prompt<{ input: number }>([
       {
         name: 'input',
@@ -148,6 +152,10 @@ export const PromptService = {
         },
       },
     ]);
+
+    if (allowUndefined && (!res.input || (typeof res.input === 'string' && res.input === ''))) {
+      return;
+    }
 
     return Number(res.input);
   },

@@ -45,7 +45,11 @@ export const printJobs = (jobs: SchedulerJob[]): void => {
   logger.table(jobs);
 };
 
-export const validateCronExpression = (schedule: string): void => {
+export const validateCronExpression = (schedule: string | undefined): void => {
+  if (!schedule) {
+    throw new Error('Cron expression is required');
+  }
+
   const cronRegex =
     // eslint-disable-next-line unicorn/better-regex -- matching the backend regex which is correct and more strict in its format
     /^(\*|([0-9]|1[0-9]|2[0-9]|3[0-1])|(\*\/([0-9]|1[0-9]|2[0-9]|3[0-1]))) (\*|([0-9]|1[0-9]|2[0-3])|(\*\/([0-9]|1[0-9]|2[0-3]))) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|(\*\/([1-9]|1[0-9]|2[0-9]|3[0-1]))) (\*|([1-9]|1[0-2])|(\*\/([1-9]|1[0-2]))) (\*|([0-6])|(\*\/([0-6])))$/;
@@ -54,7 +58,11 @@ export const validateCronExpression = (schedule: string): void => {
   }
 };
 
-export const validateTargetUrl = (targetUrl: string): void => {
+export const validateTargetUrl = (targetUrl: string | undefined): void => {
+  if (!targetUrl) {
+    throw new Error('Target URL is required');
+  }
+
   if (!targetUrl.startsWith('/')) {
     throw new Error('Target URL must start with a slash');
   }
