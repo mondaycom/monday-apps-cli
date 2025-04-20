@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 
 import { PromptService } from 'src/services/prompt-service';
-import { isDefined } from 'utils/guards';
+import { isDefined } from 'src/utils/validations';
 
 import { AuthenticatedCommand } from '../../commands-base/authenticated-command';
 import { APP_ID_TO_ENTER } from '../../consts/messages';
@@ -77,11 +77,11 @@ export default class SchedulerCreate extends AuthenticatedCommand {
       validateCronExpression(schedule);
       if (!targetUrl) targetUrl = await PromptService.promptInput(MESSAGES.targetUrl, true);
       validateTargetUrl(targetUrl);
-      if (!description) description = await PromptService.promptInput(MESSAGES.description, false);
-      if (!maxRetries) maxRetries = await PromptService.promptInputNumber(MESSAGES.maxRetries, false);
+      if (!description) description = await PromptService.promptInput(MESSAGES.description, false, true);
+      if (!maxRetries) maxRetries = await PromptService.promptInputNumber(MESSAGES.maxRetries, false, true);
       if (!minBackoffDuration)
-        minBackoffDuration = await PromptService.promptInputNumber(MESSAGES.minBackoffDuration, false);
-      if (!timeout) timeout = await PromptService.promptInputNumber(MESSAGES.timeout, false);
+        minBackoffDuration = await PromptService.promptInputNumber(MESSAGES.minBackoffDuration, false, true);
+      if (!timeout) timeout = await PromptService.promptInputNumber(MESSAGES.timeout, false, true);
 
       logger.debug(`Creating scheduler job for appId: ${appId}`, this.DEBUG_TAG);
       this.preparePrintCommand(this, {
