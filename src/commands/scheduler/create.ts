@@ -15,10 +15,10 @@ const MESSAGES = {
   name: 'Scheduled job name',
   description: 'Scheduled job description (optional)',
   schedule: 'Cron expression for the job schedule (relative to UTC)',
-  targetUrl: 'Target URL path for the job (must start with /, relative to /mndy-cronjob)',
+  targetUrl: 'Target URL path for the job (must start with /, will be relative to /mndy-cronjob)',
   maxRetries: 'Maximum number of retries for failed jobs (optional)',
   minBackoffDuration: 'Minimum backoff duration in seconds between retries (optional)',
-  timeout: 'Job timeout in seconds (optional)',
+  timeout: 'Job execution timeout in seconds (optional)',
 };
 
 export default class SchedulerCreate extends AuthenticatedCommand {
@@ -101,7 +101,7 @@ export default class SchedulerCreate extends AuthenticatedCommand {
         schedule,
         targetUrl,
         ...(description ? { description } : {}),
-        ...(isDefined(maxRetries) && isDefined(minBackoffDuration)
+        ...(isDefined(maxRetries) || isDefined(minBackoffDuration)
           ? { retryConfig: { maxRetries, minBackoffDuration } }
           : {}),
         ...(isDefined(timeout) ? { timeout } : {}),
