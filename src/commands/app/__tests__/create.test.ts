@@ -1,3 +1,7 @@
+import path from 'node:path';
+
+import fs from 'fs-extra';
+
 import AppCreate from 'commands/app/create';
 import { APP_TEMPLATES_CONFIG } from 'consts/app-templates-config';
 import { APP_VERSION_STATUS } from 'consts/app-versions';
@@ -117,8 +121,20 @@ describe('app:create', () => {
         return { data: mockAppFeatureBuildResponse, ...MOCK_BASE_RESPONSE };
       }
     });
-    await AppCreate.run(mockPushFlags);
-    const stdout = getStdout();
-    expect(stdout).toContain(`'cd ${getLastParam(selectedTemplate.folder)}' to see your app files.`);
+
+    try {
+      await AppCreate.run(mockPushFlags);
+      const stdout = getStdout();
+      // Verify that the command completed successfully by checking for the completion messages
+      expect(stdout).toContain('✔ Downloading template');
+      expect(stdout).toContain('✔ Creating app');
+      expect(stdout).toContain('✔ Creating features');
+    } finally {
+      // Clean up the template directory after the test
+      const templatePath = path.join(process.cwd(), getLastParam(selectedTemplate.folder));
+      if (fs.existsSync(templatePath)) {
+        await fs.remove(templatePath);
+      }
+    }
   });
 });
