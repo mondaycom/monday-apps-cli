@@ -39,8 +39,6 @@ const createJob = async (appId: AppId, job: CreateJobRequest): Promise<Scheduler
     const path = appSchedulerUrl(appId);
     const url = appsUrlBuilder(path);
 
-    console.log('&&&&&');
-    console.log(job);
     const response = await execute<CreateJobResponse>({
       url,
       headers: { Accept: 'application/json' },
@@ -58,7 +56,47 @@ const createJob = async (appId: AppId, job: CreateJobRequest): Promise<Scheduler
   }
 };
 
+const deleteJob = async (appId: AppId, jobName: string): Promise<void> => {
+  try {
+    const path = `${appSchedulerUrl(appId)}/${jobName}`;
+    const url = appsUrlBuilder(path);
+
+    await execute({
+      url,
+      headers: { Accept: 'application/json' },
+      method: HttpMethodTypes.DELETE,
+    });
+  } catch (error: any) {
+    if (error instanceof HttpError) {
+      handleHttpErrors(error);
+    }
+
+    throw new Error('failed to delete scheduler job');
+  }
+};
+
+const runJob = async (appId: AppId, jobName: string): Promise<void> => {
+  try {
+    const path = `${appSchedulerUrl(appId)}/${jobName}/run`;
+    const url = appsUrlBuilder(path);
+
+    await execute({
+      url,
+      headers: { Accept: 'application/json' },
+      method: HttpMethodTypes.POST,
+    });
+  } catch (error: any) {
+    if (error instanceof HttpError) {
+      handleHttpErrors(error);
+    }
+
+    throw new Error('failed to run scheduler job');
+  }
+};
+
 export const SchedulerService = {
   listJobs,
   createJob,
+  deleteJob,
+  runJob,
 };
