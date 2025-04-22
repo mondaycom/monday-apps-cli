@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Page Routes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+    }
+    .container {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    header {
+      background-color: #6200ea;
+      color: #fff;
+      padding: 15px 20px;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      padding: 10px 0;
+      background-color: #3700b3;
+    }
+    .nav-section {
+      position: relative;
+    }
+    .sub-nav {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #3700b3;
+      padding: 10px;
+      border-radius: 0 0 4px 4px;
+      min-width: 150px;
+    }
+    .nav-section:hover .sub-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.2rem;
+      padding: 5px 10px;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .page {
+      text-align: center;
+      padding: 50px 20px;
+    }
+    .page h1 {
+      color: #3700b3;
+    }
+    .page p {
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>My Web App</h1>
+  </header>
+
+  <nav>
+    <div class="nav-section">
+      <a href="#board" onclick="navigate('/board')">Board</a>
+      <div class="sub-nav">
+        <a href="#board/overview" onclick="navigate('/board/overview')">Overview</a>
+        <a href="#board/projects" onclick="navigate('/board/projects')">Projects</a>
+        <a href="#board/tasks" onclick="navigate('/board/tasks')">Tasks</a>
+      </div>
+    </div>
+    <div class="nav-section">
+      <a href="#item_view" onclick="navigate('/item_view')">Item View</a>
+      <div class="sub-nav">
+        <a href="#item_view/details" onclick="navigate('/item_view/details')">Details</a>
+        <a href="#item_view/comments" onclick="navigate('/item_view/comments')">Comments</a>
+        <a href="#item_view/updates" onclick="navigate('/item_view/updates')">Updates</a>
+      </div>
+    </div>
+  </nav>
+
+  <div id="app" class="container">
+    <!-- Content dynamically rendered here -->
+  </div>
+
+  <script>
+    const routes = {
+      '/board': `
+        <div class="page">
+          <h1>Board Page</h1>
+          <p>Welcome to the Board page. Here you can manage your boards and see all the projects in one place.</p>
+        </div>
+      `,
+      '/board/overview': `
+        <div class="page">
+          <h1>Board Overview</h1>
+          <p>Get a high-level view of all your boards and their current status.</p>
+        </div>
+      `,
+      '/board/projects': `
+        <div class="page">
+          <h1>Board Projects</h1>
+          <p>Manage and view all your active projects in one place.</p>
+        </div>
+      `,
+      '/board/tasks': `
+        <div class="page">
+          <h1>Board Tasks</h1>
+          <p>Track and manage individual tasks across all your projects.</p>
+        </div>
+      `,
+      '/item_view': `
+        <div class="page">
+          <h1>Item View Page</h1>
+          <p>This is the Item View page. Dive deep into the details of individual items and track progress.</p>
+        </div>
+      `,
+      '/item_view/details': `
+        <div class="page">
+          <h1>Item Details</h1>
+          <p>View comprehensive information about the selected item.</p>
+        </div>
+      `,
+      '/item_view/comments': `
+        <div class="page">
+          <h1>Item Comments</h1>
+          <p>See and manage all comments related to this item.</p>
+        </div>
+      `,
+      '/item_view/updates': `
+        <div class="page">
+          <h1>Item Updates</h1>
+          <p>Track all updates and changes made to this item.</p>
+        </div>
+      `
+    };
+
+    function navigate(route) {
+      const appDiv = document.getElementById('app');
+      appDiv.innerHTML = routes[route] || '<div class="page"><h1>404 - Page Not Found</h1><p>The page you are looking for does not exist.</p></div>';
+      window.history.pushState({}, '', route);
+    }
+
+    // Initialize default route
+    window.onpopstate = () => navigate(window.location.pathname);
+    navigate(window.location.pathname || '/board');
+  </script>
+</body>
+</html>
