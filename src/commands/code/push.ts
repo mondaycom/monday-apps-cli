@@ -54,12 +54,10 @@ export default class Push extends AuthenticatedCommand {
   static args = {};
   DEBUG_TAG = 'code_push';
 
-  public async handleCdnUpload(directoryPath?: string): Promise<void> {
-    const { appVersionId } = await DynamicChoicesService.chooseAppAndAppVersion(false, false, {
-      autoSelectVersion: true,
-    });
+  public async handleCdnUpload(appVersionId: number, directoryPath?: string): Promise<void> {
     logger.info('Deploying build to CDN...');
-    await getTasksForClientSide(Number(appVersionId), directoryPath || getCurrentWorkingDirectory()).run();
+    await getTasksForClientSide(appVersionId, directoryPath || getCurrentWorkingDirectory()).run();
+    console.log(getCurrentWorkingDirectory());
   }
 
   public async run(): Promise<void> {
@@ -67,13 +65,9 @@ export default class Push extends AuthenticatedCommand {
     const { directoryPath, region: strRegion, 'client-side': clientSide } = flags;
     const region = getRegionFromString(strRegion);
     let appVersionId = flags.appVersionId;
-
-    if (clientSide) {
-      await this.handleCdnUpload(directoryPath);
-      process.exit(0);
+    if (!clientSide) {
+      validateIfCanBuild(directoryPath || getCurrentWorkingDirectory());
     }
-
-    validateIfCanBuild(directoryPath || getCurrentWorkingDirectory());
 
     try {
       if (!appVersionId) {
@@ -85,6 +79,11 @@ export default class Push extends AuthenticatedCommand {
         });
 
         appVersionId = appAndAppVersion.appVersionId;
+      }
+
+      if (clientSide) {
+        await this.handleCdnUpload(appVersionId, directoryPath);
+        process.exit(0);
       }
 
       const selectedRegion = await chooseRegionIfNeeded(region, { appVersionId });
