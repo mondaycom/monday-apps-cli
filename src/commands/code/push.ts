@@ -57,7 +57,6 @@ export default class Push extends AuthenticatedCommand {
   public async handleCdnUpload(appVersionId: number, directoryPath?: string): Promise<void> {
     logger.info('Deploying build to CDN...');
     await getTasksForClientSide(appVersionId, directoryPath || getCurrentWorkingDirectory()).run();
-    console.log(getCurrentWorkingDirectory());
   }
 
   public async run(): Promise<void> {
