@@ -117,8 +117,6 @@ const updateJob = async (appId: AppId, jobName: string, job: UpdateJobRequest): 
   }
 };
 
-// TODO: Maor: check which status codes are returned from the API on each of the requests
-
 export const SchedulerService = {
   listJobs,
   createJob,
