@@ -21,6 +21,14 @@ export function isDefined<T>(input: T | null | undefined): input is T {
   return input !== null && input !== undefined;
 }
 
+export function isDefinedAndNotEmpty<T>(input: T | null | undefined): input is T {
+  if (!isDefined(input)) return false;
+  if (typeof input === 'string') return input.trim() !== '';
+  if (Array.isArray(input)) return input.length > 0;
+  if (typeof input === 'object') return Object.keys(input as Record<string, unknown>).length > 0;
+  return true;
+}
+
 /***
  * This function receives an input (string or number) and returns true if it is a number
  * @param input - The input to check if it is a number

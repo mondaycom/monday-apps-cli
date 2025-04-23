@@ -32,6 +32,8 @@ export type CreateJobRequest = {
   timeout?: number;
 };
 
+export type UpdateJobRequest = Partial<Omit<CreateJobRequest, 'name'>>;
+
 export type CreateJobResponse = {
   job: SchedulerJob;
 } & BaseResponseHttpMetaData;

@@ -1,7 +1,5 @@
 import { Flags } from '@oclif/core';
 
-import { PromptService } from 'src/services/prompt-service';
-
 import { AuthenticatedCommand } from '../../commands-base/authenticated-command';
 import { APP_ID_TO_ENTER } from '../../consts/messages';
 import { DynamicChoicesService } from '../../services/dynamic-choices-service';
@@ -36,7 +34,7 @@ export default class SchedulerDelete extends AuthenticatedCommand {
 
     try {
       if (!appId) appId = await DynamicChoicesService.chooseApp();
-      if (!jobName) jobName = await PromptService.promptInput(MESSAGES.jobName, true);
+      if (!jobName) jobName = await DynamicChoicesService.chooseSchedulerJob(appId);
 
       logger.debug(`Deleting scheduler job ${jobName} for appId: ${appId}`, this.DEBUG_TAG);
       this.preparePrintCommand(this, {

@@ -6,6 +6,7 @@ import {
   CreateJobResponse,
   ListJobsResponse,
   SchedulerJob,
+  UpdateJobRequest,
   handleHttpErrors,
 } from './scheduler-service.utils';
 import { HttpError } from '../types/errors';
@@ -94,9 +95,34 @@ const runJob = async (appId: AppId, jobName: string): Promise<void> => {
   }
 };
 
+const updateJob = async (appId: AppId, jobName: string, job: UpdateJobRequest): Promise<SchedulerJob> => {
+  try {
+    const path = `${appSchedulerUrl(appId)}/${jobName}`;
+    const url = appsUrlBuilder(path);
+
+    const response = await execute<CreateJobResponse>({
+      url,
+      headers: { Accept: 'application/json' },
+      method: HttpMethodTypes.PUT,
+      body: job,
+    });
+
+    return response.job;
+  } catch (error: any) {
+    if (error instanceof HttpError) {
+      handleHttpErrors(error);
+    }
+
+    throw new Error('failed to update scheduler job');
+  }
+};
+
+// TODO: Maor: check which status codes are returned from the API on each of the requests
+
 export const SchedulerService = {
   listJobs,
   createJob,
   deleteJob,
   runJob,
+  updateJob,
 };
