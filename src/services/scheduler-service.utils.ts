@@ -85,9 +85,16 @@ export const handleHttpErrors = (error: HttpError) => {
       throw new Error('You are not authorized to access the requested app');
     }
 
+    case StatusCodes.BAD_REQUEST: {
+      throw new Error('Invalid request');
+    }
+
+    case StatusCodes.INTERNAL_SERVER_ERROR: {
+      throw new Error('Internal server error');
+    }
+
     default: {
-      console.log(error); // FIXME: Maor: remove
-      throw new Error('UNIMPLEMENTED ERROR CASE');
+      throw new Error('Unknown error');
     }
   }
 };
