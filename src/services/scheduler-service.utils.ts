@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 
 import { SchedulerJob } from 'src/types/services/scheduler-service';
+import { isDefinedAndNotEmpty } from 'src/utils/validations';
 import logger from 'utils/logger';
 
 import { HttpError } from '../types/errors';
@@ -15,7 +16,7 @@ export const printJobs = (jobs: SchedulerJob[]): void => {
 };
 
 export const validateCronExpression = (schedule: string | undefined): void => {
-  if (!schedule) {
+  if (!isDefinedAndNotEmpty(schedule)) {
     throw new Error('Cron expression is required');
   }
 
