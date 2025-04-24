@@ -1,4 +1,5 @@
 import { PromptService } from 'src/services/prompt-service';
+import { UpdateJobRequest } from 'src/types/services/scheduler-service';
 import { isDefined, isDefinedAndNotEmpty } from 'src/utils/validations';
 
 import { SchedulerFlags } from './consts/flags';
@@ -6,12 +7,7 @@ import { SchedulerMessages } from './consts/messages';
 import { AuthenticatedCommand } from '../../commands-base/authenticated-command';
 import { DynamicChoicesService } from '../../services/dynamic-choices-service';
 import { SchedulerService } from '../../services/scheduler-service';
-import {
-  UpdateJobRequest,
-  printJobs,
-  validateCronExpression,
-  validateTargetUrl,
-} from '../../services/scheduler-service.utils';
+import { printJobs, validateCronExpression, validateTargetUrl } from '../../services/scheduler-service.utils';
 import logger from '../../utils/logger';
 
 export default class SchedulerUpdate extends AuthenticatedCommand {

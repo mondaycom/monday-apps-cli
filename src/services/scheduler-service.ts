@@ -1,14 +1,14 @@
 import { appSchedulerUrl } from 'src/consts/urls';
-
-import { execute } from './api-service';
 import {
   CreateJobRequest,
   CreateJobResponse,
   ListJobsResponse,
   SchedulerJob,
   UpdateJobRequest,
-  handleHttpErrors,
-} from './scheduler-service.utils';
+} from 'src/types/services/scheduler-service';
+
+import { execute } from './api-service';
+import { handleHttpErrors } from './scheduler-service.utils';
 import { HttpError } from '../types/errors';
 import { AppId } from '../types/general';
 import { HttpMethodTypes } from '../types/services/api-service';
