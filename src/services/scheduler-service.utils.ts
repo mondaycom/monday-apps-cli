@@ -46,18 +46,22 @@ export const validateTargetUrl = (targetUrl: string | undefined): void => {
 export const handleHttpErrors = (error: HttpError) => {
   switch (error.code) {
     case StatusCodes.NOT_FOUND: {
+      console.log(error.message);
       throw new Error('monday-code deployment not found for the requested app');
     }
 
     case StatusCodes.FORBIDDEN: {
+      console.log(error.message);
       throw new Error('You are not authorized to access the requested app');
     }
 
     case StatusCodes.BAD_REQUEST: {
+      console.log(error.message);
       throw new Error('Invalid request');
     }
 
     case StatusCodes.INTERNAL_SERVER_ERROR: {
+      console.log('Internal server error');
       throw new Error('Internal server error');
     }
 
