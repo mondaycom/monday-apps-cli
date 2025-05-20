@@ -11,10 +11,12 @@ import { execute } from './api-service';
 import { handleHttpErrors } from './scheduler-service.utils';
 import { HttpError } from '../types/errors';
 import { AppId } from '../types/general';
+import { Region } from '../types/general/region';
 import { HttpMethodTypes } from '../types/services/api-service';
+import { addRegionToQuery } from '../utils/region';
 import { appsUrlBuilder } from '../utils/urls-builder';
 
-export const listJobs = async (appId: AppId): Promise<SchedulerJob[]> => {
+export const listJobs = async (appId: AppId, region?: Region): Promise<SchedulerJob[]> => {
   try {
     const path = appSchedulerUrl(appId);
     const url = appsUrlBuilder(path);
@@ -23,6 +25,7 @@ export const listJobs = async (appId: AppId): Promise<SchedulerJob[]> => {
       url,
       headers: { Accept: 'application/json' },
       method: HttpMethodTypes.GET,
+      query: addRegionToQuery({}, region),
     });
 
     return response.jobs;
@@ -35,7 +38,7 @@ export const listJobs = async (appId: AppId): Promise<SchedulerJob[]> => {
   }
 };
 
-const createJob = async (appId: AppId, job: CreateJobRequest): Promise<SchedulerJob> => {
+const createJob = async (appId: AppId, job: CreateJobRequest, region?: Region): Promise<SchedulerJob> => {
   try {
     const path = appSchedulerUrl(appId);
     const url = appsUrlBuilder(path);
@@ -45,6 +48,7 @@ const createJob = async (appId: AppId, job: CreateJobRequest): Promise<Scheduler
       headers: { Accept: 'application/json' },
       method: HttpMethodTypes.POST,
       body: job,
+      query: addRegionToQuery({}, region),
     });
 
     return response.job;
@@ -57,7 +61,7 @@ const createJob = async (appId: AppId, job: CreateJobRequest): Promise<Scheduler
   }
 };
 
-const deleteJob = async (appId: AppId, jobName: string): Promise<void> => {
+const deleteJob = async (appId: AppId, jobName: string, region?: Region): Promise<void> => {
   try {
     const path = `${appSchedulerUrl(appId)}/${jobName}`;
     const url = appsUrlBuilder(path);
@@ -66,6 +70,7 @@ const deleteJob = async (appId: AppId, jobName: string): Promise<void> => {
       url,
       headers: { Accept: 'application/json' },
       method: HttpMethodTypes.DELETE,
+      query: addRegionToQuery({}, region),
     });
   } catch (error: any) {
     if (error instanceof HttpError) {
@@ -76,7 +81,7 @@ const deleteJob = async (appId: AppId, jobName: string): Promise<void> => {
   }
 };
 
-const runJob = async (appId: AppId, jobName: string): Promise<void> => {
+const runJob = async (appId: AppId, jobName: string, region?: Region): Promise<void> => {
   try {
     const path = `${appSchedulerUrl(appId)}/${jobName}/run`;
     const url = appsUrlBuilder(path);
@@ -85,6 +90,7 @@ const runJob = async (appId: AppId, jobName: string): Promise<void> => {
       url,
       headers: { Accept: 'application/json' },
       method: HttpMethodTypes.POST,
+      query: addRegionToQuery({}, region),
     });
   } catch (error: any) {
     if (error instanceof HttpError) {
@@ -95,7 +101,12 @@ const runJob = async (appId: AppId, jobName: string): Promise<void> => {
   }
 };
 
-const updateJob = async (appId: AppId, jobName: string, job: UpdateJobRequest): Promise<SchedulerJob> => {
+const updateJob = async (
+  appId: AppId,
+  jobName: string,
+  job: UpdateJobRequest,
+  region?: Region,
+): Promise<SchedulerJob> => {
   try {
     const path = `${appSchedulerUrl(appId)}/${jobName}`;
     const url = appsUrlBuilder(path);
@@ -105,6 +116,7 @@ const updateJob = async (appId: AppId, jobName: string, job: UpdateJobRequest): 
       headers: { Accept: 'application/json' },
       method: HttpMethodTypes.PUT,
       body: job,
+      query: addRegionToQuery({}, region),
     });
 
     return response.job;

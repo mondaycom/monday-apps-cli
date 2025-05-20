@@ -1,5 +1,6 @@
 import { PromptService } from 'src/services/prompt-service';
 import { isDefined } from 'src/utils/validations';
+import { chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
 import { SchedulerFlags } from './consts/flags';
 import { SchedulerMessages } from './consts/messages';
@@ -24,9 +25,11 @@ export default class SchedulerCreate extends AuthenticatedCommand {
   public async run(): Promise<void> {
     const { flags } = await this.parse(SchedulerCreate);
     let { appId, name, description, schedule, targetUrl, maxRetries, minBackoffDuration, timeout } = flags;
-
+    const { region } = flags;
+    const parsedRegion = getRegionFromString(region);
     try {
       if (!appId) appId = await DynamicChoicesService.chooseApp();
+      const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
       if (!name) name = await PromptService.promptInput(SchedulerMessages.name, true);
       if (!schedule) schedule = await PromptService.promptInput(SchedulerMessages.schedule, true);
       validateCronExpression(schedule);
@@ -48,19 +51,24 @@ export default class SchedulerCreate extends AuthenticatedCommand {
         maxRetries,
         minBackoffDuration,
         timeout,
+        region: selectedRegion,
       });
 
-      const job = await SchedulerService.createJob(appId, {
-        name,
-        description,
-        schedule,
-        targetUrl,
-        ...(description ? { description } : {}),
-        ...(isDefined(maxRetries) || isDefined(minBackoffDuration)
-          ? { retryConfig: { maxRetries, minBackoffDuration } }
-          : {}),
-        ...(isDefined(timeout) ? { timeout } : {}),
-      });
+      const job = await SchedulerService.createJob(
+        appId,
+        {
+          name,
+          description,
+          schedule,
+          targetUrl,
+          ...(description ? { description } : {}),
+          ...(isDefined(maxRetries) || isDefined(minBackoffDuration)
+            ? { retryConfig: { maxRetries, minBackoffDuration } }
+            : {}),
+          ...(isDefined(timeout) ? { timeout } : {}),
+        },
+        selectedRegion,
+      );
 
       printJobs([job]);
     } catch (error: any) {

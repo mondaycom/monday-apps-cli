@@ -1,4 +1,5 @@
 import { printJobs } from 'src/services/scheduler-service.utils';
+import { chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
 import { SchedulerBaseFlags } from './consts/flags';
 import { AuthenticatedCommand } from '../../commands-base/authenticated-command';
@@ -18,14 +19,17 @@ export default class SchedulerList extends AuthenticatedCommand {
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(SchedulerList);
-
+    let { appId } = flags;
+    const { region } = flags;
+    const parsedRegion = getRegionFromString(region);
     try {
-      const appId = flags.appId ? Number(flags.appId) : await DynamicChoicesService.chooseApp();
+      appId = appId ? Number(appId) : await DynamicChoicesService.chooseApp();
+      const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
 
       logger.debug(`Listing scheduler jobs for appId: ${appId}`, this.DEBUG_TAG);
-      this.preparePrintCommand(this, { appId });
+      this.preparePrintCommand(this, { appId, region: selectedRegion });
 
-      const jobs = await SchedulerService.listJobs(appId);
+      const jobs = await SchedulerService.listJobs(appId, selectedRegion);
       printJobs(jobs);
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);

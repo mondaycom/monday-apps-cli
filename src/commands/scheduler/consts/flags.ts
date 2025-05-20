@@ -1,8 +1,10 @@
 import { Flags } from '@oclif/core';
 
+import { addRegionToFlags } from 'utils/region';
+
 import { SchedulerMessages } from './messages';
 
-export const SchedulerBaseFlags = {
+export const SchedulerBaseFlags = addRegionToFlags({
   appId: Flags.integer({
     char: 'a',
     description: SchedulerMessages.appId,
@@ -11,9 +13,9 @@ export const SchedulerBaseFlags = {
     char: 'n',
     description: SchedulerMessages.name,
   }),
-};
+});
 
-export const SchedulerFlags = {
+export const SchedulerFlags = addRegionToFlags({
   ...SchedulerBaseFlags,
   description: Flags.string({
     char: 'd',
@@ -39,4 +41,4 @@ export const SchedulerFlags = {
     char: 't',
     description: SchedulerMessages.timeout,
   }),
-};
+});

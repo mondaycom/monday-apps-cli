@@ -1,6 +1,7 @@
 import { PromptService } from 'src/services/prompt-service';
 import { UpdateJobRequest } from 'src/types/services/scheduler-service';
 import { isDefined, isDefinedAndNotEmpty } from 'src/utils/validations';
+import { chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
 import { SchedulerFlags } from './consts/flags';
 import { SchedulerMessages } from './consts/messages';
@@ -25,13 +26,15 @@ export default class SchedulerUpdate extends AuthenticatedCommand {
   public async run(): Promise<void> {
     const { flags } = await this.parse(SchedulerUpdate);
     let { appId, name, description, schedule, targetUrl, maxRetries, minBackoffDuration, timeout } = flags;
-
+    const { region } = flags;
+    const parsedRegion = getRegionFromString(region);
     try {
       if (!appId) appId = await DynamicChoicesService.chooseApp();
+      const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
       if (!name) name = await DynamicChoicesService.chooseSchedulerJob(appId);
 
       // Get the current job details
-      const jobs = await SchedulerService.listJobs(appId);
+      const jobs = await SchedulerService.listJobs(appId, selectedRegion);
       const currentJob = jobs.find(job => job.name === name);
       if (!currentJob) {
         throw new Error(`Job ${name} not found`);
@@ -59,6 +62,7 @@ export default class SchedulerUpdate extends AuthenticatedCommand {
         maxRetries,
         minBackoffDuration,
         timeout,
+        region: selectedRegion,
       });
 
       // Create update payload with only the fields that were provided
@@ -73,7 +77,7 @@ export default class SchedulerUpdate extends AuthenticatedCommand {
       if (isDefined(timeout)) updatePayload.timeout = timeout;
 
       if (isDefinedAndNotEmpty(updatePayload)) {
-        const job = await SchedulerService.updateJob(appId, name, updatePayload);
+        const job = await SchedulerService.updateJob(appId, name, updatePayload, selectedRegion);
         printJobs([job]);
         logger.info(`Successfully updated job: ${name}`);
       } else {
