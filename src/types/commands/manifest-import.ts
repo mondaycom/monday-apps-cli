@@ -4,4 +4,5 @@ export type ImportCommandTasksContext = {
   appId?: AppId;
   appVersionId?: AppVersionId;
   manifestFilePath: string;
+  allowMissingVariables?: boolean;
 };
