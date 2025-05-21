@@ -46,23 +46,30 @@ export const validateTargetUrl = (targetUrl: string | undefined): void => {
 export const handleHttpErrors = (error: HttpError) => {
   switch (error.code) {
     case StatusCodes.NOT_FOUND: {
-      console.log(error.message);
+      logger.error(error.message);
       throw new Error('monday-code deployment not found for the requested app');
     }
 
     case StatusCodes.FORBIDDEN: {
-      console.log(error.message);
+      logger.error(error.message);
       throw new Error('You are not authorized to access the requested app');
     }
 
     case StatusCodes.BAD_REQUEST: {
-      console.log(error.message);
+      logger.error(error.message);
       throw new Error('Invalid request');
     }
 
     case StatusCodes.INTERNAL_SERVER_ERROR: {
-      console.log('Internal server error');
+      logger.error(error.message);
       throw new Error('Internal server error');
+    }
+
+    case StatusCodes.UPGRADE_REQUIRED: {
+      logger.error(
+        'Scheduler for monday code is in beta. check out our community slack announcement to join the beta group',
+      );
+      throw new Error('Beta access required');
     }
 
     default: {
