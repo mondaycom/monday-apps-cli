@@ -17,7 +17,7 @@ export const uploadManifestTsk = async (
   ctx: ImportCommandTasksContext,
   task: ListrTaskWrapper<ImportCommandTasksContext, any>,
 ) => {
-  const processedManifest = await processManifestTemplate(ctx.manifestFilePath);
+  const processedManifest = await processManifestTemplate(ctx.manifestFilePath, ctx.allowMissingVariables);
   ctx.manifestFilePath = `${ctx.manifestFilePath}.processed`;
 
   try {
@@ -34,13 +34,13 @@ export const uploadManifestTsk = async (
   }
 };
 
-export const processManifestTemplate = async (manifestFilePath: string) => {
+export const processManifestTemplate = async (manifestFilePath: string, allowMissingVariables = false) => {
   try {
     const manifestJson = await loadFile(manifestFilePath);
     const parsedManifest = JSON.parse(manifestJson) as Record<string, any>;
 
     const processedManifest = processTemplate(parsedManifest, process.env, {
-      failOnMissingVariable: true,
+      failOnMissingVariable: !allowMissingVariables,
     });
     return processedManifest;
   } catch (error) {

@@ -13,6 +13,7 @@ const MESSAGES = {
   appId: 'App id (will create a new draft version)',
   appVersionId: 'App version id to override',
   newApp: 'Create new app',
+  allowMissingVariables: 'Allow missing variables',
 };
 
 export default class ManifestImport extends AuthenticatedCommand {
@@ -44,6 +45,12 @@ export default class ManifestImport extends AuthenticatedCommand {
       aliases: ['new'],
       default: false,
     }),
+    allowMissingVariables: Flags.boolean({
+      description: MESSAGES.allowMissingVariables,
+      char: 'm',
+      aliases: ['allow-missing-variables'],
+      default: false,
+    }),
   });
 
   DEBUG_TAG = 'manifest_import';
@@ -63,7 +70,7 @@ export default class ManifestImport extends AuthenticatedCommand {
     try {
       const { flags } = await this.parse(ManifestImport);
       const { manifestPath: initialManifestPath } = flags;
-      const { appId: appIdAsString, appVersionId: appVersionIdAsString, newApp } = flags;
+      const { appId: appIdAsString, appVersionId: appVersionIdAsString, newApp, allowMissingVariables } = flags;
       let manifestPath = initialManifestPath;
       let appId = appIdAsString ? Number(appIdAsString) : undefined;
       let appVersionId = appVersionIdAsString ? Number(appVersionIdAsString) : undefined;
@@ -98,6 +105,7 @@ export default class ManifestImport extends AuthenticatedCommand {
         appVersionId,
         appId,
         manifestFilePath: manifestPath,
+        allowMissingVariables,
       };
       const tasks = new Listr<ImportCommandTasksContext>(
         [{ title: 'Importing app manifest', task: importService.uploadManifestTsk }],
