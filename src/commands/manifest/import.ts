@@ -13,6 +13,7 @@ const MESSAGES = {
   appId: 'App id (will create a new draft version)',
   appVersionId: 'App version id to override',
   newApp: 'Create new app',
+  allowMissingVariables: 'Allow missing variables',
 };
 
 export default class ManifestImport extends AuthenticatedCommand {
@@ -45,8 +46,8 @@ export default class ManifestImport extends AuthenticatedCommand {
       default: false,
     }),
     allowMissingVariables: Flags.boolean({
-      description: 'Allow missing variables',
-      char: 'a',
+      description: MESSAGES.allowMissingVariables,
+      char: 'm',
       aliases: ['allow-missing-variables'],
       default: false,
     }),
