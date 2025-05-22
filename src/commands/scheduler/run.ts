@@ -7,7 +7,7 @@ import { SchedulerService } from '../../services/scheduler-service';
 import logger from '../../utils/logger';
 
 export default class SchedulerRun extends AuthenticatedCommand {
-  static description = 'Run a scheduler job for an app';
+  static description = 'Manually trigger a scheduled job to run for an app';
   static examples = ['<%= config.bin %> <%= command.id %> -a APP_ID -n "my-job"'];
 
   static flags = SchedulerRun.serializeFlags(SchedulerBaseFlags);
