@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Debug CLI",
+      "program": "${workspaceFolder}/bin/dev.js",
+      "runtimeExecutable": "tsx",
+      "args": ["${input:cliCommand}"],
+      "runtimeArgs": ["--inspect"],
+      "console": "integratedTerminal",
+      "autoAttachChildProcesses": true
+    }
+  ],
+  "inputs": [
+    {
+      "id": "cliCommand",
+      "type": "promptString",
+      "description": "Enter the CLI command to debug (e.g. app:list, code:push, etc.)",
+      "default": "app:list"
+    }
+  ]
+}

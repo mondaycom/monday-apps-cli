@@ -47,6 +47,11 @@ USAGE
 * [`mapps storage:export`](#mapps-storageexport)
 * [`mapps storage:search`](#mapps-storagesearch)
 * [`mapps tunnel:create`](#mapps-tunnelcreate)
+* [`mapps scheduler:create`](#mapps-schedulercreate)
+* [`mapps scheduler:update`](#mapps-schedulerupdate)
+* [`mapps scheduler:delete`](#mapps-schedulerdelete)
+* [`mapps scheduler:list`](#mapps-schedulerlist)
+* [`mapps scheduler:run`](#mapps-schedulerrun)
 
 ## `mapps api:generate`
 
@@ -590,4 +595,143 @@ EXAMPLES
 ```
 
 _See code: [src/commands/tunnel/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/tunnel/create.ts)_
+
+## `mapps scheduler:create`
+
+Create a new scheduled job for an app.
+
+**Scheduler Command Overview:**
+
+The `mapps scheduler` commands allow you to manage scheduled jobs (cron jobs) for your monday.com apps. You can create, update, delete, list, and manually run scheduled jobs. Jobs are defined by a unique name in a specific region, a cron schedule, a target URL (relative to your app), and optional retry/backoff/timeout settings. All commands support interactive prompts for missing required fields and region selection.
+
+```
+USAGE
+  $ mapps scheduler:create [--verbose] [--print-command] [-a <value>] [-n <value>] [-d <value>] [-s <value>] [-u <value>] [-r <value>] [-b <value>] [-t <value>] [-z us|eu|au]
+
+FLAGS
+  -a, --appId=<value>            App ID for which to create the scheduled job
+  -n, --name=<value>             Scheduled job name
+  -d, --description=<value>      Scheduled job description (optional)
+  -s, --schedule=<value>         Cron expression for the job schedule (relative to UTC)
+  -u, --targetUrl=<value>        Target URL path for the job (must start with /, will be relative to /mndy-cronjob)
+  -r, --maxRetries=<value>       Maximum number of retries for failed jobs (optional)
+  -b, --minBackoffDuration=<value>  Minimum backoff duration in seconds between retries (optional)
+  -t, --timeout=<value>          Job execution timeout in seconds (optional)
+  -z, --region=<option>          Region to use <options: us|eu|au>
+
+GLOBAL FLAGS
+  --print-command                Print the command that was executed (optional)
+  --verbose                      Print advanced logs (optional)
+
+DESCRIPTION
+  Create a new scheduled job for an app. Prompts for missing required fields.
+
+EXAMPLES
+  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint"
+  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint" -n "My job" -d "Description"
+```
+
+## `mapps scheduler:update`
+
+Update an existing scheduled job for an app.
+
+```
+USAGE
+  $ mapps scheduler:update [--verbose] [--print-command] [-a <value>] [-n <value>] [-d <value>] [-s <value>] [-u <value>] [-r <value>] [-b <value>] [-t <value>] [-z us|eu|au]
+
+FLAGS
+  -a, --appId=<value>            App ID for which to update the scheduled job
+  -n, --name=<value>             Name of the job to update
+  -d, --description=<value>      New description (optional)
+  -s, --schedule=<value>         New cron expression (optional)
+  -u, --targetUrl=<value>        New target URL path (optional)
+  -r, --maxRetries=<value>       New max retries (optional)
+  -b, --minBackoffDuration=<value>  New min backoff duration (optional)
+  -t, --timeout=<value>          New timeout (optional)
+  -z, --region=<option>          Region to use <options: us|eu|au>
+
+GLOBAL FLAGS
+  --print-command                Print the command that was executed (optional)
+  --verbose                      Print advanced logs (optional)
+
+DESCRIPTION
+  Update an existing scheduled job for an app. Only provided fields will be updated. Prompts for missing required fields.
+
+EXAMPLES
+  $ mapps scheduler:update -a APP_ID -n "my-job" -s "0 * * * *"
+  $ mapps scheduler:update -a APP_ID -n "my-job" -u "/new-endpoint"
+```
+
+## `mapps scheduler:delete`
+
+Delete a scheduled job for an app.
+
+```
+USAGE
+  $ mapps scheduler:delete [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au]
+
+FLAGS
+  -a, --appId=<value>            App ID for which to delete the scheduled job
+  -n, --name=<value>             Name of the job to delete
+  -z, --region=<option>          Region to use <options: us|eu|au>
+
+GLOBAL FLAGS
+  --print-command                Print the command that was executed (optional)
+  --verbose                      Print advanced logs (optional)
+
+DESCRIPTION
+  Delete a scheduled job for an app. Prompts for missing required fields.
+
+EXAMPLES
+  $ mapps scheduler:delete -a APP_ID -n "my-job"
+```
+
+## `mapps scheduler:list`
+
+List all scheduled jobs for an app.
+
+```
+USAGE
+  $ mapps scheduler:list [--verbose] [--print-command] [-a <value>] [-z us|eu|au]
+
+FLAGS
+  -a, --appId=<value>            App ID for which to list scheduled jobs
+  -z, --region=<option>          Region to use <options: us|eu|au>
+
+GLOBAL FLAGS
+  --print-command                Print the command that was executed (optional)
+  --verbose                      Print advanced logs (optional)
+
+DESCRIPTION
+  List all scheduled jobs for an app.
+
+EXAMPLES
+  $ mapps scheduler:list -a APP_ID
+```
+
+## `mapps scheduler:run`
+
+Manually trigger a scheduled job to run for an app.
+
+```
+USAGE
+  $ mapps scheduler:run [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au]
+
+FLAGS
+  -a, --appId=<value>            App ID for which to run the scheduled job
+  -n, --name=<value>             Name of the job to run
+  -z, --region=<option>          Region to use <options: us|eu|au>
+
+GLOBAL FLAGS
+  --print-command                Print the command that was executed (optional)
+  --verbose                      Print advanced logs (optional)
+
+DESCRIPTION
+  Manually trigger a scheduled job to run for an app. Prompts for missing required fields.
+
+EXAMPLES
+  $ mapps scheduler:run -a APP_ID -n "my-job"
+```
+
+
 <!-- commandsstop -->
