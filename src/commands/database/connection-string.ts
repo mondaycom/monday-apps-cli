@@ -3,8 +3,8 @@ import chalk from 'chalk';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { VAR_UNKNOWN } from 'consts/messages';
-import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getDatabaseConnectionString } from 'services/database-service';
+import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { HttpError } from 'types/errors';
 import { AppId } from 'types/general';
 import logger from 'utils/logger';
@@ -29,7 +29,7 @@ export default class ConnectionString extends AuthenticatedCommand {
         appId = await DynamicChoicesService.chooseApp();
       }
 
-      const result = await getDatabaseConnectionString(appId as AppId);
+      const result = await getDatabaseConnectionString(appId);
 
       logger.log(chalk.green('✓ Connection string retrieved successfully:'));
       logger.log(chalk.cyan(result.connectionString));
