@@ -1,10 +1,9 @@
-import { chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
-
-import { SchedulerBaseFlags } from './consts/flags';
-import { AuthenticatedCommand } from '../../commands-base/authenticated-command';
-import { DynamicChoicesService } from '../../services/dynamic-choices-service';
-import { SchedulerService } from '../../services/scheduler-service';
-import logger from '../../utils/logger';
+import { AuthenticatedCommand } from 'src/commands-base/authenticated-command';
+import { SchedulerBaseFlags } from 'src/consts/scheduler/flags';
+import { DynamicChoicesService } from 'src/services/dynamic-choices-service';
+import { SchedulerService } from 'src/services/scheduler-service';
+import logger from 'src/utils/logger';
+import { chooseRegionIfNeeded, getRegionFromString } from 'src/utils/region';
 
 export default class SchedulerDelete extends AuthenticatedCommand {
   static description = 'Delete a scheduler job for an app';
