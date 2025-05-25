@@ -122,3 +122,7 @@ export const pullPromoteStatusUrl = (path: string): string => {
 export const appSchedulerUrl = (appId: AppId): string => {
   return `${BASE_MONDAY_CODE_URL}/${appId}/scheduler`;
 };
+
+export const appStorageConnectionStringUrl = (appId: AppId): string => {
+  return `${BASE_MONDAY_CODE_URL}/${appId}/storage/connection-string`;
+};
