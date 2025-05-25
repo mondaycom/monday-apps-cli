@@ -6,7 +6,10 @@ import { defaultVersionByAppId, listAppVersionsByAppId } from 'services/app-vers
 import { listApps } from 'services/apps-service';
 import { PromptService } from 'services/prompt-service';
 import { LIVE_VERSION_ERROR_LOG } from 'src/consts/messages';
+import { AppId } from 'src/types/general';
 import { AppFeature, AppFeatureType } from 'src/types/services/app-features-service';
+
+import { SchedulerService } from './scheduler-service';
 
 export const DynamicChoicesService = {
   async chooseApp() {
@@ -132,5 +135,21 @@ export const DynamicChoicesService = {
       APP_TEMPLATES_CONFIG.map(template => template.name),
     );
     return APP_TEMPLATES_CONFIG.find(template => template.name === selectedTemplateName)!;
+  },
+
+  async chooseSchedulerJob(appId: AppId) {
+    const jobs = await SchedulerService.listJobs(appId);
+    const jobChoicesMap: Record<string, string> = {};
+    for (const job of jobs) {
+      jobChoicesMap[`${job.name} (${job.targetUrl})`] = job.name;
+    }
+
+    const selectedJobKey = await PromptService.promptSelectionWithAutoComplete<string>(
+      'Select a job',
+      Object.keys(jobChoicesMap),
+    );
+
+    const selectedJobName = jobChoicesMap[selectedJobKey];
+    return selectedJobName;
   },
 };

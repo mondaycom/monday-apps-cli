@@ -1,10 +1,10 @@
 import Pusher from 'pusher-js';
 import Channel from 'pusher-js/types/src/core/channels/channel';
 
+import { isDefined } from 'src/utils/validations';
 import { LogItem, LogItemSeverity } from 'types/communication/log-item-types';
 import { StreamLogType, StreamMessage } from 'types/services/client-channel-service';
 import { ClientChannel } from 'types/services/notification-service';
-import { isDefined } from 'utils/guards';
 import logger from 'utils/logger.js';
 
 const mapSeverityToLogFunction: {

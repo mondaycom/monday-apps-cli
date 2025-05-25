@@ -21,11 +21,18 @@ function validateIfRequired(input: string, message: string, isRequired = false):
   return true;
 }
 
-function validateIfValueIsANumber(input: string, message: string, isRequired = false): boolean | string {
+export function validateIfValueIsANumber(input: string, message: string, isRequired = false): boolean | string {
+  // If not required and input is empty, it's valid
+  if (!isRequired && !input) {
+    return true;
+  }
+
+  // If required and input is empty, return error
   if (isRequired && !input) {
     return message;
   }
 
+  // Check if it's a valid non-negative integer (including 0)
   const isNumber = /^\d+$/.test(input);
   if (!isNumber) {
     return message;
@@ -115,7 +122,7 @@ export const PromptService = {
     return this.promptForHiddenInput('password', 'Please enter your password', 'You must enter a password');
   },
 
-  async promptInput(message: string, required = false) {
+  async promptInput(message: string, required = false, allowUndefined = false): Promise<string> {
     const res = await inquirer.prompt<{ input: string }>([
       {
         name: 'input',
@@ -127,10 +134,14 @@ export const PromptService = {
       },
     ]);
 
+    if (allowUndefined && (!res.input || (typeof res.input === 'string' && res.input === ''))) {
+      return undefined as unknown as string;
+    }
+
     return res.input;
   },
 
-  async promptInputNumber(message: string, required = false) {
+  async promptInputNumber(message: string, required = false, allowUndefined = false): Promise<number> {
     const res = await inquirer.prompt<{ input: number }>([
       {
         name: 'input',
@@ -141,6 +152,10 @@ export const PromptService = {
         },
       },
     ]);
+
+    if (allowUndefined && (!res.input || (typeof res.input === 'string' && res.input === ''))) {
+      return undefined as unknown as number;
+    }
 
     return Number(res.input);
   },
