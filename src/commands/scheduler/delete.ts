@@ -22,7 +22,7 @@ export default class SchedulerDelete extends AuthenticatedCommand {
     try {
       if (!appId) appId = await DynamicChoicesService.chooseApp();
       const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
-      if (!name) name = await DynamicChoicesService.chooseSchedulerJob(appId);
+      if (!name) name = await DynamicChoicesService.chooseSchedulerJob(appId, selectedRegion);
 
       logger.debug(`Deleting scheduler job ${name} for appId: ${appId}`, this.DEBUG_TAG);
       this.preparePrintCommand(this, {
