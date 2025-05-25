@@ -16,7 +16,7 @@ $ npm install -g @mondaycom/apps-cli
 $ mapps COMMAND
 running command...
 $ mapps (--version)
-@mondaycom/apps-cli/4.4.1 darwin-arm64 node-v20.12.2
+@mondaycom/apps-cli/4.7.0 darwin-arm64 node-v18.12.1
 $ mapps --help [COMMAND]
 USAGE
   $ mapps COMMAND
@@ -36,6 +36,7 @@ USAGE
 * [`mapps app:create`](#mapps-appcreate)
 * [`mapps app:deploy`](#mapps-appdeploy)
 * [`mapps app:list`](#mapps-applist)
+* [`mapps app:promote`](#mapps-apppromote)
 * [`mapps autocomplete [SHELL]`](#mapps-autocomplete-shell)
 * [`mapps code:env`](#mapps-codeenv)
 * [`mapps code:logs`](#mapps-codelogs)
@@ -44,14 +45,15 @@ USAGE
 * [`mapps code:status`](#mapps-codestatus)
 * [`mapps help [COMMANDS]`](#mapps-help-commands)
 * [`mapps init`](#mapps-init)
-* [`mapps storage:export`](#mapps-storageexport)
-* [`mapps storage:search`](#mapps-storagesearch)
-* [`mapps tunnel:create`](#mapps-tunnelcreate)
 * [`mapps scheduler:create`](#mapps-schedulercreate)
-* [`mapps scheduler:update`](#mapps-schedulerupdate)
 * [`mapps scheduler:delete`](#mapps-schedulerdelete)
 * [`mapps scheduler:list`](#mapps-schedulerlist)
 * [`mapps scheduler:run`](#mapps-schedulerrun)
+* [`mapps scheduler:update`](#mapps-schedulerupdate)
+* [`mapps storage:export`](#mapps-storageexport)
+* [`mapps storage:remove-data`](#mapps-storageremove-data)
+* [`mapps storage:search`](#mapps-storagesearch)
+* [`mapps tunnel:create`](#mapps-tunnelcreate)
 
 ## `mapps api:generate`
 
@@ -69,7 +71,7 @@ DESCRIPTION
   [@mondaydotcomorg/setup-api](https://github.com/mondaycom/monday-graphql-api/tree/main/packages/setup-api)
 ```
 
-_See code: [src/commands/api/generate.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/api/generate.ts)_
+_See code: [src/commands/api/generate.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/api/generate.ts)_
 
 ## `mapps app-features:build`
 
@@ -99,7 +101,7 @@ EXAMPLES
   $ mapps app-features:build -a APP_ID -i APP_VERSION_ID -d APP_FEATURE_ID  -t BUILD_TYPE -u CUSTOM_URL
 ```
 
-_See code: [src/commands/app-features/build.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/app-features/build.ts)_
+_See code: [src/commands/app-features/build.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/app-features/build.ts)_
 
 ## `mapps app-features:create`
 
@@ -126,7 +128,7 @@ EXAMPLES
   $ mapps app-features:create -a APP_ID -i APP_VERSION_ID -t APP-FEATURE-TYPE
 ```
 
-_See code: [src/commands/app-features/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/app-features/create.ts)_
+_See code: [src/commands/app-features/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/app-features/create.ts)_
 
 ## `mapps app-features:list`
 
@@ -151,7 +153,7 @@ EXAMPLES
   $ mapps app-features:list -a APP_ID -i APP_VERSION_ID
 ```
 
-_See code: [src/commands/app-features/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/app-features/list.ts)_
+_See code: [src/commands/app-features/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/app-features/list.ts)_
 
 ## `mapps app-version:builds`
 
@@ -175,7 +177,7 @@ EXAMPLES
   $ mapps app-version:builds -i APP_VERSION_ID
 ```
 
-_See code: [src/commands/app-version/builds.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/app-version/builds.ts)_
+_See code: [src/commands/app-version/builds.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/app-version/builds.ts)_
 
 ## `mapps app-version:list`
 
@@ -199,7 +201,7 @@ EXAMPLES
   $ mapps app-version:list
 ```
 
-_See code: [src/commands/app-version/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/app-version/list.ts)_
+_See code: [src/commands/app-version/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/app-version/list.ts)_
 
 ## `mapps app:create`
 
@@ -226,7 +228,7 @@ EXAMPLES
   $ mapps app:create -n NEW_APP_NAME
 ```
 
-_See code: [src/commands/app/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/app/create.ts)_
+_See code: [src/commands/app/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/app/create.ts)_
 
 ## `mapps app:deploy`
 
@@ -256,7 +258,7 @@ EXAMPLES
   $ mapps app:deploy
 ```
 
-_See code: [src/commands/app/deploy.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/app/deploy.ts)_
+_See code: [src/commands/app/deploy.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/app/deploy.ts)_
 
 ## `mapps app:list`
 
@@ -277,7 +279,34 @@ EXAMPLES
   $ mapps app:list
 ```
 
-_See code: [src/commands/app/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/app/list.ts)_
+_See code: [src/commands/app/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/app/list.ts)_
+
+## `mapps app:promote`
+
+Promote an app to live.
+
+```
+USAGE
+  $ mapps app:promote [--verbose] [--print-command] [-a <value>] [-i <value>]
+
+FLAGS
+  -a, --appId=<value>         App id to promote
+  -i, --appVersionId=<value>  App version id to promote
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  Promote an app to live.
+
+EXAMPLES
+  $ mapps app:promote
+
+  $ mapps app:promote
+```
+
+_See code: [src/commands/app/promote.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/app/promote.ts)_
 
 ## `mapps autocomplete [SHELL]`
 
@@ -339,7 +368,7 @@ EXAMPLES
   $ mapps code:env
 ```
 
-_See code: [src/commands/code/env.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/code/env.ts)_
+_See code: [src/commands/code/env.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/code/env.ts)_
 
 ## `mapps code:logs`
 
@@ -374,7 +403,7 @@ EXAMPLES
   $ mapps code:logs -i APP_VERSION_ID -t LOGS_TYPE
 ```
 
-_See code: [src/commands/code/logs.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/code/logs.ts)_
+_See code: [src/commands/code/logs.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/code/logs.ts)_
 
 ## `mapps code:push`
 
@@ -382,10 +411,11 @@ Push your project to get hosted on monday-code.
 
 ```
 USAGE
-  $ mapps code:push [--verbose] [--print-command] [-d <value>] [-a <value>] [-i <value>] [-f] [-z us|eu|au]
+  $ mapps code:push [--verbose] [--print-command] [-d <value>] [-a <value>] [-i <value>] [-f] [-c] [-z us|eu|au]
 
 FLAGS
   -a, --appId=<value>          Please enter app id:
+  -c, --client-side            Push files to CDN
   -d, --directoryPath=<value>  Directory path of you project in your machine. If not included will use the current
                                working directory.
   -f, --force                  Force push to live version
@@ -408,7 +438,7 @@ EXAMPLES
   $ mapps code:push -a APP_ID_TO_PUSH
 ```
 
-_See code: [src/commands/code/push.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/code/push.ts)_
+_See code: [src/commands/code/push.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/code/push.ts)_
 
 ## `mapps code:secret`
 
@@ -439,7 +469,7 @@ EXAMPLES
   $ mapps code:secret
 ```
 
-_See code: [src/commands/code/secret.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/code/secret.ts)_
+_See code: [src/commands/code/secret.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/code/secret.ts)_
 
 ## `mapps code:status`
 
@@ -465,7 +495,7 @@ EXAMPLES
   $ mapps code:status -i APP_VERSION_ID
 ```
 
-_See code: [src/commands/code/status.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/code/status.ts)_
+_See code: [src/commands/code/status.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/code/status.ts)_
 
 ## `mapps help [COMMANDS]`
 
@@ -473,10 +503,10 @@ Display help for mapps.
 
 ```
 USAGE
-  $ mapps help [COMMANDS] [-n]
+  $ mapps help [COMMANDS...] [-n]
 
 ARGUMENTS
-  COMMANDS  Command to show help for.
+  COMMANDS...  Command to show help for.
 
 FLAGS
   -n, --nested-commands  Include all nested commands in the output.
@@ -510,7 +540,161 @@ EXAMPLES
   $ mapps init -t SECRET_TOKEN
 ```
 
-_See code: [src/commands/init/index.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/init/index.ts)_
+_See code: [src/commands/init/index.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/init/index.ts)_
+
+## `mapps scheduler:create`
+
+Create a new scheduler job for an app
+
+```
+USAGE
+  $ mapps scheduler:create [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au] [-d <value>] [-s
+    <value>] [-u <value>] [-r <value>] [-b <value>] [-t <value>]
+
+FLAGS
+  -a, --appId=<value>               Please enter app id:
+  -b, --minBackoffDuration=<value>  Minimum backoff duration in seconds between retries (optional)
+  -d, --description=<value>         Scheduled job description (optional)
+  -n, --name=<value>                Scheduled job name
+  -r, --maxRetries=<value>          Maximum number of retries for failed jobs (optional)
+  -s, --schedule=<value>            Cron expression for the job schedule (relative to UTC)
+  -t, --timeout=<value>             Job execution timeout in seconds (optional)
+  -u, --targetUrl=<value>           Target URL path for the job (must start with /, will be relative to /mndy-cronjob)
+  -z, --region=<option>             Region to use
+                                    <options: us|eu|au>
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  Create a new scheduler job for an app
+
+EXAMPLES
+  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint"
+
+  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint" -n "My special job" -d "My description"
+
+  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint" -r 3 -b 10 -t 60
+```
+
+_See code: [src/commands/scheduler/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/scheduler/create.ts)_
+
+## `mapps scheduler:delete`
+
+Delete a scheduler job for an app
+
+```
+USAGE
+  $ mapps scheduler:delete [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au]
+
+FLAGS
+  -a, --appId=<value>    Please enter app id:
+  -n, --name=<value>     Scheduled job name
+  -z, --region=<option>  Region to use
+                         <options: us|eu|au>
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  Delete a scheduler job for an app
+
+EXAMPLES
+  $ mapps scheduler:delete -a APP_ID -n "my-job"
+```
+
+_See code: [src/commands/scheduler/delete.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/scheduler/delete.ts)_
+
+## `mapps scheduler:list`
+
+List all scheduler jobs for an app
+
+```
+USAGE
+  $ mapps scheduler:list [--verbose] [--print-command] [-a <value>]
+
+FLAGS
+  -a, --appId=<value>  Please enter app id:
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  List all scheduler jobs for an app
+
+EXAMPLES
+  $ mapps scheduler:list -a APP_ID
+```
+
+_See code: [src/commands/scheduler/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/scheduler/list.ts)_
+
+## `mapps scheduler:run`
+
+Manually trigger a scheduled job to run for an app
+
+```
+USAGE
+  $ mapps scheduler:run [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au]
+
+FLAGS
+  -a, --appId=<value>    Please enter app id:
+  -n, --name=<value>     Scheduled job name
+  -z, --region=<option>  Region to use
+                         <options: us|eu|au>
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  Manually trigger a scheduled job to run for an app
+
+EXAMPLES
+  $ mapps scheduler:run -a APP_ID -n "my-job"
+```
+
+_See code: [src/commands/scheduler/run.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/scheduler/run.ts)_
+
+## `mapps scheduler:update`
+
+Update a scheduler job for an app
+
+```
+USAGE
+  $ mapps scheduler:update [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au] [-d <value>] [-s
+    <value>] [-u <value>] [-r <value>] [-b <value>] [-t <value>]
+
+FLAGS
+  -a, --appId=<value>               Please enter app id:
+  -b, --minBackoffDuration=<value>  Minimum backoff duration in seconds between retries (optional)
+  -d, --description=<value>         Scheduled job description (optional)
+  -n, --name=<value>                Scheduled job name
+  -r, --maxRetries=<value>          Maximum number of retries for failed jobs (optional)
+  -s, --schedule=<value>            Cron expression for the job schedule (relative to UTC)
+  -t, --timeout=<value>             Job execution timeout in seconds (optional)
+  -u, --targetUrl=<value>           Target URL path for the job (must start with /, will be relative to /mndy-cronjob)
+  -z, --region=<option>             Region to use
+                                    <options: us|eu|au>
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  Update a scheduler job for an app
+
+EXAMPLES
+  $ mapps scheduler:update -a APP_ID -n "my-job" -s "0 * * * *"
+
+  $ mapps scheduler:update -a APP_ID -n "my-job" -u "/my-endpoint"
+
+  $ mapps scheduler:update -a APP_ID -n "my-job" -d "My description" -r 3 -b 10 -t 60
+```
+
+_See code: [src/commands/scheduler/update.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/scheduler/update.ts)_
 
 ## `mapps storage:export`
 
@@ -537,7 +721,33 @@ EXAMPLES
   $ mapps storage:export -a APP_ID -c CLIENT_ACCOUNT_ID -d FILE_FULL_PATH -f FILE_FORMAT
 ```
 
-_See code: [src/commands/storage/export.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/storage/export.ts)_
+_See code: [src/commands/storage/export.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/storage/export.ts)_
+
+## `mapps storage:remove-data`
+
+Completely remove all the storage data for specific customer account.
+
+```
+USAGE
+  $ mapps storage:remove-data [--verbose] [--print-command] [-a <value>] [-c <value>] [-f]
+
+FLAGS
+  -a, --appId=<value>            Select the app that you wish to remove account data for
+  -c, --clientAccountId=<value>  Client account id (number)
+  -f, --force                    Skip the confirmation step
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  Completely remove all the storage data for specific customer account.
+
+EXAMPLES
+  $ mapps storage:remove-data -a APP_ID -c CLIENT_ACCOUNT_ID
+```
+
+_See code: [src/commands/storage/remove-data.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/storage/remove-data.ts)_
 
 ## `mapps storage:search`
 
@@ -563,7 +773,7 @@ EXAMPLES
   $ mapps storage:search -a APP_ID -c CLIENT_ACCOUNT_ID -t TERM
 ```
 
-_See code: [src/commands/storage/search.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/storage/search.ts)_
+_See code: [src/commands/storage/search.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/storage/search.ts)_
 
 ## `mapps tunnel:create`
 
@@ -594,144 +804,5 @@ EXAMPLES
   $ mapps tunnel:create -p PORT_FOR_TUNNEL -a APP_ID_FOR_TUNNEL
 ```
 
-_See code: [src/commands/tunnel/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.4.1/src/commands/tunnel/create.ts)_
-
-## `mapps scheduler:create`
-
-Create a new scheduled job for an app.
-
-**Scheduler Command Overview:**
-
-The `mapps scheduler` commands allow you to manage scheduled jobs (cron jobs) for your monday.com apps. You can create, update, delete, list, and manually run scheduled jobs. Jobs are defined by a unique name in a specific region, a cron schedule, a target URL (relative to your app), and optional retry/backoff/timeout settings. All commands support interactive prompts for missing required fields and region selection.
-
-```
-USAGE
-  $ mapps scheduler:create [--verbose] [--print-command] [-a <value>] [-n <value>] [-d <value>] [-s <value>] [-u <value>] [-r <value>] [-b <value>] [-t <value>] [-z us|eu|au]
-
-FLAGS
-  -a, --appId=<value>            App ID for which to create the scheduled job
-  -n, --name=<value>             Scheduled job name
-  -d, --description=<value>      Scheduled job description (optional)
-  -s, --schedule=<value>         Cron expression for the job schedule (relative to UTC)
-  -u, --targetUrl=<value>        Target URL path for the job (must start with /, will be relative to /mndy-cronjob)
-  -r, --maxRetries=<value>       Maximum number of retries for failed jobs (optional)
-  -b, --minBackoffDuration=<value>  Minimum backoff duration in seconds between retries (optional)
-  -t, --timeout=<value>          Job execution timeout in seconds (optional)
-  -z, --region=<option>          Region to use <options: us|eu|au>
-
-GLOBAL FLAGS
-  --print-command                Print the command that was executed (optional)
-  --verbose                      Print advanced logs (optional)
-
-DESCRIPTION
-  Create a new scheduled job for an app. Prompts for missing required fields.
-
-EXAMPLES
-  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint"
-  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint" -n "My job" -d "Description"
-```
-
-## `mapps scheduler:update`
-
-Update an existing scheduled job for an app.
-
-```
-USAGE
-  $ mapps scheduler:update [--verbose] [--print-command] [-a <value>] [-n <value>] [-d <value>] [-s <value>] [-u <value>] [-r <value>] [-b <value>] [-t <value>] [-z us|eu|au]
-
-FLAGS
-  -a, --appId=<value>            App ID for which to update the scheduled job
-  -n, --name=<value>             Name of the job to update
-  -d, --description=<value>      New description (optional)
-  -s, --schedule=<value>         New cron expression (optional)
-  -u, --targetUrl=<value>        New target URL path (optional)
-  -r, --maxRetries=<value>       New max retries (optional)
-  -b, --minBackoffDuration=<value>  New min backoff duration (optional)
-  -t, --timeout=<value>          New timeout (optional)
-  -z, --region=<option>          Region to use <options: us|eu|au>
-
-GLOBAL FLAGS
-  --print-command                Print the command that was executed (optional)
-  --verbose                      Print advanced logs (optional)
-
-DESCRIPTION
-  Update an existing scheduled job for an app. Only provided fields will be updated. Prompts for missing required fields.
-
-EXAMPLES
-  $ mapps scheduler:update -a APP_ID -n "my-job" -s "0 * * * *"
-  $ mapps scheduler:update -a APP_ID -n "my-job" -u "/new-endpoint"
-```
-
-## `mapps scheduler:delete`
-
-Delete a scheduled job for an app.
-
-```
-USAGE
-  $ mapps scheduler:delete [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au]
-
-FLAGS
-  -a, --appId=<value>            App ID for which to delete the scheduled job
-  -n, --name=<value>             Name of the job to delete
-  -z, --region=<option>          Region to use <options: us|eu|au>
-
-GLOBAL FLAGS
-  --print-command                Print the command that was executed (optional)
-  --verbose                      Print advanced logs (optional)
-
-DESCRIPTION
-  Delete a scheduled job for an app. Prompts for missing required fields.
-
-EXAMPLES
-  $ mapps scheduler:delete -a APP_ID -n "my-job"
-```
-
-## `mapps scheduler:list`
-
-List all scheduled jobs for an app.
-
-```
-USAGE
-  $ mapps scheduler:list [--verbose] [--print-command] [-a <value>] [-z us|eu|au]
-
-FLAGS
-  -a, --appId=<value>            App ID for which to list scheduled jobs
-  -z, --region=<option>          Region to use <options: us|eu|au>
-
-GLOBAL FLAGS
-  --print-command                Print the command that was executed (optional)
-  --verbose                      Print advanced logs (optional)
-
-DESCRIPTION
-  List all scheduled jobs for an app.
-
-EXAMPLES
-  $ mapps scheduler:list -a APP_ID
-```
-
-## `mapps scheduler:run`
-
-Manually trigger a scheduled job to run for an app.
-
-```
-USAGE
-  $ mapps scheduler:run [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au]
-
-FLAGS
-  -a, --appId=<value>            App ID for which to run the scheduled job
-  -n, --name=<value>             Name of the job to run
-  -z, --region=<option>          Region to use <options: us|eu|au>
-
-GLOBAL FLAGS
-  --print-command                Print the command that was executed (optional)
-  --verbose                      Print advanced logs (optional)
-
-DESCRIPTION
-  Manually trigger a scheduled job to run for an app. Prompts for missing required fields.
-
-EXAMPLES
-  $ mapps scheduler:run -a APP_ID -n "my-job"
-```
-
-
+_See code: [src/commands/tunnel/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.0/src/commands/tunnel/create.ts)_
 <!-- commandsstop -->

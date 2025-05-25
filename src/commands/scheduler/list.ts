@@ -1,11 +1,10 @@
+import { AuthenticatedCommand } from 'src/commands-base/authenticated-command';
+import { SchedulerBaseFlags } from 'src/consts/scheduler/flags';
+import { DynamicChoicesService } from 'src/services/dynamic-choices-service';
+import { SchedulerService } from 'src/services/scheduler-service';
 import { printJobs } from 'src/services/scheduler-service.utils';
-import { chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
-
-import { SchedulerBaseFlags } from './consts/flags';
-import { AuthenticatedCommand } from '../../commands-base/authenticated-command';
-import { DynamicChoicesService } from '../../services/dynamic-choices-service';
-import { SchedulerService } from '../../services/scheduler-service';
-import logger from '../../utils/logger';
+import logger from 'src/utils/logger';
+import { chooseRegionIfNeeded, getRegionFromString } from 'src/utils/region';
 
 export default class SchedulerList extends AuthenticatedCommand {
   static description = 'List all scheduler jobs for an app';
