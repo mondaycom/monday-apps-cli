@@ -1,4 +1,4 @@
-import { validateIfValueIsANumber } from '../prompt-service';
+import { validateIfValueIsANumber } from 'src/services/prompt-service';
 
 describe('validateIfValueIsANumber', () => {
   const errorMessage = 'Please enter a valid number';

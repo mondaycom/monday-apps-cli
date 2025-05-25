@@ -1,4 +1,4 @@
-import { validateCronExpression } from '../scheduler-service.utils';
+import { validateCronExpression } from 'services/scheduler-service.utils';
 
 describe('validateCronExpression', () => {
   it('should throw an error when schedule is empty', () => {
