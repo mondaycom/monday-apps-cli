@@ -134,6 +134,9 @@
       },
       "app-version": {
         "description": "Perform operations related to app versions in monday.com"
+      },
+      "docs-db": {
+        "description": "Perform operations related to app docs database"
       }
     },
     "hooks": {
