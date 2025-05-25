@@ -4,13 +4,13 @@ import chalk from 'chalk';
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { VAR_UNKNOWN } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
-import { getDocsDbConnectionString } from 'services/docs-db-service';
+import { getDatabaseConnectionString } from 'services/database-service';
 import { HttpError } from 'types/errors';
 import { AppId } from 'types/general';
 import logger from 'utils/logger';
 
 export default class ConnectionString extends AuthenticatedCommand {
-  static description = 'Get the connection string for your app docs database.';
+  static description = 'Get the connection string for your app database.';
 
   static examples = ['<%= config.bin %> <%= command.id %> -a APP_ID'];
 
@@ -29,7 +29,7 @@ export default class ConnectionString extends AuthenticatedCommand {
         appId = await DynamicChoicesService.chooseApp();
       }
 
-      const result = await getDocsDbConnectionString(appId as AppId);
+      const result = await getDatabaseConnectionString(appId as AppId);
 
       logger.log(chalk.green('✓ Connection string retrieved successfully:'));
       logger.log(chalk.cyan(result.connectionString));

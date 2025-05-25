@@ -1,25 +1,25 @@
 import { appStorageConnectionStringUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
-import { docsDbConnectionStringResponseSchema } from 'services/schemas/docs-db-service-schemas';
+import { databaseConnectionStringResponseSchema } from 'services/schemas/database-service-schemas';
 import { HttpError } from 'types/errors';
 import { AppId } from 'types/general';
 import { HttpMethodTypes } from 'types/services/api-service';
-import { DocsDbConnectionStringResponseSchema } from 'types/services/docs-db-service';
+import { DatabaseConnectionStringResponseSchema } from 'types/services/database-service';
 import logger from 'utils/logger';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
-export const getDocsDbConnectionString = async (appId: AppId): Promise<DocsDbConnectionStringResponseSchema> => {
-  const DEBUG_TAG = 'get_docs_db_connection_string';
+export const getDatabaseConnectionString = async (appId: AppId): Promise<DatabaseConnectionStringResponseSchema> => {
+  const DEBUG_TAG = 'get_database_connection_string';
   try {
     const baseUrl = appStorageConnectionStringUrl(appId);
     const url = appsUrlBuilder(baseUrl);
-    const response = await execute<DocsDbConnectionStringResponseSchema>(
+    const response = await execute<DatabaseConnectionStringResponseSchema>(
       {
         url,
         headers: { Accept: 'application/json' },
         method: HttpMethodTypes.GET,
       },
-      docsDbConnectionStringResponseSchema,
+      databaseConnectionStringResponseSchema,
     );
     return response;
   } catch (error: any | HttpError) {
@@ -28,6 +28,6 @@ export const getDocsDbConnectionString = async (appId: AppId): Promise<DocsDbCon
       throw error;
     }
 
-    throw new Error('Failed to fetch docs-db connection string.');
+    throw new Error('Failed to fetch database connection string.');
   }
 };

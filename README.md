@@ -43,7 +43,7 @@ USAGE
 * [`mapps code:push`](#mapps-codepush)
 * [`mapps code:secret`](#mapps-codesecret)
 * [`mapps code:status`](#mapps-codestatus)
-* [`mapps docs-db:connection-string`](#mapps-docs-dbconnection-string)
+* [`mapps database:connection-string`](#mapps-databaseconnection-string)
 * [`mapps help [COMMANDS]`](#mapps-help-commands)
 * [`mapps init`](#mapps-init)
 * [`mapps scheduler:create`](#mapps-schedulercreate)
@@ -498,13 +498,13 @@ EXAMPLES
 
 _See code: [src/commands/code/status.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/code/status.ts)_
 
-## `mapps docs-db:connection-string`
+## `mapps database:connection-string`
 
-Get the connection string for your app docs database.
+Get the connection string for your app database.
 
 ```
 USAGE
-  $ mapps docs-db:connection-string [--verbose] [--print-command] [-a <value>]
+  $ mapps database:connection-string [--verbose] [--print-command] [-a <value>]
 
 FLAGS
   -a, --appId=<value>  Select the app that you wish to retrieve the connection string for
@@ -514,13 +514,13 @@ GLOBAL FLAGS
   --verbose        Print advanced logs (optional).
 
 DESCRIPTION
-  Get the connection string for your app docs database.
+  Get the connection string for your app database.
 
 EXAMPLES
-  $ mapps docs-db:connection-string -a APP_ID
+  $ mapps database:connection-string -a APP_ID
 ```
 
-_See code: [src/commands/docs-db/connection-string.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/docs-db/connection-string.ts)_
+_See code: [src/commands/database/connection-string.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/database/connection-string.ts)_
 
 ## `mapps help [COMMANDS]`
 
