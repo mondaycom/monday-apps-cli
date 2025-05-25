@@ -1,4 +1,10 @@
 import { appSchedulerUrl } from 'src/consts/urls';
+import { execute } from 'src/services/api-service';
+import { handleHttpErrors } from 'src/services/scheduler-service.utils';
+import { HttpError } from 'src/types/errors';
+import { AppId } from 'src/types/general';
+import { Region } from 'src/types/general/region';
+import { HttpMethodTypes } from 'src/types/services/api-service';
 import {
   CreateJobRequest,
   CreateJobResponse,
@@ -6,15 +12,8 @@ import {
   SchedulerJob,
   UpdateJobRequest,
 } from 'src/types/services/scheduler-service';
-
-import { execute } from './api-service';
-import { handleHttpErrors } from './scheduler-service.utils';
-import { HttpError } from '../types/errors';
-import { AppId } from '../types/general';
-import { Region } from '../types/general/region';
-import { HttpMethodTypes } from '../types/services/api-service';
-import { addRegionToQuery } from '../utils/region';
-import { appsUrlBuilder } from '../utils/urls-builder';
+import { addRegionToQuery } from 'src/utils/region';
+import { appsUrlBuilder } from 'src/utils/urls-builder';
 
 export const listJobs = async (appId: AppId, region?: Region): Promise<SchedulerJob[]> => {
   try {

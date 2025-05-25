@@ -1,10 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 
+import { HttpError } from 'src/types/errors';
 import { SchedulerJob } from 'src/types/services/scheduler-service';
+import logger from 'src/utils/logger';
 import { isDefinedAndNotEmpty } from 'src/utils/validations';
-import logger from 'utils/logger';
-
-import { HttpError } from '../types/errors';
 
 export const printJobs = (jobs: SchedulerJob[]): void => {
   if (jobs.length === 0) {

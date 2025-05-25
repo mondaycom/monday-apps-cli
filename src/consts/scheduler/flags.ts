@@ -1,8 +1,7 @@
 import { Flags } from '@oclif/core';
 
+import { SchedulerMessages } from 'consts/scheduler/messages';
 import { addRegionToFlags } from 'utils/region';
-
-import { SchedulerMessages } from './messages';
 
 export const SchedulerBaseFlags = addRegionToFlags({
   appId: Flags.integer({
