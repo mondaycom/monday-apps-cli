@@ -16,7 +16,7 @@ $ npm install -g @mondaycom/apps-cli
 $ mapps COMMAND
 running command...
 $ mapps (--version)
-@mondaycom/apps-cli/4.7.2 darwin-arm64 node-v18.12.1
+@mondaycom/apps-cli/4.7.3 darwin-arm64 node-v18.12.1
 $ mapps --help [COMMAND]
 USAGE
   $ mapps COMMAND
@@ -72,7 +72,7 @@ DESCRIPTION
   [@mondaydotcomorg/setup-api](https://github.com/mondaycom/monday-graphql-api/tree/main/packages/setup-api)
 ```
 
-_See code: [src/commands/api/generate.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/api/generate.ts)_
+_See code: [src/commands/api/generate.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/api/generate.ts)_
 
 ## `mapps app-features:build`
 
@@ -102,7 +102,7 @@ EXAMPLES
   $ mapps app-features:build -a APP_ID -i APP_VERSION_ID -d APP_FEATURE_ID  -t BUILD_TYPE -u CUSTOM_URL
 ```
 
-_See code: [src/commands/app-features/build.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/app-features/build.ts)_
+_See code: [src/commands/app-features/build.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/app-features/build.ts)_
 
 ## `mapps app-features:create`
 
@@ -129,7 +129,7 @@ EXAMPLES
   $ mapps app-features:create -a APP_ID -i APP_VERSION_ID -t APP-FEATURE-TYPE
 ```
 
-_See code: [src/commands/app-features/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/app-features/create.ts)_
+_See code: [src/commands/app-features/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/app-features/create.ts)_
 
 ## `mapps app-features:list`
 
@@ -154,7 +154,7 @@ EXAMPLES
   $ mapps app-features:list -a APP_ID -i APP_VERSION_ID
 ```
 
-_See code: [src/commands/app-features/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/app-features/list.ts)_
+_See code: [src/commands/app-features/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/app-features/list.ts)_
 
 ## `mapps app-version:builds`
 
@@ -178,7 +178,7 @@ EXAMPLES
   $ mapps app-version:builds -i APP_VERSION_ID
 ```
 
-_See code: [src/commands/app-version/builds.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/app-version/builds.ts)_
+_See code: [src/commands/app-version/builds.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/app-version/builds.ts)_
 
 ## `mapps app-version:list`
 
@@ -202,7 +202,7 @@ EXAMPLES
   $ mapps app-version:list
 ```
 
-_See code: [src/commands/app-version/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/app-version/list.ts)_
+_See code: [src/commands/app-version/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/app-version/list.ts)_
 
 ## `mapps app:create`
 
@@ -229,7 +229,7 @@ EXAMPLES
   $ mapps app:create -n NEW_APP_NAME
 ```
 
-_See code: [src/commands/app/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/app/create.ts)_
+_See code: [src/commands/app/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/app/create.ts)_
 
 ## `mapps app:deploy`
 
@@ -259,7 +259,7 @@ EXAMPLES
   $ mapps app:deploy
 ```
 
-_See code: [src/commands/app/deploy.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/app/deploy.ts)_
+_See code: [src/commands/app/deploy.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/app/deploy.ts)_
 
 ## `mapps app:list`
 
@@ -280,7 +280,7 @@ EXAMPLES
   $ mapps app:list
 ```
 
-_See code: [src/commands/app/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/app/list.ts)_
+_See code: [src/commands/app/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/app/list.ts)_
 
 ## `mapps app:promote`
 
@@ -307,7 +307,7 @@ EXAMPLES
   $ mapps app:promote
 ```
 
-_See code: [src/commands/app/promote.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/app/promote.ts)_
+_See code: [src/commands/app/promote.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/app/promote.ts)_
 
 ## `mapps autocomplete [SHELL]`
 
@@ -369,7 +369,7 @@ EXAMPLES
   $ mapps code:env
 ```
 
-_See code: [src/commands/code/env.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/code/env.ts)_
+_See code: [src/commands/code/env.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/code/env.ts)_
 
 ## `mapps code:logs`
 
@@ -404,7 +404,7 @@ EXAMPLES
   $ mapps code:logs -i APP_VERSION_ID -t LOGS_TYPE
 ```
 
-_See code: [src/commands/code/logs.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/code/logs.ts)_
+_See code: [src/commands/code/logs.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/code/logs.ts)_
 
 ## `mapps code:push`
 
@@ -439,7 +439,7 @@ EXAMPLES
   $ mapps code:push -a APP_ID_TO_PUSH
 ```
 
-_See code: [src/commands/code/push.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/code/push.ts)_
+_See code: [src/commands/code/push.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/code/push.ts)_
 
 ## `mapps code:secret`
 
@@ -470,7 +470,7 @@ EXAMPLES
   $ mapps code:secret
 ```
 
-_See code: [src/commands/code/secret.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/code/secret.ts)_
+_See code: [src/commands/code/secret.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/code/secret.ts)_
 
 ## `mapps code:status`
 
@@ -496,7 +496,7 @@ EXAMPLES
   $ mapps code:status -i APP_VERSION_ID
 ```
 
-_See code: [src/commands/code/status.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/code/status.ts)_
+_See code: [src/commands/code/status.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/code/status.ts)_
 
 ## `mapps database:connection-string`
 
@@ -522,7 +522,7 @@ EXAMPLES
   $ mapps database:connection-string -a APP_ID
 ```
 
-_See code: [src/commands/database/connection-string.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/database/connection-string.ts)_
+_See code: [src/commands/database/connection-string.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/database/connection-string.ts)_
 
 ## `mapps help [COMMANDS]`
 
@@ -567,7 +567,7 @@ EXAMPLES
   $ mapps init -t SECRET_TOKEN
 ```
 
-_See code: [src/commands/init/index.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/init/index.ts)_
+_See code: [src/commands/init/index.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/init/index.ts)_
 
 ## `mapps scheduler:create`
 
@@ -605,7 +605,7 @@ EXAMPLES
   $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint" -r 3 -b 10 -t 60
 ```
 
-_See code: [src/commands/scheduler/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/scheduler/create.ts)_
+_See code: [src/commands/scheduler/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/scheduler/create.ts)_
 
 ## `mapps scheduler:delete`
 
@@ -632,7 +632,7 @@ EXAMPLES
   $ mapps scheduler:delete -a APP_ID -n "my-job"
 ```
 
-_See code: [src/commands/scheduler/delete.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/scheduler/delete.ts)_
+_See code: [src/commands/scheduler/delete.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/scheduler/delete.ts)_
 
 ## `mapps scheduler:list`
 
@@ -656,7 +656,7 @@ EXAMPLES
   $ mapps scheduler:list -a APP_ID
 ```
 
-_See code: [src/commands/scheduler/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/scheduler/list.ts)_
+_See code: [src/commands/scheduler/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/scheduler/list.ts)_
 
 ## `mapps scheduler:run`
 
@@ -683,7 +683,7 @@ EXAMPLES
   $ mapps scheduler:run -a APP_ID -n "my-job"
 ```
 
-_See code: [src/commands/scheduler/run.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/scheduler/run.ts)_
+_See code: [src/commands/scheduler/run.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/scheduler/run.ts)_
 
 ## `mapps scheduler:update`
 
@@ -721,7 +721,7 @@ EXAMPLES
   $ mapps scheduler:update -a APP_ID -n "my-job" -d "My description" -r 3 -b 10 -t 60
 ```
 
-_See code: [src/commands/scheduler/update.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/scheduler/update.ts)_
+_See code: [src/commands/scheduler/update.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/scheduler/update.ts)_
 
 ## `mapps storage:export`
 
@@ -748,7 +748,7 @@ EXAMPLES
   $ mapps storage:export -a APP_ID -c CLIENT_ACCOUNT_ID -d FILE_FULL_PATH -f FILE_FORMAT
 ```
 
-_See code: [src/commands/storage/export.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/storage/export.ts)_
+_See code: [src/commands/storage/export.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/storage/export.ts)_
 
 ## `mapps storage:remove-data`
 
@@ -774,7 +774,7 @@ EXAMPLES
   $ mapps storage:remove-data -a APP_ID -c CLIENT_ACCOUNT_ID
 ```
 
-_See code: [src/commands/storage/remove-data.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/storage/remove-data.ts)_
+_See code: [src/commands/storage/remove-data.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/storage/remove-data.ts)_
 
 ## `mapps storage:search`
 
@@ -800,7 +800,7 @@ EXAMPLES
   $ mapps storage:search -a APP_ID -c CLIENT_ACCOUNT_ID -t TERM
 ```
 
-_See code: [src/commands/storage/search.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/storage/search.ts)_
+_See code: [src/commands/storage/search.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/storage/search.ts)_
 
 ## `mapps tunnel:create`
 
@@ -831,5 +831,5 @@ EXAMPLES
   $ mapps tunnel:create -p PORT_FOR_TUNNEL -a APP_ID_FOR_TUNNEL
 ```
 
-_See code: [src/commands/tunnel/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/tunnel/create.ts)_
+_See code: [src/commands/tunnel/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.3/src/commands/tunnel/create.ts)_
 <!-- commandsstop -->
