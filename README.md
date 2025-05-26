@@ -504,10 +504,12 @@ Get the connection string for your app database.
 
 ```
 USAGE
-  $ mapps database:connection-string [--verbose] [--print-command] [-a <value>]
+  $ mapps database:connection-string [--verbose] [--print-command] [-a <value>] [-z us|eu|au]
 
 FLAGS
-  -a, --appId=<value>  Select the app that you wish to retrieve the connection string for
+  -a, --appId=<value>    Select the app that you wish to retrieve the connection string for
+  -z, --region=<option>  Region to use
+                         <options: us|eu|au>
 
 GLOBAL FLAGS
   --print-command  Print the command that was executed (optional).

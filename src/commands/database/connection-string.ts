@@ -8,33 +8,41 @@ import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { HttpError } from 'types/errors';
 import { AppId } from 'types/general';
 import logger from 'utils/logger';
+import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
 export default class ConnectionString extends AuthenticatedCommand {
   static description = 'Get the connection string for your app database.';
 
   static examples = ['<%= config.bin %> <%= command.id %> -a APP_ID'];
 
-  static flags = ConnectionString.serializeFlags({
-    appId: Flags.integer({
-      char: 'a',
-      description: 'Select the app that you wish to retrieve the connection string for',
+  static flags = ConnectionString.serializeFlags(
+    addRegionToFlags({
+      appId: Flags.integer({
+        char: 'a',
+        description: 'Select the app that you wish to retrieve the connection string for',
+      }),
     }),
-  });
+  );
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(ConnectionString);
     let { appId } = flags;
+    const { region: strRegion } = flags;
+    const region = getRegionFromString(strRegion);
+
     try {
       if (!appId) {
         appId = await DynamicChoicesService.chooseApp();
       }
 
-      const result = await getDatabaseConnectionString(appId);
+      const selectedRegion = await chooseRegionIfNeeded(region, { appId });
+
+      const result = await getDatabaseConnectionString(appId, selectedRegion);
 
       logger.log(chalk.green('✓ Connection string retrieved successfully:'));
       logger.log(chalk.cyan(result.connectionString));
 
-      this.preparePrintCommand(this, { appId });
+      this.preparePrintCommand(this, { appId, region: selectedRegion });
     } catch (error: unknown) {
       logger.debug(error);
       if (error instanceof HttpError) {
