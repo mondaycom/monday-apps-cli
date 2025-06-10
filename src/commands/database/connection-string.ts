@@ -6,7 +6,6 @@ import { VAR_UNKNOWN } from 'consts/messages';
 import { getDatabaseConnectionString } from 'services/database-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { HttpError } from 'types/errors';
-import { AppId } from 'types/general';
 import logger from 'utils/logger';
 
 export default class ConnectionString extends AuthenticatedCommand {

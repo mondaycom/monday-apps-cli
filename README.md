@@ -598,7 +598,7 @@ DESCRIPTION
 EXAMPLES
   $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint"
 
-  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint" -n "My special job" -d "My description"
+  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint" -n "My-special-job" -d "My description"
 
   $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint" -r 3 -b 10 -t 60
 ```
