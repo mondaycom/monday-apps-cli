@@ -16,6 +16,8 @@ const MESSAGES = {
   force: 'Skip the confirmation step',
   operationAborted: 'Operation aborted',
   removingData: 'Removing data...',
+  operationAccepted: 'We got your request, it will take a few minutes to complete',
+  operationSuccess: 'Operation completed successfully',
 };
 
 export default class RemoveData extends AuthenticatedCommand {
@@ -61,7 +63,13 @@ export default class RemoveData extends AuthenticatedCommand {
       }
 
       logger.log(MESSAGES.removingData);
-      await removeAppStorageDataForAccount(appId, clientAccountId);
+      const response = await removeAppStorageDataForAccount(appId, clientAccountId);
+
+      if (response.statusCode === 202) {
+        logger.log(MESSAGES.operationAccepted);
+      } else {
+        logger.log(MESSAGES.operationSuccess);
+      }
 
       this.preparePrintCommand(this, { appId, clientAccountId, force });
     } catch (error: unknown) {

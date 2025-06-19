@@ -7,14 +7,15 @@ import { SchedulerService } from 'src/services/scheduler-service';
 import { printJobs, validateCronExpression, validateTargetUrl } from 'src/services/scheduler-service.utils';
 import logger from 'src/utils/logger';
 import { chooseRegionIfNeeded, getRegionFromString } from 'src/utils/region';
+import { addPrefixIfNotExists } from 'src/utils/urls-builder';
 import { isDefined } from 'src/utils/validations';
 
 export default class SchedulerCreate extends AuthenticatedCommand {
   static description = 'Create a new scheduler job for an app';
   static examples = [
-    '<%= config.bin %> <%= command.id %> -a APP_ID -s "0 * * * *" -u "/my-endpoint"',
-    '<%= config.bin %> <%= command.id %> -a APP_ID -s "0 * * * *" -u "/my-endpoint" -n "My-special-job" -d "My description"',
-    '<%= config.bin %> <%= command.id %> -a APP_ID -s "0 * * * *" -u "/my-endpoint" -r 3 -b 10 -t 60',
+    '<%= config.bin %> <%= command.id %> -a APP_ID -s "0 * * * *" -u "my-endpoint"',
+    '<%= config.bin %> <%= command.id %> -a APP_ID -s "0 * * * *" -u "my-endpoint" -n "My-special-job" -d "My description"',
+    '<%= config.bin %> <%= command.id %> -a APP_ID -s "0 * * * *" -u "my-endpoint" -r 3 -b 10 -t 60',
   ];
 
   static flags = SchedulerCreate.serializeFlags(SchedulerFlags);
@@ -33,6 +34,7 @@ export default class SchedulerCreate extends AuthenticatedCommand {
       if (!schedule) schedule = await PromptService.promptInput(SchedulerMessages.schedule, true);
       validateCronExpression(schedule);
       if (!targetUrl) targetUrl = await PromptService.promptInput(SchedulerMessages.targetUrl, true);
+      targetUrl = addPrefixIfNotExists(targetUrl, '/');
       validateTargetUrl(targetUrl);
       if (!description) description = await PromptService.promptInput(SchedulerMessages.description, false, true);
       if (!maxRetries) maxRetries = await PromptService.promptInputNumber(SchedulerMessages.maxRetries, false, true);
