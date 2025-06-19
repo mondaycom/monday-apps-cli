@@ -16,6 +16,7 @@ const MESSAGES = {
   force: 'Skip the confirmation step',
   operationAborted: 'Operation aborted',
   removingData: 'Removing data...',
+  // TODO: Maor: add a message for 202, "We got your request, it will take a few minutes to complete"
 };
 
 export default class RemoveData extends AuthenticatedCommand {

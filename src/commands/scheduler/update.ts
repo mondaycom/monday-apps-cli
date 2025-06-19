@@ -14,7 +14,7 @@ export default class SchedulerUpdate extends AuthenticatedCommand {
   static description = 'Update a scheduler job for an app';
   static examples = [
     '<%= config.bin %> <%= command.id %> -a APP_ID -n "my-job" -s "0 * * * *"',
-    '<%= config.bin %> <%= command.id %> -a APP_ID -n "my-job" -u="/my-endpoint"',
+    '<%= config.bin %> <%= command.id %> -a APP_ID -n "my-job" -u "/my-endpoint"',
     '<%= config.bin %> <%= command.id %> -a APP_ID -n "my-job" -d "My description" -r 3 -b 10 -t 60',
   ];
 

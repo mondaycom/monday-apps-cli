@@ -596,11 +596,11 @@ DESCRIPTION
   Create a new scheduler job for an app
 
 EXAMPLES
-  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u="/my-endpoint"
+  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint"
 
-  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u="/my-endpoint" -n "My-special-job" -d "My description"
+  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint" -n "My-special-job" -d "My description"
 
-  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u="/my-endpoint" -r 3 -b 10 -t 60
+  $ mapps scheduler:create -a APP_ID -s "0 * * * *" -u "/my-endpoint" -r 3 -b 10 -t 60
 ```
 
 _See code: [src/commands/scheduler/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/scheduler/create.ts)_
@@ -714,7 +714,7 @@ DESCRIPTION
 EXAMPLES
   $ mapps scheduler:update -a APP_ID -n "my-job" -s "0 * * * *"
 
-  $ mapps scheduler:update -a APP_ID -n "my-job" -u="/my-endpoint"
+  $ mapps scheduler:update -a APP_ID -n "my-job" -u "/my-endpoint"
 
   $ mapps scheduler:update -a APP_ID -n "my-job" -d "My description" -r 3 -b 10 -t 60
 ```
