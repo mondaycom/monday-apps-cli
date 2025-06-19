@@ -12,7 +12,7 @@ import { getTunnelingDomain } from 'services/tunnel-service';
 import { AppCreateCommandTasksContext } from 'types/commands/app-create';
 import { HttpError } from 'types/errors';
 import { AccountId, AppId } from 'types/general';
-import { HttpMethodTypes } from 'types/services/api-service';
+import { BaseResponseHttpMetaData, HttpMethodTypes } from 'types/services/api-service';
 import { App, CreateAppResponse, ListAppResponse } from 'types/services/apps-service';
 import { appsUrlBuilder } from 'utils/urls-builder';
 
@@ -107,11 +107,14 @@ export const checkIfAppSupportMultiRegion = async (appId: number): Promise<boole
   return Boolean(app.mondayCodeConfig?.isMultiRegion);
 };
 
-export const removeAppStorageDataForAccount = async (appId: AppId, targetAccountId: AccountId): Promise<void> => {
+export const removeAppStorageDataForAccount = async <T extends BaseResponseHttpMetaData>(
+  appId: AppId,
+  targetAccountId: AccountId,
+): Promise<T> => {
   try {
     const path = removeAppStorageDataForAccountUrl(appId, targetAccountId);
     const url = appsUrlBuilder(path);
-    await execute(
+    return await execute<T>(
       {
         url,
         headers: { Accept: 'application/json' },
