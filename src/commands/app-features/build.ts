@@ -18,7 +18,7 @@ const MESSAGES = {
 };
 
 export default class Build extends AuthenticatedCommand {
-  static description = 'Create an app feature build.';
+  static description = 'Perform operations related to app features in monday.com';
   static examples = [
     '<%= config.bin %> <%= command.id %> -a APP_ID -i APP_VERSION_ID -d APP_FEATURE_ID  -t BUILD_TYPE -u CUSTOM_URL',
   ];
