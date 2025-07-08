@@ -70,7 +70,7 @@ export const uploadClientZipFile = async (appVersionId: number, buffer: Buffer) 
     headers: { Accept: 'application/json', 'Content-Type': 'multipart/form-data' },
     method: HttpMethodTypes.POST,
     body: formData,
-    timeout: CLIENT_ZIP_UPLOAD_TIMEOUT
+    timeout: CLIENT_ZIP_UPLOAD_TIMEOUT,
   });
   return response.data;
 };
