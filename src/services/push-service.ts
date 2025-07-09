@@ -58,6 +58,8 @@ export const getSignedStorageUrl = async (appVersionId: number, region?: Region)
   }
 };
 
+const CLIENT_ZIP_UPLOAD_TIMEOUT = 60 * 1000;
+
 export const uploadClientZipFile = async (appVersionId: number, buffer: Buffer) => {
   const baseUrl = getDeploymentClientUpload(appVersionId);
   const url = appsUrlBuilder(baseUrl);
@@ -68,6 +70,7 @@ export const uploadClientZipFile = async (appVersionId: number, buffer: Buffer) 
     headers: { Accept: 'application/json', 'Content-Type': 'multipart/form-data' },
     method: HttpMethodTypes.POST,
     body: formData,
+    timeout: CLIENT_ZIP_UPLOAD_TIMEOUT,
   });
   return response.data;
 };
