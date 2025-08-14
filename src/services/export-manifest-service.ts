@@ -14,9 +14,12 @@ export const downloadManifestTask = async (
 ) => {
   task.output = `downloading manifest for app ${ctx.appId}`;
   const appManifest = await downloadManifest(ctx.appId, ctx.appVersionId);
-  await decompressZipBufferToFiles(Buffer.from(appManifest, 'base64'), `${ctx.appId}`);
+  const outputPath = ctx.manifestPath || `${ctx.appId}`;
+  await decompressZipBufferToFiles(Buffer.from(appManifest, 'base64'), outputPath);
+
   const currentWorkingDirectory = process.cwd();
-  task.title = `your manifest files are downloaded at ${currentWorkingDirectory}/${ctx.appId}`;
+  const absolutePath = outputPath.startsWith('/') ? outputPath : `${currentWorkingDirectory}/${outputPath}`;
+  task.title = `your manifest files are downloaded at ${absolutePath}`;
 };
 
 export const downloadManifest = async (appId: AppId, appVersionId?: AppVersionId) => {
