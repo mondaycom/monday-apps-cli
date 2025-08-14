@@ -10,13 +10,23 @@ import logger from 'utils/logger';
 const MESSAGES = {
   appId: 'App id (will export the live version)',
   appVersionId: 'App version id',
+  path: 'Path to export your app manifest files to',
 };
 
 export default class ManifestExport extends AuthenticatedCommand {
   static description = 'export app manifest.';
   static withPrintCommand = false;
-  static examples = ['<%= config.bin %> <%= command.id %>'];
+  static examples = [
+    '<%= config.bin %> <%= command.id %>',
+    '<%= config.bin %> <%= command.id %> -p ./exports',
+    '<%= config.bin %> <%= command.id %> --manifestPath ./my-manifests',
+  ];
+
   static flags = ManifestExport.serializeFlags({
+    manifestPath: Flags.string({
+      char: 'p',
+      description: MESSAGES.path,
+    }),
     appId: Flags.string({
       char: 'a',
       description: MESSAGES.appId,
@@ -44,7 +54,7 @@ export default class ManifestExport extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(ManifestExport);
-      const { appId: appIdAsString, appVersionId: appVersionIdAsString } = flags;
+      const { manifestPath, appId: appIdAsString, appVersionId: appVersionIdAsString } = flags;
 
       let appId = appIdAsString ? Number(appIdAsString) : undefined;
       let appVersionId = appVersionIdAsString ? Number(appVersionIdAsString) : undefined;
@@ -66,7 +76,7 @@ export default class ManifestExport extends AuthenticatedCommand {
           { title: 'Validate app before exporting manifest', task: exportService.validateManifestTask },
           { title: 'Export app manifest', task: exportService.downloadManifestTask },
         ],
-        { ctx: { appVersionId, appId: appId! } },
+        { ctx: { appVersionId, appId: appId!, manifestPath } },
       );
 
       await tasks.run();
