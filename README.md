@@ -217,7 +217,7 @@ EXAMPLES
   $ mapps app-version:list
 ```
 
-_See code: [src/commands/app-version/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.3.2/src/commands/app-version/list.ts)_
+_See code: [src/commands/app-version/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/master/src/commands/app-version/list.ts)_
 
 ## `mapps app:create`
 
@@ -605,7 +605,7 @@ EXAMPLES
   $ mapps manifest:export
 ```
 
-_See code: [src/commands/manifest/export.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.3.2/src/commands/manifest/export.ts)_
+_See code: [src/commands/manifest/export.ts](https://github.com/mondaycom/monday-apps-cli/blob/master/src/commands/manifest/export.ts)_
 
 ## `mapps manifest:import`
 
@@ -632,7 +632,7 @@ EXAMPLES
   $ mapps manifest:import
 ```
 
-_See code: [src/commands/manifest/import.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.3.2/src/commands/manifest/import.ts)_
+_See code: [src/commands/manifest/import.ts](https://github.com/mondaycom/monday-apps-cli/blob/master/src/commands/manifest/import.ts)_
 
 ## `mapps scheduler:create`
 
@@ -896,6 +896,6 @@ EXAMPLES
   $ mapps tunnel:create -p PORT_FOR_TUNNEL -a APP_ID_FOR_TUNNEL
 ```
 
-_See code: [src/commands/tunnel/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/tunnel/create.ts)_
+_See code: [src/commands/tunnel/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/master/src/commands/tunnel/create.ts)_
 
 <!-- commandsstop -->
