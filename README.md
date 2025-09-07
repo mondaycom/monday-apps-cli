@@ -68,7 +68,6 @@ USAGE
 
 * [`mapps storage:remove-data`](#mapps-storageremove-data)
 
-- [`mapps storage:remove-data`](#mapps-storageremove-data)
 - [`mapps storage:search`](#mapps-storagesearch)
 - [`mapps tunnel:create`](#mapps-tunnelcreate)
 
@@ -82,7 +81,6 @@ USAGE
 
 DESCRIPTION
   Prepares your environment for custom queries development. run it from your root directory!
-  Creates all necessary files and scripts
   Creates all necessary files and scripts
   to start working with custom api queries and mutations.
   Read the documentation at
@@ -220,7 +218,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/app-version/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.3.2/src/commands/app-version/list.ts)_
-_See code: [src/commands/app-version/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/app-version/list.ts)_
 
 ## `mapps app:create`
 
