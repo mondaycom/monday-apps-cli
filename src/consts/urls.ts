@@ -126,3 +126,19 @@ export const appSchedulerUrl = (appId: AppId): string => {
 export const appStorageConnectionStringUrl = (appId: AppId): string => {
   return `${BASE_MONDAY_CODE_URL}/${appId}/storage/connection-string`;
 };
+
+export const createAppFromManifestUrl = (): string => {
+  return `${BASE_APPS_URL}/manifest`;
+};
+
+export const updateAppFromManifestUrl = (appId: AppId): string => {
+  return `${BASE_APPS_URL}/${appId}/manifest`;
+};
+
+export const exportAppManifestUrl = (appId: AppId): string => {
+  return `${BASE_APPS_URL}/${appId}/manifest?zipBase64=true`;
+};
+
+export const makeAppManifestExportableUrl = (appId: AppId): string => {
+  return `${BASE_APPS_URL}/${appId}/manifest/exportability`;
+};

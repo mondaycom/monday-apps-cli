@@ -1,16 +1,17 @@
-monday-apps-cli
-=================
+# monday-apps-cli
 
 monday.com cli tool for monday apps management.
 
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @mondaycom/apps-cli
 $ mapps COMMAND
@@ -22,39 +23,53 @@ USAGE
   $ mapps COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`mapps api:generate`](#mapps-apigenerate)
-* [`mapps app-features:build`](#mapps-app-featuresbuild)
-* [`mapps app-features:create`](#mapps-app-featurescreate)
-* [`mapps app-features:list`](#mapps-app-featureslist)
-* [`mapps app-version:builds`](#mapps-app-versionbuilds)
-* [`mapps app-version:list`](#mapps-app-versionlist)
-* [`mapps app:create`](#mapps-appcreate)
-* [`mapps app:deploy`](#mapps-appdeploy)
-* [`mapps app:list`](#mapps-applist)
+
+- [`mapps api:generate`](#mapps-apigenerate)
+- [`mapps app-features:build`](#mapps-app-featuresbuild)
+- [`mapps app-features:create`](#mapps-app-featurescreate)
+- [`mapps app-features:list`](#mapps-app-featureslist)
+- [`mapps app-version:builds`](#mapps-app-versionbuilds)
+- [`mapps app-version:list`](#mapps-app-versionlist)
+- [`mapps app:create`](#mapps-appcreate)
+- [`mapps app:deploy`](#mapps-appdeploy)
+- [`mapps app:list`](#mapps-applist)
+
 * [`mapps app:promote`](#mapps-apppromote)
-* [`mapps autocomplete [SHELL]`](#mapps-autocomplete-shell)
-* [`mapps code:env`](#mapps-codeenv)
-* [`mapps code:logs`](#mapps-codelogs)
-* [`mapps code:push`](#mapps-codepush)
+
+- [`mapps autocomplete [SHELL]`](#mapps-autocomplete-shell)
+- [`mapps code:env`](#mapps-codeenv)
+- [`mapps code:logs`](#mapps-codelogs)
+- [`mapps code:push`](#mapps-codepush)
+
 * [`mapps code:secret`](#mapps-codesecret)
-* [`mapps code:status`](#mapps-codestatus)
+
+- [`mapps code:status`](#mapps-codestatus)
+
 * [`mapps database:connection-string`](#mapps-databaseconnection-string)
-* [`mapps help [COMMANDS]`](#mapps-help-commands)
-* [`mapps init`](#mapps-init)
+
+- [`mapps help [COMMANDS]`](#mapps-help-commands)
+- [`mapps init`](#mapps-init)
+
 * [`mapps scheduler:create`](#mapps-schedulercreate)
 * [`mapps scheduler:delete`](#mapps-schedulerdelete)
 * [`mapps scheduler:list`](#mapps-schedulerlist)
 * [`mapps scheduler:run`](#mapps-schedulerrun)
 * [`mapps scheduler:update`](#mapps-schedulerupdate)
-* [`mapps storage:export`](#mapps-storageexport)
+
+- [`mapps manifest:export`](#mapps-manifestexport)
+- [`mapps manifest:import`](#mapps-manifestimport)
+- [`mapps storage:export`](#mapps-storageexport)
+
 * [`mapps storage:remove-data`](#mapps-storageremove-data)
-* [`mapps storage:search`](#mapps-storagesearch)
-* [`mapps tunnel:create`](#mapps-tunnelcreate)
+
+- [`mapps storage:search`](#mapps-storagesearch)
+- [`mapps tunnel:create`](#mapps-tunnelcreate)
 
 ## `mapps api:generate`
 
@@ -202,7 +217,7 @@ EXAMPLES
   $ mapps app-version:list
 ```
 
-_See code: [src/commands/app-version/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/app-version/list.ts)_
+_See code: [src/commands/app-version/list.ts](https://github.com/mondaycom/monday-apps-cli/blob/master/src/commands/app-version/list.ts)_
 
 ## `mapps app:create`
 
@@ -567,6 +582,58 @@ EXAMPLES
 
 _See code: [src/commands/init/index.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/init/index.ts)_
 
+## `mapps manifest:export`
+
+export manifest.
+
+```
+USAGE
+  $ mapps manifest:export [--verbose] [--print-command] [-a <value>] [-v <value>]
+
+FLAGS
+  -a, --appId=<value>         App id (will export the live version)
+  -v, --appVersionId=<value>  App version id
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  export manifest.
+
+EXAMPLES
+  $ mapps manifest:export
+```
+
+_See code: [src/commands/manifest/export.ts](https://github.com/mondaycom/monday-apps-cli/blob/master/src/commands/manifest/export.ts)_
+
+## `mapps manifest:import`
+
+Import manifest.
+
+```
+USAGE
+  $ mapps manifest:import [--verbose] [--print-command] [-p <value>] [-a <value>] [-v <value>] [-n]
+
+FLAGS
+  -a, --appId=<value>         App id (will create new draft version)
+  -n, --newApp                Create new app
+  -p, --manifestPath=<value>  Path of you manifest file in your machine
+  -v, --appVersionId=<value>  App version id to override
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  Import manifest.
+
+EXAMPLES
+  $ mapps manifest:import
+```
+
+_See code: [src/commands/manifest/import.ts](https://github.com/mondaycom/monday-apps-cli/blob/master/src/commands/manifest/import.ts)_
+
 ## `mapps scheduler:create`
 
 Create a new scheduler job for an app
@@ -829,5 +896,6 @@ EXAMPLES
   $ mapps tunnel:create -p PORT_FOR_TUNNEL -a APP_ID_FOR_TUNNEL
 ```
 
-_See code: [src/commands/tunnel/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/tunnel/create.ts)_
+_See code: [src/commands/tunnel/create.ts](https://github.com/mondaycom/monday-apps-cli/blob/master/src/commands/tunnel/create.ts)_
+
 <!-- commandsstop -->
