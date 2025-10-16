@@ -72,7 +72,7 @@ export const uploadClientZipFile = async (appVersionId: number, buffer: Buffer) 
     body: formData,
     timeout: CLIENT_ZIP_UPLOAD_TIMEOUT,
   });
-  return response.data;
+  return response.data.data;
 };
 
 export const getAppVersionDeploymentStatus = async (appVersionId: number, region?: Region) => {
