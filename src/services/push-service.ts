@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 import axios from 'axios';
 import chalk from 'chalk';
 import { StatusCodes } from 'http-status-codes';
@@ -156,6 +159,37 @@ export const uploadFileToStorage = async (
   }
 };
 
+const checkFileSizesInDirectory = (directoryPath: string): void => {
+  const MAX_FILE_SIZE_MB = 75;
+  const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
+  const checkDirectory = (dir: string) => {
+    const items = fs.readdirSync(dir);
+
+    for (const item of items) {
+      const fullPath = path.join(dir, item);
+      const stats = fs.statSync(fullPath);
+
+      if (stats.isDirectory()) {
+        checkDirectory(fullPath);
+      } else if (stats.isFile() && stats.size > MAX_FILE_SIZE_BYTES) {
+        const fileSizeMB = (stats.size / (1024 * 1024)).toFixed(2);
+        const relativePath = path.relative(directoryPath, fullPath);
+        throw new Error(
+          `File size limit exceeded!\n\n` +
+            `File: ${relativePath}\n` +
+            `Size: ${fileSizeMB}MB\n` +
+            `Maximum allowed: ${MAX_FILE_SIZE_MB}MB\n\n` +
+            `The file "${relativePath}" is too large to deploy.\n\n` +
+            `Please reduce the file size`,
+        );
+      }
+    }
+  };
+
+  checkDirectory(directoryPath);
+};
+
 export const buildClientZip = async (
   ctx: PushCommandTasksContext,
   task: ListrTaskWrapper<PushCommandTasksContext, any>,
@@ -168,6 +202,7 @@ export const buildClientZip = async (
 
   task.output = `Building client zip from "${ctx.directoryPath}" directory`;
   verifyClientDirectory(ctx.directoryPath);
+  checkFileSizesInDirectory(ctx.directoryPath);
   ctx.archivePath = await compressBuildToZip(ctx.directoryPath);
 };
 
