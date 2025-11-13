@@ -1,7 +1,9 @@
 // eslint-disable-next-line node/no-extraneous-import,n/no-extraneous-import
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
-import axios, { AxiosError } from 'axios';
+import { describe, expect, it, jest } from '@jest/globals';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 
+import { execute } from 'services/api-service';
+import { HttpError } from 'types/errors';
 import { HttpMethodTypes } from 'types/services/api-service';
 
 jest.mock('axios');
@@ -18,30 +20,31 @@ jest.mock('services/env-service', () => ({
 }));
 
 describe('ApiService', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('should throw HttpError with helpful token message for invalid token', async () => {
-    const { execute } = await import('services/api-service');
-
-    const axiosError = new AxiosError('Request failed');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    axiosError.response = {
+    const mockResponse = {
       status: 406,
       data: {},
       statusText: 'Not Acceptable',
       headers: {},
-      config: {},
-    } as any;
+    } as AxiosResponse;
+
+    const axiosError = new AxiosError('Request failed');
+    axiosError.response = mockResponse;
 
     mockedAxios.request.mockRejectedValue(axiosError);
 
-    await expect(
-      execute({
-        url: '/test',
-        method: HttpMethodTypes.GET,
-      }),
-    ).rejects.toThrow('Invalid or expired access token');
+    const error = (await execute({
+      url: '/test',
+      method: HttpMethodTypes.GET,
+    }).catch((error_: Error) => error_)) as HttpError;
+
+    expect(error).toBeInstanceOf(HttpError);
+    expect(error.message).toEqual(
+      'Invalid or expired access token.\n\n' +
+        'To fix this, run:\n' +
+        '   mapps init -t YOUR_ACCESS_TOKEN\n\n' +
+        'Or run: mapps init\n' +
+        '(and you will be prompted for your token)\n\n',
+    );
   });
 });

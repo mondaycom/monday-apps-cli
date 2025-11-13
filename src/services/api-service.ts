@@ -49,6 +49,22 @@ const printTraceIdIfPresent = (traceId: string | undefined, statusCode: number |
   }
 };
 
+/**
+ * Checks if theres an error of invalid token (returns 406 with empty response for auth errors).
+ * @param statusCode - HTTP status code from error response
+ * @param message - Error message from response body
+ * @param title - Error title from response body
+ * @returns true if this is an invalid token error, false otherwise
+ */
+const isAuthError = (
+  statusCode: number | undefined,
+  message: string | undefined,
+  title: string | undefined,
+): boolean => {
+  const isEmptyResponse = !message && !title;
+  return statusCode === 406 && isEmptyResponse;
+};
+
 const handleErrors = (error: any | Error | AxiosError): never => {
   const defaultErrorMessage = `Unexpected error occurred while communicating with the remote server`;
   if (error instanceof AxiosError) {
@@ -58,9 +74,7 @@ const handleErrors = (error: any | Error | AxiosError): never => {
     const message = errorAxiosResponse?.message || defaultErrorMessage;
     const traceId = errorAxiosResponse?.traceId?.toString();
 
-    const isEmptyResponse = !errorAxiosResponse?.message && !title;
-    const isAuthError = statusCode === 406 && isEmptyResponse;
-    if (isAuthError) {
+    if (isAuthError(statusCode, errorAxiosResponse?.message, title)) {
       const tokenErrorMessage =
         'Invalid or expired access token.\n\n' +
         'To fix this, run:\n' +

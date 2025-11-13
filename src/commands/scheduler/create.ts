@@ -59,7 +59,6 @@ export default class SchedulerCreate extends AuthenticatedCommand {
       appId,
       {
         name,
-        description,
         schedule,
         targetUrl,
         ...(description ? { description } : {}),
