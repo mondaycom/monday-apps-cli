@@ -21,18 +21,14 @@ export default class SchedulerList extends AuthenticatedCommand {
     let { appId } = flags;
     const { region } = flags;
     const parsedRegion = getRegionFromString(region);
-    try {
-      appId = appId ? Number(appId) : await DynamicChoicesService.chooseApp();
-      const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
 
-      logger.debug(`Listing scheduler jobs for appId: ${appId}`, this.DEBUG_TAG);
-      this.preparePrintCommand(this, { appId, region: selectedRegion });
+    appId = appId ? Number(appId) : await DynamicChoicesService.chooseApp();
+    const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
 
-      const jobs = await SchedulerService.listJobs(appId, selectedRegion);
-      printJobs(jobs);
-    } catch (error: any) {
-      logger.debug(error, this.DEBUG_TAG);
-      process.exit(1);
-    }
+    logger.debug(`Listing scheduler jobs for appId: ${appId}`, this.DEBUG_TAG);
+    this.preparePrintCommand(this, { appId, region: selectedRegion });
+
+    const jobs = await SchedulerService.listJobs(appId, selectedRegion);
+    printJobs(jobs);
   }
 }

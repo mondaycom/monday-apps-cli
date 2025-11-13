@@ -19,24 +19,18 @@ export default class SchedulerDelete extends AuthenticatedCommand {
     const { region } = flags;
     const parsedRegion = getRegionFromString(region);
 
-    try {
-      if (!appId) appId = await DynamicChoicesService.chooseApp();
-      const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
-      if (!name) name = await DynamicChoicesService.chooseSchedulerJob(appId, selectedRegion);
+    if (!appId) appId = await DynamicChoicesService.chooseApp();
+    const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
+    if (!name) name = await DynamicChoicesService.chooseSchedulerJob(appId, selectedRegion);
 
-      logger.debug(`Deleting scheduler job ${name} for appId: ${appId}`, this.DEBUG_TAG);
-      this.preparePrintCommand(this, {
-        appId,
-        name,
-        region: selectedRegion,
-      });
+    logger.debug(`Deleting scheduler job ${name} for appId: ${appId}`, this.DEBUG_TAG);
+    this.preparePrintCommand(this, {
+      appId,
+      name,
+      region: selectedRegion,
+    });
 
-      await SchedulerService.deleteJob(appId, name, selectedRegion);
-      logger.info(`Successfully deleted job: ${name}`);
-    } catch (error: any) {
-      console.log(error);
-      logger.debug(error, this.DEBUG_TAG);
-      process.exit(1);
-    }
+    await SchedulerService.deleteJob(appId, name, selectedRegion);
+    logger.info(`Successfully deleted job: ${name}`);
   }
 }

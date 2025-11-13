@@ -27,54 +27,50 @@ export default class SchedulerCreate extends AuthenticatedCommand {
     let { appId, name, description, schedule, targetUrl, maxRetries, minBackoffDuration, timeout } = flags;
     const { region } = flags;
     const parsedRegion = getRegionFromString(region);
-    try {
-      if (!appId) appId = await DynamicChoicesService.chooseApp();
-      const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
-      if (!name) name = await PromptService.promptInput(SchedulerMessages.name, true);
-      if (!schedule) schedule = await PromptService.promptInput(SchedulerMessages.schedule, true);
-      validateCronExpression(schedule);
-      if (!targetUrl) targetUrl = await PromptService.promptInput(SchedulerMessages.targetUrl, true);
-      targetUrl = addPrefixIfNotExists(targetUrl, '/');
-      validateTargetUrl(targetUrl);
-      if (!description) description = await PromptService.promptInput(SchedulerMessages.description, false, true);
-      if (!maxRetries) maxRetries = await PromptService.promptInputNumber(SchedulerMessages.maxRetries, false, true);
-      if (!minBackoffDuration)
-        minBackoffDuration = await PromptService.promptInputNumber(SchedulerMessages.minBackoffDuration, false, true);
-      if (!timeout) timeout = await PromptService.promptInputNumber(SchedulerMessages.timeout, false, true);
 
-      logger.debug(`Creating scheduler job for appId: ${appId}`, this.DEBUG_TAG);
-      this.preparePrintCommand(this, {
-        appId,
+    if (!appId) appId = await DynamicChoicesService.chooseApp();
+    const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
+    if (!name) name = await PromptService.promptInput(SchedulerMessages.name, true);
+    if (!schedule) schedule = await PromptService.promptInput(SchedulerMessages.schedule, true);
+    validateCronExpression(schedule);
+    if (!targetUrl) targetUrl = await PromptService.promptInput(SchedulerMessages.targetUrl, true);
+    targetUrl = addPrefixIfNotExists(targetUrl, '/');
+    validateTargetUrl(targetUrl);
+    if (!description) description = await PromptService.promptInput(SchedulerMessages.description, false, true);
+    if (!maxRetries) maxRetries = await PromptService.promptInputNumber(SchedulerMessages.maxRetries, false, true);
+    if (!minBackoffDuration)
+      minBackoffDuration = await PromptService.promptInputNumber(SchedulerMessages.minBackoffDuration, false, true);
+    if (!timeout) timeout = await PromptService.promptInputNumber(SchedulerMessages.timeout, false, true);
+
+    logger.debug(`Creating scheduler job for appId: ${appId}`, this.DEBUG_TAG);
+    this.preparePrintCommand(this, {
+      appId,
+      name,
+      description,
+      schedule,
+      targetUrl,
+      maxRetries,
+      minBackoffDuration,
+      timeout,
+      region: selectedRegion,
+    });
+
+    const job = await SchedulerService.createJob(
+      appId,
+      {
         name,
         description,
         schedule,
         targetUrl,
-        maxRetries,
-        minBackoffDuration,
-        timeout,
-        region: selectedRegion,
-      });
+        ...(description ? { description } : {}),
+        ...(isDefined(maxRetries) || isDefined(minBackoffDuration)
+          ? { retryConfig: { maxRetries, minBackoffDuration } }
+          : {}),
+        ...(isDefined(timeout) ? { timeout } : {}),
+      },
+      selectedRegion,
+    );
 
-      const job = await SchedulerService.createJob(
-        appId,
-        {
-          name,
-          description,
-          schedule,
-          targetUrl,
-          ...(description ? { description } : {}),
-          ...(isDefined(maxRetries) || isDefined(minBackoffDuration)
-            ? { retryConfig: { maxRetries, minBackoffDuration } }
-            : {}),
-          ...(isDefined(timeout) ? { timeout } : {}),
-        },
-        selectedRegion,
-      );
-
-      printJobs([job]);
-    } catch (error: any) {
-      logger.debug(error, this.DEBUG_TAG);
-      process.exit(1);
-    }
+    printJobs([job]);
   }
 }
