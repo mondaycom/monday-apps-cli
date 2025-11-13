@@ -91,7 +91,7 @@ _See code: [src/commands/api/generate.ts](https://github.com/mondaycom/monday-ap
 
 ## `mapps app-features:build`
 
-Create an app feature build.
+Perform operations related to app features in monday.com
 
 ```
 USAGE
@@ -111,7 +111,7 @@ GLOBAL FLAGS
   --verbose        Print advanced logs (optional).
 
 DESCRIPTION
-  Create an app feature build.
+  Perform operations related to app features in monday.com
 
 EXAMPLES
   $ mapps app-features:build -a APP_ID -i APP_VERSION_ID -d APP_FEATURE_ID  -t BUILD_TYPE -u CUSTOM_URL
