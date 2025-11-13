@@ -57,6 +57,19 @@ const handleErrors = (error: any | Error | AxiosError): never => {
     const title = errorAxiosResponse?.title;
     const message = errorAxiosResponse?.message || defaultErrorMessage;
     const traceId = errorAxiosResponse?.traceId?.toString();
+
+    const isEmptyResponse = !errorAxiosResponse?.message && !title;
+    const isAuthError = statusCode === 406 && isEmptyResponse;
+    if (isAuthError) {
+      const tokenErrorMessage =
+        'Invalid or expired access token.\n\n' +
+        'To fix this, run:\n' +
+        '   mapps init -t YOUR_ACCESS_TOKEN\n\n' +
+        'Or run: mapps init\n' +
+        '(and you will be prompted for your token)\n\n';
+      throw new HttpError(tokenErrorMessage);
+    }
+
     printTraceIdIfPresent(traceId, statusCode);
     throw new HttpError(message, title, statusCode);
   } else if (error instanceof Error) {

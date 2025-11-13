@@ -28,65 +28,61 @@ export default class SchedulerUpdate extends AuthenticatedCommand {
     let { appId, name, description, schedule, targetUrl, maxRetries, minBackoffDuration, timeout } = flags;
     const { region } = flags;
     const parsedRegion = getRegionFromString(region);
-    try {
-      if (!appId) appId = await DynamicChoicesService.chooseApp();
-      const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
-      if (!name) name = await DynamicChoicesService.chooseSchedulerJob(appId, selectedRegion);
 
-      // Get the current job details
-      const jobs = await SchedulerService.listJobs(appId, selectedRegion);
-      const currentJob = jobs.find(job => job.name === name);
-      if (!currentJob) {
-        throw new Error(`Job ${name} not found`);
-      }
+    if (!appId) appId = await DynamicChoicesService.chooseApp();
+    const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
+    if (!name) name = await DynamicChoicesService.chooseSchedulerJob(appId, selectedRegion);
 
-      logger.info(`All parameters are optional, press enter to skip`);
-      // Only prompt for fields that weren't provided in flags
-      if (!description) description = await PromptService.promptInput(SchedulerMessages.description, false, true);
-      if (!schedule) schedule = await PromptService.promptInput(SchedulerMessages.schedule, false, true);
-      if (schedule) validateCronExpression(schedule);
-      if (!targetUrl) targetUrl = await PromptService.promptInput(SchedulerMessages.targetUrl, false, true);
-      targetUrl = addPrefixIfNotExists(targetUrl, '/');
-      if (targetUrl) validateTargetUrl(targetUrl);
-      if (!maxRetries) maxRetries = await PromptService.promptInputNumber(SchedulerMessages.maxRetries, false, true);
-      if (!minBackoffDuration)
-        minBackoffDuration = await PromptService.promptInputNumber(SchedulerMessages.minBackoffDuration, false, true);
-      if (!timeout) timeout = await PromptService.promptInputNumber(SchedulerMessages.timeout, false, true);
+    // Get the current job details
+    const jobs = await SchedulerService.listJobs(appId, selectedRegion);
+    const currentJob = jobs.find(job => job.name === name);
+    if (!currentJob) {
+      throw new Error(`Job ${name} not found`);
+    }
 
-      logger.debug(`Updating scheduler job ${name} for appId: ${appId}`, this.DEBUG_TAG);
-      this.preparePrintCommand(this, {
-        appId,
-        name,
-        description,
-        schedule,
-        targetUrl,
-        maxRetries,
-        minBackoffDuration,
-        timeout,
-        region: selectedRegion,
-      });
+    logger.info(`All parameters are optional, press enter to skip`);
+    // Only prompt for fields that weren't provided in flags
+    if (!description) description = await PromptService.promptInput(SchedulerMessages.description, false, true);
+    if (!schedule) schedule = await PromptService.promptInput(SchedulerMessages.schedule, false, true);
+    if (schedule) validateCronExpression(schedule);
+    if (!targetUrl) targetUrl = await PromptService.promptInput(SchedulerMessages.targetUrl, false, true);
+    targetUrl = addPrefixIfNotExists(targetUrl, '/');
+    if (targetUrl) validateTargetUrl(targetUrl);
+    if (!maxRetries) maxRetries = await PromptService.promptInputNumber(SchedulerMessages.maxRetries, false, true);
+    if (!minBackoffDuration)
+      minBackoffDuration = await PromptService.promptInputNumber(SchedulerMessages.minBackoffDuration, false, true);
+    if (!timeout) timeout = await PromptService.promptInputNumber(SchedulerMessages.timeout, false, true);
 
-      // Create update payload with only the fields that were provided
-      const updatePayload: UpdateJobRequest = {};
-      if (isDefinedAndNotEmpty(description)) updatePayload.description = description;
-      if (isDefinedAndNotEmpty(schedule)) updatePayload.schedule = schedule;
-      if (isDefinedAndNotEmpty(targetUrl)) updatePayload.targetUrl = targetUrl;
-      if (isDefined(maxRetries) || isDefined(minBackoffDuration)) {
-        updatePayload.retryConfig = { maxRetries, minBackoffDuration };
-      }
+    logger.debug(`Updating scheduler job ${name} for appId: ${appId}`, this.DEBUG_TAG);
+    this.preparePrintCommand(this, {
+      appId,
+      name,
+      description,
+      schedule,
+      targetUrl,
+      maxRetries,
+      minBackoffDuration,
+      timeout,
+      region: selectedRegion,
+    });
 
-      if (isDefined(timeout)) updatePayload.timeout = timeout;
+    // Create update payload with only the fields that were provided
+    const updatePayload: UpdateJobRequest = {};
+    if (isDefinedAndNotEmpty(description)) updatePayload.description = description;
+    if (isDefinedAndNotEmpty(schedule)) updatePayload.schedule = schedule;
+    if (isDefinedAndNotEmpty(targetUrl)) updatePayload.targetUrl = targetUrl;
+    if (isDefined(maxRetries) || isDefined(minBackoffDuration)) {
+      updatePayload.retryConfig = { maxRetries, minBackoffDuration };
+    }
 
-      if (isDefinedAndNotEmpty(updatePayload)) {
-        const job = await SchedulerService.updateJob(appId, name, updatePayload, selectedRegion);
-        printJobs([job]);
-        logger.info(`Successfully updated job: ${name}`);
-      } else {
-        logger.info(`No changes to update for job: ${name}`);
-      }
-    } catch (error: any) {
-      logger.debug(error, this.DEBUG_TAG);
-      process.exit(1);
+    if (isDefined(timeout)) updatePayload.timeout = timeout;
+
+    if (isDefinedAndNotEmpty(updatePayload)) {
+      const job = await SchedulerService.updateJob(appId, name, updatePayload, selectedRegion);
+      printJobs([job]);
+      logger.info(`Successfully updated job: ${name}`);
+    } else {
+      logger.info(`No changes to update for job: ${name}`);
     }
   }
 }

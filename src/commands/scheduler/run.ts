@@ -19,24 +19,18 @@ export default class SchedulerRun extends AuthenticatedCommand {
     const { region } = flags;
     const parsedRegion = getRegionFromString(region);
 
-    try {
-      if (!appId) appId = await DynamicChoicesService.chooseApp();
-      const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
-      if (!name) name = await DynamicChoicesService.chooseSchedulerJob(appId, selectedRegion);
+    if (!appId) appId = await DynamicChoicesService.chooseApp();
+    const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
+    if (!name) name = await DynamicChoicesService.chooseSchedulerJob(appId, selectedRegion);
 
-      logger.debug(`Running scheduler job ${name} for appId: ${appId}`, this.DEBUG_TAG);
-      this.preparePrintCommand(this, {
-        appId,
-        name,
-        region: selectedRegion,
-      });
+    logger.debug(`Running scheduler job ${name} for appId: ${appId}`, this.DEBUG_TAG);
+    this.preparePrintCommand(this, {
+      appId,
+      name,
+      region: selectedRegion,
+    });
 
-      await SchedulerService.runJob(appId, name, selectedRegion);
-      logger.info(`Successfully triggered job: ${name}`);
-    } catch (error: any) {
-      console.log(error);
-      logger.debug(error, this.DEBUG_TAG);
-      process.exit(1);
-    }
+    await SchedulerService.runJob(appId, name, selectedRegion);
+    logger.info(`Successfully triggered job: ${name}`);
   }
 }
