@@ -10,5 +10,5 @@ export const PROJECT_TEMPLATES: ProjectTemplate[] = [
   { name: 'slack-node', isWithSigningSecret: true, openSetupMd: true },
   { name: 'word-cloud' },
   { name: 'docs-viewer' },
-  { name: 'workspace-view-app'},
+  { name: 'workspace-view-app' },
 ];

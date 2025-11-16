@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
-import fs_extra from 'fs-extra';
+import { ensureDir } from 'fs-extra';
 import { ListrTaskWrapper } from 'listr2';
 
 import { MONDAY_GITHUB_REPO, MONDAY_GITHUB_REPO_BRANCH, MONDAY_GITHUB_REPO_URL } from 'consts/scaffold';
@@ -46,14 +46,14 @@ export const editEnvFileTask = async (ctx: ScaffoldTaskContext, task: ListrTaskW
   }
 
   try {
-    let envLines = fs.readFileSync(filePath, 'utf-8').replace(/\r\n/g, '\n').split('\n');
+    let envLines = fs.readFileSync(filePath, 'utf8').replaceAll('\r\n', '\n').split('\n');
 
     // Update MONDAY_SIGNING_SECRET if provided
     envLines = envLines.map(line =>
       line.startsWith('MONDAY_SIGNING_SECRET=') ? `MONDAY_SIGNING_SECRET=${ctx.signingSecret}` : line,
     );
 
-    fs.writeFileSync(filePath, envLines.join(os.EOL), 'utf-8');
+    fs.writeFileSync(filePath, envLines.join(os.EOL), 'utf8');
     task.title = 'Environment variables configured';
   } catch (error) {
     logger.debug(error, DEBUG_TAG);
@@ -61,10 +61,7 @@ export const editEnvFileTask = async (ctx: ScaffoldTaskContext, task: ListrTaskW
   }
 };
 
-export const openSetupFileTask = async (
-  ctx: ScaffoldTaskContext,
-  task: ListrTaskWrapper<ScaffoldTaskContext, any>,
-) => {
+export const openSetupFileTask = async (ctx: ScaffoldTaskContext, task: ListrTaskWrapper<ScaffoldTaskContext, any>) => {
   if (!ctx.project.openSetupMd) {
     task.skip('No setup documentation for this template');
     return;
@@ -99,7 +96,7 @@ export const installDependenciesTask = async (
 
     let errorOutput = '';
 
-    installProcess.stderr?.on('data', data => {
+    installProcess.stderr?.on('data', (data: Buffer) => {
       errorOutput += data.toString();
     });
 
@@ -165,9 +162,8 @@ export const runProjectTask = async (ctx: ScaffoldTaskContext, task: ListrTaskWr
 
 export const validateDestination = async (destination: string): Promise<void> => {
   try {
-    await fs_extra.ensureDir(destination);
-  } catch (error) {
+    await ensureDir(destination);
+  } catch {
     throw new Error(`Invalid destination directory: ${destination}`);
   }
 };
-

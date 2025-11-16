@@ -15,4 +15,3 @@ describe('app:scaffold command', () => {
     });
   });
 });
-

@@ -68,6 +68,7 @@ export default class AppScaffold extends BaseCommand {
             `Project "${args.project}" not found. Available projects: ${PROJECT_TEMPLATES.map(p => p.name).join(', ')}`,
           );
         }
+
         project = foundProject;
       } else {
         const projectName = await PromptService.promptList(
@@ -125,7 +126,11 @@ export default class AppScaffold extends BaseCommand {
     const tasks = new Listr<ScaffoldTaskContext>([
       { title: 'Downloading template', task: downloadTemplateTask },
       { title: 'Configuring environment', task: editEnvFileTask },
-      { title: 'Opening setup documentation', task: openSetupFileTask, enabled: () => Boolean(ctx.project.openSetupMd) },
+      {
+        title: 'Opening setup documentation',
+        task: openSetupFileTask,
+        enabled: () => Boolean(ctx.project.openSetupMd),
+      },
       { title: 'Installing dependencies', task: installDependenciesTask },
       { title: 'Starting project', task: runProjectTask },
     ]);
@@ -141,4 +146,3 @@ export default class AppScaffold extends BaseCommand {
     );
   }
 }
-
