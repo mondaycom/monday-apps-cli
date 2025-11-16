@@ -71,8 +71,14 @@ export const openSetupFileTask = async (ctx: ScaffoldTaskContext, task: ListrTas
   const setupUrl = `${MONDAY_GITHUB_REPO_URL}/blob/${MONDAY_GITHUB_REPO_BRANCH}/apps/${ctx.project.name}/SETUP.md`;
 
   try {
-    // Use native Node.js approach to open URL in browser
-    const command = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
+    // Map platform identifiers to their corresponding open commands
+    const platformCommands: Record<string, string> = {
+      darwin: 'open',
+      win32: 'start',
+      linux: 'xdg-open',
+    };
+
+    const command = platformCommands[process.platform] ?? platformCommands.linux;
     spawn(command, [setupUrl], { detached: true, stdio: 'ignore' }).unref();
     task.title = `Setup documentation opened in browser`;
   } catch (error) {
