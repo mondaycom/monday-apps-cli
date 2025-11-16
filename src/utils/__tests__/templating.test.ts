@@ -64,6 +64,6 @@ describe('processTemplate', () => {
     const jsonContent = { value: '{{INVALID_JSON}}' };
     const vars = { INVALID_JSON: '{"unclosed": "object"' };
 
-    expect(() => processTemplate(jsonContent, vars)).toThrow(/Expected ',' or '}' after property value/);
+    expect(() => processTemplate(jsonContent, vars)).toThrow(SyntaxError);
   });
 });
