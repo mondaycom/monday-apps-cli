@@ -49,6 +49,22 @@ const printTraceIdIfPresent = (traceId: string | undefined, statusCode: number |
   }
 };
 
+/**
+ * Checks if theres an error of invalid token (returns 406 with empty response for auth errors).
+ * @param statusCode - HTTP status code from error response
+ * @param message - Error message from response body
+ * @param title - Error title from response body
+ * @returns true if this is an invalid token error, false otherwise
+ */
+const isAuthError = (
+  statusCode: number | undefined,
+  message: string | undefined,
+  title: string | undefined,
+): boolean => {
+  const isEmptyResponse = !message && !title;
+  return statusCode === 406 && isEmptyResponse;
+};
+
 const handleErrors = (error: any | Error | AxiosError): never => {
   const defaultErrorMessage = `Unexpected error occurred while communicating with the remote server`;
   if (error instanceof AxiosError) {
@@ -57,6 +73,17 @@ const handleErrors = (error: any | Error | AxiosError): never => {
     const title = errorAxiosResponse?.title;
     const message = errorAxiosResponse?.message || defaultErrorMessage;
     const traceId = errorAxiosResponse?.traceId?.toString();
+
+    if (isAuthError(statusCode, errorAxiosResponse?.message, title)) {
+      const tokenErrorMessage =
+        'Invalid or expired access token.\n\n' +
+        'To fix this, run:\n' +
+        '   mapps init -t YOUR_ACCESS_TOKEN\n\n' +
+        'Or run: mapps init\n' +
+        '(and you will be prompted for your token)\n\n';
+      throw new HttpError(tokenErrorMessage);
+    }
+
     printTraceIdIfPresent(traceId, statusCode);
     throw new HttpError(message, title, statusCode);
   } else if (error instanceof Error) {

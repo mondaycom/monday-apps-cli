@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 import axios from 'axios';
 import chalk from 'chalk';
 import { StatusCodes } from 'http-status-codes';
@@ -30,6 +33,10 @@ import logger from 'utils/logger';
 import { createProgressBarString } from 'utils/progress-bar';
 import { addRegionToQuery } from 'utils/region';
 import { appsUrlBuilder } from 'utils/urls-builder';
+
+const MAX_FILE_SIZE_MB = 75;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+const MAX_RECURSION_DEPTH = 10;
 
 export const getSignedStorageUrl = async (appVersionId: number, region?: Region): Promise<string> => {
   const DEBUG_TAG = 'get_signed_storage_url';
@@ -156,6 +163,44 @@ export const uploadFileToStorage = async (
   }
 };
 
+const checkFileSizesInDirectory = (directoryPath: string): void => {
+  const checkDirectory = (dir: string, depth = 0) => {
+    if (depth > MAX_RECURSION_DEPTH) {
+      const relativePath = path.relative(directoryPath, dir);
+      throw new Error(
+        `Directory structure is too deep!\n\n` +
+          `Maximum directory depth: ${MAX_RECURSION_DEPTH} levels\n` +
+          `Reached at: ${relativePath || '.'}\n\n` +
+          `Please flatten your project structure or move deeply nested directories outside your deployment folder.`,
+      );
+    }
+
+    const items = fs.readdirSync(dir);
+
+    for (const item of items) {
+      const fullPath = path.join(dir, item);
+      const stats = fs.statSync(fullPath);
+
+      if (stats.isDirectory()) {
+        checkDirectory(fullPath, depth + 1);
+      } else if (stats.isFile() && stats.size > MAX_FILE_SIZE_BYTES) {
+        const fileSizeMB = (stats.size / (1024 * 1024)).toFixed(2);
+        const relativePath = path.relative(directoryPath, fullPath);
+        throw new Error(
+          `File size limit exceeded!\n\n` +
+            `File: ${relativePath}\n` +
+            `Size: ${fileSizeMB}MB\n` +
+            `Maximum allowed: ${MAX_FILE_SIZE_MB}MB\n\n` +
+            `The file "${relativePath}" is too large to deploy.\n\n` +
+            `Please reduce the file size`,
+        );
+      }
+    }
+  };
+
+  checkDirectory(directoryPath);
+};
+
 export const buildClientZip = async (
   ctx: PushCommandTasksContext,
   task: ListrTaskWrapper<PushCommandTasksContext, any>,
@@ -168,6 +213,7 @@ export const buildClientZip = async (
 
   task.output = `Building client zip from "${ctx.directoryPath}" directory`;
   verifyClientDirectory(ctx.directoryPath);
+  checkFileSizesInDirectory(ctx.directoryPath);
   ctx.archivePath = await compressBuildToZip(ctx.directoryPath);
 };
 
