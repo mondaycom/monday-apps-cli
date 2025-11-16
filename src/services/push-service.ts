@@ -166,7 +166,13 @@ export const uploadFileToStorage = async (
 const checkFileSizesInDirectory = (directoryPath: string): void => {
   const checkDirectory = (dir: string, depth = 0) => {
     if (depth > MAX_RECURSION_DEPTH) {
-      return;
+      const relativePath = path.relative(directoryPath, dir);
+      throw new Error(
+        `Directory structure is too deep!\n\n` +
+          `Maximum directory depth: ${MAX_RECURSION_DEPTH} levels\n` +
+          `Reached at: ${relativePath || '.'}\n\n` +
+          `Please flatten your project structure or move deeply nested directories outside your deployment folder.`,
+      );
     }
 
     const items = fs.readdirSync(dir);
