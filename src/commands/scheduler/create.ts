@@ -19,6 +19,7 @@ export default class SchedulerCreate extends AuthenticatedCommand {
   ];
 
   static flags = SchedulerCreate.serializeFlags(SchedulerFlags);
+  static args = {};
 
   DEBUG_TAG = 'scheduler_create';
 
