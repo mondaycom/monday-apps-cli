@@ -57,7 +57,7 @@ export const handleHttpErrors = (error: HttpError) => {
 
     case StatusCodes.BAD_REQUEST: {
       logger.error(error.message);
-      throw new Error('Invalid request');
+      throw new Error(error.message);
     }
 
     case StatusCodes.INTERNAL_SERVER_ERROR: {
