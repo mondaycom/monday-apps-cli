@@ -13,13 +13,12 @@ import { isDefined } from 'src/utils/validations';
 export default class SchedulerCreate extends AuthenticatedCommand {
   static description = 'Create a new scheduler job for an app';
   static examples = [
-    '<%= config.bin %> <%= command.id %> -a APP_ID -s "0 * * * *" -u "my-endpoint"',
-    '<%= config.bin %> <%= command.id %> -a APP_ID -s "0 * * * *" -u "my-endpoint" -n "My-special-job" -d "My description"',
-    '<%= config.bin %> <%= command.id %> -a APP_ID -s "0 * * * *" -u "my-endpoint" -r 3 -b 10 -t 60',
+    '<%= config.bin %> <%= command.id %> -a APP_ID -s "0 * * * *" -e "my-endpoint"',
+    '<%= config.bin %> <%= command.id %> -a APP_ID -s "0 * * * *" -e "my-endpoint" -n "My-special-job" -d "My description"',
+    '<%= config.bin %> <%= command.id %> -a APP_ID -s "0 * * * *" -e "my-endpoint" -r 3 -b 10 -t 60',
   ];
 
   static flags = SchedulerCreate.serializeFlags(SchedulerFlags);
-  static args = {};
 
   DEBUG_TAG = 'scheduler_create';
 

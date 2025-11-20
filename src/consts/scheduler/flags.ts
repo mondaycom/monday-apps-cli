@@ -25,7 +25,7 @@ export const SchedulerFlags = addRegionToFlags({
     description: SchedulerMessages.schedule,
   }),
   targetUrl: Flags.string({
-    char: 'u',
+    char: 'e',
     description: SchedulerMessages.targetUrl,
   }),
   maxRetries: Flags.integer({
