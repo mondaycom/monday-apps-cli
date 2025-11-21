@@ -24,6 +24,15 @@ import { getLastParam } from 'utils/urls-builder';
 
 const requestSpy = getRequestSpy();
 
+// Create a minimal mock config
+const createMockConfig = (): Config => {
+  return {
+    bin: 'mapps',
+    configDir: process.cwd(),
+    runCommand: jest.fn(),
+  } as unknown as Config;
+};
+
 describe('app:create', () => {
   jest.setTimeout(1_000_000);
   const MOCK_BASE_RESPONSE = { headers: {} };
@@ -74,15 +83,6 @@ describe('app:create', () => {
 
   const mockTunnelingDomainResponse = {
     domain: 'abcdefgh.monday.mock',
-  };
-
-  // Create a minimal mock config
-  const createMockConfig = (): Config => {
-    return {
-      bin: 'mapps',
-      configDir: process.cwd(),
-      runCommand: jest.fn(),
-    } as any;
   };
 
   afterEach(() => {
@@ -136,7 +136,7 @@ describe('app:create', () => {
       const config = createMockConfig();
       const command = new AppCreate(mockPushFlags, config);
       await command.run();
-      
+
       const stdout = getStdout();
       expect(stdout).toContain('✔ Downloading template');
       expect(stdout).toContain('✔ Creating app');
