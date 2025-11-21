@@ -7,16 +7,18 @@ enableDebugMode();
 let loggerSpies: jest.SpyInstance[] = [];
 
 function addLoggerSpies() {
-  // Clear any existing spies first
-  loggerSpies.forEach(spy => spy.mockRestore());
+  // Restore and clear any existing spies first
+  loggerSpies.forEach(spy => {
+    spy.mockRestore();
+  });
   loggerSpies = [];
 
-  // Create new spies
+  // Create new spies that write to process.stdout/stderr so they can be captured
   loggerSpies.push(
-    jest.spyOn(logger, 'error').mockImplementation(val => console.error(val as string)),
-    jest.spyOn(logger, 'log').mockImplementation(val => console.log(val as string)),
-    jest.spyOn(logger, 'info').mockImplementation(val => console.info(val as string)),
-    jest.spyOn(logger, 'warn').mockImplementation(val => console.warn(val as string)),
+    jest.spyOn(logger, 'error').mockImplementation(val => process.stderr.write(val as string + '\n')),
+    jest.spyOn(logger, 'log').mockImplementation(val => process.stdout.write(val as string + '\n')),
+    jest.spyOn(logger, 'info').mockImplementation(val => process.stdout.write(val as string + '\n')),
+    jest.spyOn(logger, 'warn').mockImplementation(val => process.stderr.write(val as string + '\n')),
     jest.spyOn(logger, 'table').mockImplementation((val: unknown) => {
       if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object' && val[0] !== null) {
         const headers = Object.keys(val[0] as Record<string, unknown>).join('\t');
@@ -25,24 +27,24 @@ function addLoggerSpies() {
             .map(value => (value === undefined ? '' : String(value)))
             .join('\t'),
         );
-        console.log([headers, ...rows].join('\n'));
+        process.stdout.write([headers, ...rows].join('\n') + '\n');
         return;
       }
 
       if (val && typeof val === 'object') {
-        console.log(JSON.stringify(val));
+        process.stdout.write(JSON.stringify(val) + '\n');
         return;
       }
 
-      console.log(String(val));
+      process.stdout.write(String(val) + '\n');
     }),
-    jest.spyOn(logger, 'success').mockImplementation(val => console.info(val as string)),
+    jest.spyOn(logger, 'success').mockImplementation(val => process.stdout.write(val as string + '\n')),
     jest.spyOn(logger, 'debug').mockImplementation(val => {
       if (val instanceof Error) {
-        return console.error(val);
+        return process.stderr.write(val.toString() + '\n');
       }
 
-      console.debug(val as string);
+      process.stderr.write(val as string + '\n');
     }),
   );
 }
@@ -62,13 +64,12 @@ global.beforeEach(() => {
 
 global.afterEach(() => {
   // Clear all spies
-  loggerSpies.forEach(spy => spy.mockRestore());
-  loggerSpies = [];
+  loggerSpies.forEach(spy => spy.mockClear());
   
-  getConfigDataByKeySpy.mockReset();
-  processExistSpy.mockReset();
-  stderrWriteSpy.mockReset();
-  stdoutWriteSpy.mockReset();
+  getConfigDataByKeySpy.mockClear();
+  processExistSpy.mockClear();
+  stderrWriteSpy.mockClear();
+  stdoutWriteSpy.mockClear();
 });
 
 process.on('unhandledRejection', err => {

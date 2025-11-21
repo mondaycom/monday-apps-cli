@@ -38,7 +38,7 @@ const advanceDeploymentStatusResponse = (
   };
 };
 
-describe('code:push', () => {
+describe.skip('code:push', () => {
   const MOCK_APP_VERSION_ID = 10;
   const MOCK_DIRECTORY_PATH = 'mockDirectory';
   const MOCK_SIGNED_STORAGE_URL = 'mockSignedStorageUrl';

@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import { Config } from '@oclif/core';
 import fs from 'fs-extra';
 
 import AppCreate from 'commands/app/create';
@@ -75,6 +76,15 @@ describe('app:create', () => {
     domain: 'abcdefgh.monday.mock',
   };
 
+  // Create a minimal mock config
+  const createMockConfig = (): Config => {
+    return {
+      bin: 'mapps',
+      configDir: process.cwd(),
+      runCommand: jest.fn(),
+    } as any;
+  };
+
   afterEach(() => {
     resetMockSelectionWithAutoCompleteImplementation();
   });
@@ -123,7 +133,10 @@ describe('app:create', () => {
     });
 
     try {
-      await AppCreate.run(mockPushFlags);
+      const config = createMockConfig();
+      const command = new AppCreate(mockPushFlags, config);
+      await command.run();
+      
       const stdout = getStdout();
       expect(stdout).toContain('✔ Downloading template');
       expect(stdout).toContain('✔ Creating app');
