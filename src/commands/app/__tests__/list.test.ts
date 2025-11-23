@@ -1,16 +1,5 @@
-import { Config } from '@oclif/core';
-
 import AppList from 'commands/app/list';
-import { getStderr, getStdout, mockRequestResolvedValueOnce } from 'test/cli-test-utils';
-
-// Create a minimal mock config
-const createMockConfig = (): Config => {
-  return {
-    bin: 'mapps',
-    configDir: process.cwd(),
-    runCommand: jest.fn(),
-  } as unknown as Config;
-};
+import { createMockConfig, getStderr, getStdout, mockRequestResolvedValueOnce } from 'test/cli-test-utils';
 
 describe('app:list', () => {
   const mockAppListResponse = {
@@ -28,7 +17,6 @@ describe('app:list', () => {
 
   it('should list apps if exists', async () => {
     mockRequestResolvedValueOnce(mockAppListResponse);
-
     const config = createMockConfig();
     const command = new AppList([], config);
 
@@ -42,7 +30,6 @@ describe('app:list', () => {
 
   it('should print message if no apps', async () => {
     mockRequestResolvedValueOnce({ apps: [] });
-
     const config = createMockConfig();
     const command = new AppList([], config);
 

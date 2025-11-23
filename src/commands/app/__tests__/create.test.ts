@@ -1,6 +1,5 @@
 import path from 'node:path';
 
-import { Config } from '@oclif/core';
 import fs from 'fs-extra';
 
 import AppCreate from 'commands/app/create';
@@ -15,6 +14,7 @@ import {
 } from 'consts/urls';
 import {
   buildMockFlags,
+  createMockConfig,
   getRequestSpy,
   getStdout,
   mockSelectionWithAutoCompleteImplementation,
@@ -23,15 +23,6 @@ import {
 import { getLastParam } from 'utils/urls-builder';
 
 const requestSpy = getRequestSpy();
-
-// Create a minimal mock config
-const createMockConfig = (): Config => {
-  return {
-    bin: 'mapps',
-    configDir: process.cwd(),
-    runCommand: jest.fn(),
-  } as unknown as Config;
-};
 
 describe('app:create', () => {
   jest.setTimeout(1_000_000);
@@ -94,6 +85,7 @@ describe('app:create', () => {
     const selectedTemplate = APP_TEMPLATES_CONFIG[0];
     const answer = selectedTemplate.name;
 
+    const config = createMockConfig();
     const mockPushFlags = buildMockFlags(AppCreate, { name: 'New App by CLI' });
     mockSelectionWithAutoCompleteImplementation([{ question, answer }]);
 
@@ -133,7 +125,6 @@ describe('app:create', () => {
     });
 
     try {
-      const config = createMockConfig();
       const command = new AppCreate(mockPushFlags, config);
       await command.run();
 

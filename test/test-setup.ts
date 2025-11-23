@@ -19,25 +19,7 @@ function addLoggerSpies() {
     jest.spyOn(logger, 'log').mockImplementation(val => process.stdout.write(val as string + '\n')),
     jest.spyOn(logger, 'info').mockImplementation(val => process.stdout.write(val as string + '\n')),
     jest.spyOn(logger, 'warn').mockImplementation(val => process.stderr.write(val as string + '\n')),
-    jest.spyOn(logger, 'table').mockImplementation((val: unknown) => {
-      if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object' && val[0] !== null) {
-        const headers = Object.keys(val[0] as Record<string, unknown>).join('\t');
-        const rows = val.map(row =>
-          Object.values(row as Record<string, unknown>)
-            .map(value => (value === undefined ? '' : String(value)))
-            .join('\t'),
-        );
-        process.stdout.write([headers, ...rows].join('\n') + '\n');
-        return;
-      }
-
-      if (val && typeof val === 'object') {
-        process.stdout.write(JSON.stringify(val) + '\n');
-        return;
-      }
-
-      process.stdout.write(String(val) + '\n');
-    }),
+    jest.spyOn(logger, 'table').mockImplementation((val: unknown[]) => process.stdout.write(JSON.stringify(val) + '\n')),
     jest.spyOn(logger, 'success').mockImplementation(val => process.stdout.write(val as string + '\n')),
     jest.spyOn(logger, 'debug').mockImplementation(val => {
       if (val instanceof Error) {
