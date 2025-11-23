@@ -19,7 +19,7 @@ function addLoggerSpies() {
     jest.spyOn(logger, 'log').mockImplementation(val => process.stdout.write(val as string + '\n')),
     jest.spyOn(logger, 'info').mockImplementation(val => process.stdout.write(val as string + '\n')),
     jest.spyOn(logger, 'warn').mockImplementation(val => process.stderr.write(val as string + '\n')),
-    jest.spyOn(logger, 'table').mockImplementation((val: unknown[]) => process.stdout.write(JSON.stringify(val) + '\n')),
+    jest.spyOn(logger, 'table').mockImplementation(val => process.stdout.write(JSON.stringify(val) as string + '\n')),
     jest.spyOn(logger, 'success').mockImplementation(val => process.stdout.write(val as string + '\n')),
     jest.spyOn(logger, 'debug').mockImplementation(val => {
       if (val instanceof Error) {
