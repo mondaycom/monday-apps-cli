@@ -1,4 +1,4 @@
-import { Command } from '@oclif/core';
+import { Command, Config } from '@oclif/core';
 import axios from 'axios';
 import { ConfigService } from 'services/config-service';
 import { PromptService } from 'services/prompt-service';
@@ -102,4 +102,12 @@ export const buildMockFlag = <T extends typeof Command>(
   }
 
   return mockedFlag;
+};
+
+export const createMockConfig = (): Config => {
+  return {
+    bin: 'mapps',
+    configDir: process.cwd(),
+    runCommand: jest.fn(),
+  } as unknown as Config;
 };

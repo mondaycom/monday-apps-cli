@@ -1,5 +1,5 @@
 import AppList from 'commands/app/list';
-import { getStdout, mockRequestResolvedValueOnce } from 'test/cli-test-utils';
+import { createMockConfig, getStderr, getStdout, mockRequestResolvedValueOnce } from 'test/cli-test-utils';
 
 describe('app:list', () => {
   const mockAppListResponse = {
@@ -17,7 +17,10 @@ describe('app:list', () => {
 
   it('should list apps if exists', async () => {
     mockRequestResolvedValueOnce(mockAppListResponse);
-    await AppList.run();
+    const config = createMockConfig();
+    const command = new AppList([], config);
+
+    await command.run();
 
     // requires investigation - This should work with getStderr
     const stdout = getStdout();
@@ -27,8 +30,11 @@ describe('app:list', () => {
 
   it('should print message if no apps', async () => {
     mockRequestResolvedValueOnce({ apps: [] });
-    await AppList.run();
-    const stdout = getStdout();
-    expect(stdout).toContain('No apps found');
+    const config = createMockConfig();
+    const command = new AppList([], config);
+
+    await command.run();
+    const stderr = getStderr();
+    expect(stderr).toContain('No apps found');
   });
 });

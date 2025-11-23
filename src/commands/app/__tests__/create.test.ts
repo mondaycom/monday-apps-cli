@@ -14,6 +14,7 @@ import {
 } from 'consts/urls';
 import {
   buildMockFlags,
+  createMockConfig,
   getRequestSpy,
   getStdout,
   mockSelectionWithAutoCompleteImplementation,
@@ -84,6 +85,7 @@ describe('app:create', () => {
     const selectedTemplate = APP_TEMPLATES_CONFIG[0];
     const answer = selectedTemplate.name;
 
+    const config = createMockConfig();
     const mockPushFlags = buildMockFlags(AppCreate, { name: 'New App by CLI' });
     mockSelectionWithAutoCompleteImplementation([{ question, answer }]);
 
@@ -123,7 +125,9 @@ describe('app:create', () => {
     });
 
     try {
-      await AppCreate.run(mockPushFlags);
+      const command = new AppCreate(mockPushFlags, config);
+      await command.run();
+
       const stdout = getStdout();
       expect(stdout).toContain('✔ Downloading template');
       expect(stdout).toContain('✔ Creating app');
