@@ -12,4 +12,5 @@ jobs:
           node-version: "18.12.x"
       - run: yarn install
       - run: yarn build
+      - run: yarn test
       - run: yarn lint

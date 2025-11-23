@@ -3,38 +3,55 @@ import { enableDebugMode, default as logger } from 'utils/logger';
 
 enableDebugMode();
 
-function addLoggerSpies() {
-  jest.spyOn(logger, 'error').mockImplementation(val => console.error(val as string));
-  jest.spyOn(logger, 'log').mockImplementation(val => console.log(val as string));
-  jest.spyOn(logger, 'info').mockImplementation(val => console.info(val as string));
-  jest.spyOn(logger, 'warn').mockImplementation(val => console.warn(val as string));
-  jest.spyOn(logger, 'table').mockImplementation(val => console.table(val as string));
-  jest.spyOn(logger, 'success').mockImplementation(val => console.info(val as string));
-  jest.spyOn(logger, 'debug').mockImplementation(val => {
-    if (val instanceof Error) {
-      return console.error(val);
-    }
+// Store logger spies so they can be properly cleaned up
+let loggerSpies: jest.SpyInstance[] = [];
 
-    console.debug(val as string);
+function addLoggerSpies() {
+  // Restore and clear any existing spies first
+  loggerSpies.forEach(spy => {
+    spy.mockRestore();
   });
+  loggerSpies = [];
+
+  // Create new spies that write to process.stdout/stderr so they can be captured
+  loggerSpies.push(
+    jest.spyOn(logger, 'error').mockImplementation(val => process.stderr.write(val as string + '\n')),
+    jest.spyOn(logger, 'log').mockImplementation(val => process.stdout.write(val as string + '\n')),
+    jest.spyOn(logger, 'info').mockImplementation(val => process.stdout.write(val as string + '\n')),
+    jest.spyOn(logger, 'warn').mockImplementation(val => process.stderr.write(val as string + '\n')),
+    jest.spyOn(logger, 'table').mockImplementation(val => process.stdout.write(JSON.stringify(val) as string + '\n')),
+    jest.spyOn(logger, 'success').mockImplementation(val => process.stdout.write(val as string + '\n')),
+    jest.spyOn(logger, 'debug').mockImplementation(val => {
+      if (val instanceof Error) {
+        return process.stderr.write(val.toString() + '\n');
+      }
+
+      process.stderr.write(val as string + '\n');
+    }),
+  );
 }
 
 global.beforeEach(() => {
   addLoggerSpies();
   getConfigDataByKeySpy.mockReturnValue('mocked-access-token');
   // @ts-ignore
-  processExistSpy.mockImplementation(code => {
+  processExistSpy.mockImplementation((code) => {
     if (code !== 0) {
       throw new Error(`process.exit(${code})`);
     }
+    // Return undefined to prevent actual process exit
+    return undefined as never;
   });
 });
 
 global.afterEach(() => {
-  getConfigDataByKeySpy.mockReset();
-  processExistSpy.mockReset();
-  stderrWriteSpy.mockReset();
-  stdoutWriteSpy.mockReset();
+  // Clear all spies
+  loggerSpies.forEach(spy => spy.mockClear());
+  
+  getConfigDataByKeySpy.mockClear();
+  processExistSpy.mockClear();
+  stderrWriteSpy.mockClear();
+  stdoutWriteSpy.mockClear();
 });
 
 process.on('unhandledRejection', err => {
