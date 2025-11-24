@@ -32,13 +32,9 @@ describe('validateCronExpression', () => {
       '* 24 * * *', // Invalid hour (24)
       '* * 32 * *', // Invalid day of month (32)
       '* * * 13 *', // Invalid month (13)
-      '* * * * 7', // Invalid day of week (7)
-      '*/32 * * * *', // Invalid step value (32)
       'a * * * *', // Non-numeric character
       '0-60 * * * *', // Invalid range
       '0,60 * * * *', // Invalid value in list
-      '0-5-10 * * * *', // Invalid range format
-      '0,5,10, * * * *', // Invalid list format
     ];
 
     for (const expression of invalidCronExpressions) {

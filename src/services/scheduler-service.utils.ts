@@ -1,3 +1,4 @@
+import { CronExpressionParser } from 'cron-parser';
 import { StatusCodes } from 'http-status-codes';
 
 import { HttpError } from 'src/types/errors';
@@ -19,11 +20,18 @@ export const validateCronExpression = (schedule: string | undefined): void => {
     throw new Error('Cron expression is required');
   }
 
-  const cronRegex =
-    // eslint-disable-next-line unicorn/better-regex -- matching the backend regex which is correct and more strict in its format
-    /^(\*|([0-9]|1[0-9]|2[0-9]|3[0-1])|(\*\/([0-9]|1[0-9]|2[0-9]|3[0-1]))) (\*|([0-9]|1[0-9]|2[0-3])|(\*\/([0-9]|1[0-9]|2[0-3]))) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|(\*\/([1-9]|1[0-9]|2[0-9]|3[0-1]))) (\*|([1-9]|1[0-2])|(\*\/([1-9]|1[0-2]))) (\*|([0-6])|(\*\/([0-6])))$/;
-  if (!cronRegex.test(schedule)) {
-    throw new Error('Invalid cronjob schedule format');
+  const fields = schedule.trim().split(/\s+/);
+  if (fields.length !== 5) {
+    throw new Error(
+      `Invalid cronjob schedule format: Expected 5 fields (minute hour day month weekday), got ${fields.length}`,
+    );
+  }
+
+  try {
+    CronExpressionParser.parse(schedule);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Invalid cronjob schedule format: ${message}`);
   }
 };
 
