@@ -27,7 +27,7 @@ describe('validateCronExpression', () => {
   it('should reject invalid cron expressions', () => {
     const invalidCronExpressions = [
       '* * * *', // Missing field
-      '* * * * * *', // Extra field (6 fields - seconds format)
+      '* * * * * *', // Extra field
       '60 * * * *', // Invalid minute (60)
       '* 24 * * *', // Invalid hour (24)
       '* * 32 * *', // Invalid day of month (32)
