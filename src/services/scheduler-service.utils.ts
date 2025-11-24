@@ -20,6 +20,13 @@ export const validateCronExpression = (schedule: string | undefined): void => {
     throw new Error('Cron expression is required');
   }
 
+  const fields = schedule.trim().split(/\s+/);
+  if (fields.length !== 5) {
+    throw new Error(
+      `Invalid cronjob schedule format: Expected 5 fields (minute hour day month weekday), got ${fields.length}`,
+    );
+  }
+
   try {
     CronExpressionParser.parse(schedule);
   } catch (error: unknown) {
