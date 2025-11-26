@@ -9,6 +9,7 @@ import { LIVE_VERSION_ERROR_LOG } from 'src/consts/messages';
 import { AppId } from 'src/types/general';
 import { Region } from 'src/types/general/region';
 import { AppFeature, AppFeatureType } from 'src/types/services/app-features-service';
+import { SchedulerJob } from 'src/types/services/scheduler-service';
 
 import { SchedulerService } from './scheduler-service';
 
@@ -138,8 +139,8 @@ export const DynamicChoicesService = {
     return APP_TEMPLATES_CONFIG.find(template => template.name === selectedTemplateName)!;
   },
 
-  async chooseSchedulerJob(appId: AppId, region?: Region) {
-    const jobs = await SchedulerService.listJobs(appId, region);
+  async chooseSchedulerJob(appId: AppId, region?: Region, jobs?: SchedulerJob[]) {
+    if (!jobs) jobs = await SchedulerService.listJobs(appId, region);
     const jobChoicesMap: Record<string, string> = {};
     for (const job of jobs) {
       jobChoicesMap[`${job.name} (${job.targetUrl})`] = job.name;
