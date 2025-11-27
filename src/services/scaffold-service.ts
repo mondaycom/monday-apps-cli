@@ -133,17 +133,6 @@ export const runProjectTask = async (ctx: ScaffoldTaskContext, task: ListrTaskWr
       stdio: 'inherit',
     });
 
-    // Handle process cleanup on exit
-    const cleanup = () => {
-      if (!startProcess.killed) {
-        startProcess.kill('SIGTERM');
-      }
-    };
-
-    process.on('SIGINT', cleanup);
-    process.on('SIGTERM', cleanup);
-    process.on('exit', cleanup);
-
     startProcess.on('exit', code => {
       if (code === 0) {
         task.title = 'Project started successfully';
@@ -158,7 +147,6 @@ export const runProjectTask = async (ctx: ScaffoldTaskContext, task: ListrTaskWr
       reject(new Error(`Failed to start project: ${error.message}`));
     });
 
-    // Resolve after a short delay to let the process start
     setTimeout(() => {
       task.title = `Project is running (npm run ${ctx.startCommand})`;
       resolve();

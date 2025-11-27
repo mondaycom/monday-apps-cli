@@ -144,5 +144,7 @@ export default class AppScaffold extends BaseCommand {
         `  cd ${ctx.project.name}\n` +
         `  npm run ${ctx.startCommand}`,
     );
+
+    await new Promise(() => {});
   }
 }
