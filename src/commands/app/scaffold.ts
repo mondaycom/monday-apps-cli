@@ -136,15 +136,16 @@ export default class AppScaffold extends BaseCommand {
     ]);
 
     await tasks.run(ctx);
+
     logger.success(
       `Project is running at: ${ctx.projectPath}\n` +
-        `Running command: npm run ${ctx.startCommand}\n` +
-        `To stop: Press Ctrl+C\n` +
         `To run manually later:\n` +
         `  cd ${ctx.project.name}\n` +
-        `  npm run ${ctx.startCommand}`,
+        `  npm run ${ctx.startCommand}\n\n` +
+        `Press Enter to enter access token and view the tunnel URL\n\n`,
     );
 
+    // Keep scaffold process alive so dev server continues running
     await new Promise(() => {});
   }
 }
