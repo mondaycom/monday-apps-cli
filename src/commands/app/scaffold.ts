@@ -142,7 +142,7 @@ export default class AppScaffold extends BaseCommand {
         `To run manually later:\n` +
         `  cd ${ctx.project.name}\n` +
         `  npm run ${ctx.startCommand}\n\n` +
-        `Press Enter to enter access token and view the tunnel URL\n\n`,
+        `Press Enter to provide your access token and view the tunnel URL\n`,
     );
 
     // Keep scaffold process alive so dev server continues running
