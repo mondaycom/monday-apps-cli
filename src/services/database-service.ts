@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+
 import { appStorageConnectionStringUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
 import { databaseConnectionStringResponseSchema } from 'services/schemas/database-service-schemas';
@@ -24,6 +26,8 @@ export const getDatabaseConnectionString = async (appId: AppId): Promise<Databas
     const baseUrl = appStorageConnectionStringUrl(appId);
     const url = appsUrlBuilder(baseUrl);
     const publicIp = await getPublicIp();
+
+    logger.log(chalk.dim(`Retrieving database connection string... client IP: ${publicIp}`));
     const response = await execute<DatabaseConnectionStringResponseSchema>(
       {
         url,
