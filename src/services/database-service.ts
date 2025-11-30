@@ -3,6 +3,8 @@ import chalk from 'chalk';
 import { appStorageConnectionStringUrl } from 'consts/urls';
 import { execute } from 'services/api-service';
 import { databaseConnectionStringResponseSchema } from 'services/schemas/database-service-schemas';
+import { Region } from 'src/types/general/region';
+import { addRegionToQuery } from 'src/utils/region';
 import { HttpError } from 'types/errors';
 import { AppId } from 'types/general';
 import { HttpMethodTypes } from 'types/services/api-service';
@@ -20,7 +22,10 @@ const getPublicIp = async (): Promise<string> => {
   return ip.trim();
 };
 
-export const getDatabaseConnectionString = async (appId: AppId): Promise<DatabaseConnectionStringResponseSchema> => {
+export const getDatabaseConnectionString = async (
+  appId: AppId,
+  region?: Region,
+): Promise<DatabaseConnectionStringResponseSchema> => {
   const DEBUG_TAG = 'get_database_connection_string';
   try {
     const baseUrl = appStorageConnectionStringUrl(appId);
@@ -33,7 +38,7 @@ export const getDatabaseConnectionString = async (appId: AppId): Promise<Databas
         url,
         headers: { Accept: 'application/json' },
         method: HttpMethodTypes.GET,
-        query: { clientIp: publicIp },
+        query: addRegionToQuery({ clientIp: publicIp }, region),
       },
       databaseConnectionStringResponseSchema,
     );

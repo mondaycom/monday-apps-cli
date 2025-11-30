@@ -5,6 +5,7 @@ import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { VAR_UNKNOWN } from 'consts/messages';
 import { getDatabaseConnectionString } from 'services/database-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
+import { chooseRegionIfNeeded, getRegionFromString } from 'src/utils/region';
 import { HttpError } from 'types/errors';
 import logger from 'utils/logger';
 
@@ -23,12 +24,16 @@ export default class ConnectionString extends AuthenticatedCommand {
   public async run(): Promise<void> {
     const { flags } = await this.parse(ConnectionString);
     let { appId } = flags;
+    const { region } = flags;
+    const parsedRegion = getRegionFromString(region);
+
     try {
       if (!appId) {
         appId = await DynamicChoicesService.chooseApp();
       }
 
-      const result = await getDatabaseConnectionString(appId);
+      const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
+      const result = await getDatabaseConnectionString(appId, selectedRegion);
 
       logger.log(chalk.green('✓ Connection string retrieved successfully:'));
       logger.log(chalk.cyan(result.connectionString));
