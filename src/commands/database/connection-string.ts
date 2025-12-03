@@ -37,6 +37,7 @@ export default class ConnectionString extends AuthenticatedCommand {
 
       logger.log(chalk.green('✓ Connection string retrieved successfully:'));
       logger.log(chalk.cyan(result.connectionString));
+      logger.log(chalk.cyan(`Expires at: ${result.expiresAt}`));
 
       this.preparePrintCommand(this, { appId });
     } catch (error: unknown) {
