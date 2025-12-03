@@ -38,12 +38,19 @@ const MAX_FILE_SIZE_MB = 75;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 const MAX_RECURSION_DEPTH = 10;
 
-export const getSignedStorageUrl = async (appVersionId: number, region?: Region): Promise<string> => {
+export const getSignedStorageUrl = async (
+  appVersionId: number,
+  region?: Region,
+  securityScan?: boolean,
+): Promise<string> => {
   const DEBUG_TAG = 'get_signed_storage_url';
   try {
     const baseSignUrl = getDeploymentSignedUrl(appVersionId);
     const url = appsUrlBuilder(baseSignUrl);
-    const query = addRegionToQuery({}, region);
+    let query = addRegionToQuery({}, region);
+    if (securityScan) {
+      query = { ...query, securityScan: true };
+    }
 
     const response = await execute<SignedUrl>(
       {
@@ -123,6 +130,7 @@ export const pollForDeploymentStatus = async (
         DeploymentStatusTypesSchema.building,
         DeploymentStatusTypesSchema['building-infra'],
         DeploymentStatusTypesSchema['building-app'],
+        DeploymentStatusTypesSchema['security-scan'],
         DeploymentStatusTypesSchema['deploying-app'],
       ];
       const response = await getAppVersionDeploymentStatus(appVersionId, region);
@@ -251,7 +259,7 @@ export const buildAssetToDeployTask = async (
 
 export const prepareEnvironmentTask = async (ctx: PushCommandTasksContext) => {
   try {
-    const signedCloudStorageUrl = await getSignedStorageUrl(ctx.appVersionId, ctx.region);
+    const signedCloudStorageUrl = await getSignedStorageUrl(ctx.appVersionId, ctx.region, ctx.securityScan);
     const archiveContent = readFileData(ctx.archivePath!);
     ctx.signedCloudStorageUrl = signedCloudStorageUrl;
     ctx.archiveContent = archiveContent;
@@ -288,6 +296,7 @@ const STATUS_TO_PROGRESS_VALUE: Record<keyof typeof DeploymentStatusTypesSchema,
   [DeploymentStatusTypesSchema.building]: PROGRESS_STEP * 10,
   [DeploymentStatusTypesSchema['building-infra']]: PROGRESS_STEP * 25,
   [DeploymentStatusTypesSchema['building-app']]: PROGRESS_STEP * 50,
+  [DeploymentStatusTypesSchema['security-scan']]: PROGRESS_STEP * 60,
   [DeploymentStatusTypesSchema['deploying-app']]: PROGRESS_STEP * 75,
   [DeploymentStatusTypesSchema.successful]: PROGRESS_STEP * 100,
 };
@@ -304,9 +313,20 @@ const setCustomTip = (tip?: string, color = 'green') => {
   return tip ? `\n ${chalk.italic(chalkColor(tip))}` : '';
 };
 
+const downloadSecurityScanResults = (securityScanResults: any, appVersionId: number): string => {
+  const timestamp = new Date().toISOString().replaceAll(/[.:]/g, '-');
+  const fileName = `security-scan-${appVersionId}-${timestamp}.json`;
+  const filePath = path.join(process.cwd(), fileName);
+
+  fs.writeFileSync(filePath, JSON.stringify(securityScanResults, null, 2), 'utf8');
+
+  return filePath;
+};
+
 const finalizeDeployment = (
   deploymentStatus: AppVersionDeploymentStatus,
   task: ListrTaskWrapper<PushCommandTasksContext, any>,
+  ctx: PushCommandTasksContext,
 ) => {
   switch (deploymentStatus.status) {
     case DeploymentStatusTypesSchema.failed: {
@@ -316,7 +336,20 @@ const finalizeDeployment = (
     }
 
     case DeploymentStatusTypesSchema.successful: {
-      const deploymentUrl = `Deployment successfully finished, deployment url: ${deploymentStatus.deployment!.url}`;
+      let deploymentUrl = `Deployment successfully finished, deployment url: ${deploymentStatus.deployment!.url}`;
+
+      // Handle security scan results if present
+      if (deploymentStatus.securityScanResults) {
+        const scanResultsPath = downloadSecurityScanResults(deploymentStatus.securityScanResults, ctx.appVersionId);
+        ctx.securityScanResultsPath = scanResultsPath;
+
+        const summary = deploymentStatus.securityScanResults.summary;
+        const scanSummary = `\nSecurity scan complete: ${summary.total} findings (${summary.error} errors, ${summary.warning} warnings, ${summary.note} notes)`;
+        const downloadLink = `\nSecurity scan results: file://${scanResultsPath}`;
+
+        deploymentUrl += scanSummary + downloadLink;
+      }
+
       task.title = deploymentUrl;
       break;
     }
@@ -348,5 +381,5 @@ export const handleDeploymentTask = async (
     },
   });
 
-  finalizeDeployment(deploymentStatus, task);
+  finalizeDeployment(deploymentStatus, task, ctx);
 };

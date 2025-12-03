@@ -15,6 +15,7 @@ const MESSAGES = {
   appId: APP_ID_TO_ENTER,
   force: 'Force push to live version',
   'client-side': 'Push files to CDN',
+  'security-scan': 'Run security scan during deployment',
 };
 
 export default class Push extends AuthenticatedCommand {
@@ -48,6 +49,10 @@ export default class Push extends AuthenticatedCommand {
         char: 'c',
         description: MESSAGES['client-side'],
       }),
+      'security-scan': Flags.boolean({
+        char: 's',
+        description: MESSAGES['security-scan'],
+      }),
     }),
   );
 
@@ -61,7 +66,7 @@ export default class Push extends AuthenticatedCommand {
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Push);
-    const { directoryPath, region: strRegion, 'client-side': clientSide } = flags;
+    const { directoryPath, region: strRegion, 'client-side': clientSide, 'security-scan': securityScan } = flags;
     const region = getRegionFromString(strRegion);
     let appVersionId = flags.appVersionId;
     if (!clientSide) {
@@ -90,7 +95,7 @@ export default class Push extends AuthenticatedCommand {
       logger.debug(`push code to appVersionId: ${appVersionId}`, this.DEBUG_TAG);
       this.preparePrintCommand(this, { appVersionId, directoryPath: directoryPath });
 
-      const tasks = getTasksForServerSide(appVersionId, directoryPath, selectedRegion);
+      const tasks = getTasksForServerSide(appVersionId, directoryPath, selectedRegion, securityScan);
 
       await tasks.run();
     } catch (error: any) {
