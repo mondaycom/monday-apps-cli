@@ -338,7 +338,6 @@ const finalizeDeployment = (
     case DeploymentStatusTypesSchema.successful: {
       let deploymentUrl = `Deployment successfully finished, deployment url: ${deploymentStatus.deployment!.url}`;
 
-      // Handle security scan results if present
       if (deploymentStatus.securityScanResults) {
         const scanResultsPath = downloadSecurityScanResults(deploymentStatus.securityScanResults, ctx.appVersionId);
         ctx.securityScanResultsPath = scanResultsPath;
