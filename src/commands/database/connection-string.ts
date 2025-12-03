@@ -5,6 +5,7 @@ import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { VAR_UNKNOWN } from 'consts/messages';
 import { getDatabaseConnectionString } from 'services/database-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
+import { defaultVersionByAppId } from 'src/services/app-versions-service';
 import { chooseRegionIfNeeded, getRegionFromString } from 'src/utils/region';
 import { HttpError } from 'types/errors';
 import logger from 'utils/logger';
@@ -32,12 +33,15 @@ export default class ConnectionString extends AuthenticatedCommand {
         appId = await DynamicChoicesService.chooseApp();
       }
 
-      const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
+      const defaultVersion = await defaultVersionByAppId(Number(appId));
+      const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId, appVersionId: defaultVersion?.id });
       const result = await getDatabaseConnectionString(appId, selectedRegion);
 
       logger.log(chalk.green('✓ Connection string retrieved successfully:'));
       logger.log(chalk.cyan(result.connectionString));
-      logger.log(chalk.cyan(`Expires at: ${result.expiresAt}`));
+      logger.log(
+        chalk.cyan(`The connection may take a few moments to be available, and will expire at: ${result.expiresAt}`),
+      );
 
       this.preparePrintCommand(this, { appId });
     } catch (error: unknown) {
@@ -46,7 +50,9 @@ export default class ConnectionString extends AuthenticatedCommand {
         logger.error(`\n ${chalk.italic(chalk.red(error.message))}`);
       } else {
         logger.error(
-          `An unknown error happened while fetching connection string for app id - "${appId || VAR_UNKNOWN}"`,
+          `An unknown error happened while fetching the database connection string for app id - "${
+            appId || VAR_UNKNOWN
+          }"`,
         );
       }
 
