@@ -37,10 +37,10 @@ export default class ConnectionString extends AuthenticatedCommand {
       const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId, appVersionId: defaultVersion?.id });
       const result = await getDatabaseConnectionString(appId, selectedRegion);
 
-      logger.log(chalk.green('✓ Connection string retrieved successfully:'));
-      logger.log(chalk.cyan(result.connectionString));
+      logger.log(chalk.cyan('✓ Connection string retrieved successfully:'));
+      logger.log(chalk.green(result.connectionString));
       logger.log(
-        chalk.green(`The connection may take a few moments to be available, and will expire at: ${result.expiresAt}`),
+        chalk.cyan(`The connection may take a few moments to be available, and will expire at: ${result.expiresAt}`),
       );
 
       this.preparePrintCommand(this, { appId });
