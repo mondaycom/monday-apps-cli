@@ -40,7 +40,7 @@ export default class ConnectionString extends AuthenticatedCommand {
       logger.log(chalk.green('✓ Connection string retrieved successfully:'));
       logger.log(chalk.cyan(result.connectionString));
       logger.log(
-        chalk.cyan(`The connection may take a few moments to be available, and will expire at: ${result.expiresAt}`),
+        chalk.green(`The connection may take a few moments to be available, and will expire at: ${result.expiresAt}`),
       );
 
       this.preparePrintCommand(this, { appId });
