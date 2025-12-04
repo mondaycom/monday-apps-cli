@@ -313,8 +313,8 @@ const setCustomTip = (tip?: string, color = 'green') => {
   return tip ? `\n ${chalk.italic(chalkColor(tip))}` : '';
 };
 
-const downloadSecurityScanResults = (securityScanResults: any, appVersionId: number): string => {
-  const timestamp = new Date().toISOString().replaceAll(/[.:]/g, '-');
+const writeSecurityScanResultsToDisk = (securityScanResults: any, appVersionId: number): string => {
+  const timestamp = new Date().toISOString().split('.')[0].replaceAll(':', '-');
   const fileName = `security-scan-${appVersionId}-${timestamp}.json`;
   const filePath = path.join(process.cwd(), fileName);
 
@@ -339,12 +339,15 @@ const finalizeDeployment = (
       let deploymentUrl = `Deployment successfully finished, deployment url: ${deploymentStatus.deployment!.url}`;
 
       if (deploymentStatus.securityScanResults) {
-        const scanResultsPath = downloadSecurityScanResults(deploymentStatus.securityScanResults, ctx.appVersionId);
+        const scanResultsPath = writeSecurityScanResultsToDisk(deploymentStatus.securityScanResults, ctx.appVersionId);
         ctx.securityScanResultsPath = scanResultsPath;
 
         const summary = deploymentStatus.securityScanResults.summary;
-        const scanSummary = `\nSecurity scan complete: ${summary.total} findings (${summary.error} errors, ${summary.warning} warnings, ${summary.note} notes)`;
-        const downloadLink = `\nSecurity scan results: file://${scanResultsPath}`;
+        const errors = chalk.red(`✖ ${summary.error} errors`);
+        const warnings = chalk.yellow(`▲ ${summary.warning} warnings`);
+        const notes = chalk.cyan(`ℹ ${summary.note} info`);
+        const scanSummary = `\nSecurity scan completed with ${summary.total} findings:\n${errors}\t${warnings}\t${notes}`;
+        const downloadLink = `\nResults saved to: ${scanResultsPath}`;
 
         deploymentUrl += scanSummary + downloadLink;
       }

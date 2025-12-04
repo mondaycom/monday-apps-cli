@@ -15,7 +15,7 @@ const MESSAGES = {
   appId: APP_ID_TO_ENTER,
   force: 'Force push to live version',
   'client-side': 'Push files to CDN',
-  'security-scan': 'Run security scan during deployment',
+  'security-scan': 'Run a security scan to find dependency vulnerabilities during code deployment',
 };
 
 export default class Push extends AuthenticatedCommand {
