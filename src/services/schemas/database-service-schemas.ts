@@ -5,5 +5,6 @@ import { baseResponseHttpMetaDataSchema } from 'services/schemas/api-service-sch
 export const databaseConnectionStringResponseSchema = z
   .object({
     connectionString: z.string(),
+    expiresAt: z.string(),
   })
   .merge(baseResponseHttpMetaDataSchema);
