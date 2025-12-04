@@ -142,3 +142,7 @@ export const exportAppManifestUrl = (appId: AppId): string => {
 export const makeAppManifestExportableUrl = (appId: AppId): string => {
   return `${BASE_APPS_URL}/${appId}/manifest/exportability`;
 };
+
+export const getDeploymentSecurityScanUrl = (appVersionId: number): string => {
+  return `${appVersionIdBaseUrl(appVersionId)}/deployments/security-scan`;
+};

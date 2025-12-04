@@ -27,8 +27,13 @@ export const getTasksForClientSide = (appVersionId: number, directoryPath?: stri
   );
 };
 
-export const getTasksForServerSide = (appVersionId: number, directoryPath?: string, region?: Region) => {
-  const ctx = { appVersionId, directoryPath, region };
+export const getTasksForServerSide = (
+  appVersionId: number,
+  directoryPath?: string,
+  region?: Region,
+  securityScan?: boolean,
+) => {
+  const ctx = { appVersionId, directoryPath, region, securityScan };
   return new Listr<PushCommandTasksContext>(
     [
       { title: 'Build asset to deploy', task: buildAssetToDeployTask },

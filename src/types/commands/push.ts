@@ -10,4 +10,6 @@ export type PushCommandTasksContext = {
   showHandleDeploymentTask?: boolean;
   directoryPath?: string;
   region?: Region;
+  securityScan?: boolean;
+  securityScanResultsPath?: string;
 };
