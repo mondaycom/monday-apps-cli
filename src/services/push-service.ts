@@ -6,7 +6,12 @@ import chalk from 'chalk';
 import { StatusCodes } from 'http-status-codes';
 import { ListrTaskWrapper } from 'listr2';
 
-import { getAppVersionDeploymentStatusUrl, getDeploymentClientUpload, getDeploymentSignedUrl } from 'consts/urls';
+import {
+  getAppVersionDeploymentStatusUrl,
+  getDeploymentClientUpload,
+  getDeploymentSecurityScanUrl,
+  getDeploymentSignedUrl,
+} from 'consts/urls';
 import { execute } from 'services/api-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import {
@@ -17,7 +22,11 @@ import {
   verifyClientDirectory,
 } from 'services/files-service';
 import { pollPromise } from 'services/polling-service';
-import { appVersionDeploymentStatusSchema, signedUrlSchema } from 'services/schemas/push-service-schemas';
+import {
+  appVersionDeploymentStatusSchema,
+  securityScanResponseSchema,
+  signedUrlSchema,
+} from 'services/schemas/push-service-schemas';
 import { PushCommandTasksContext } from 'types/commands/push';
 import { HttpError } from 'types/errors';
 import { Region } from 'types/general/region';
@@ -26,6 +35,7 @@ import { HttpMethodTypes } from 'types/services/api-service';
 import {
   AppVersionDeploymentStatus,
   DeploymentStatusTypesSchema,
+  SecurityScanResponse,
   SignedUrl,
   uploadClient,
 } from 'types/services/push-service';
@@ -107,6 +117,31 @@ export const getAppVersionDeploymentStatus = async (appVersionId: number, region
     return response;
   } catch (error_: any | HttpError) {
     const error = error_ instanceof HttpError ? error_ : new Error('Failed to check app version deployment status.');
+    throw error;
+  }
+};
+
+export const getDeploymentSecurityScan = async (
+  appVersionId: number,
+  region?: Region,
+): Promise<SecurityScanResponse> => {
+  try {
+    const baseUrl = getDeploymentSecurityScanUrl(appVersionId);
+    const url = appsUrlBuilder(baseUrl);
+    const query = addRegionToQuery({}, region);
+
+    const response = await execute<SecurityScanResponse>(
+      {
+        query,
+        url,
+        headers: { Accept: 'application/json' },
+        method: HttpMethodTypes.GET,
+      },
+      securityScanResponseSchema,
+    );
+    return response;
+  } catch (error_: any | HttpError) {
+    const error = error_ instanceof HttpError ? error_ : new Error('Failed to fetch security scan results.');
     throw error;
   }
 };

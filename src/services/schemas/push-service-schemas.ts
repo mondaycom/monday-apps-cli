@@ -91,3 +91,9 @@ export const appVersionDeploymentStatusSchema = z
     securityScanResults: securityScanSchema.optional(),
   })
   .merge(baseResponseHttpMetaDataSchema);
+
+export const securityScanResponseSchema = z
+  .object({
+    securityScanResults: securityScanSchema.nullable(),
+  })
+  .merge(baseResponseHttpMetaDataSchema);

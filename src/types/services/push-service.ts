@@ -4,6 +4,7 @@ import {
   appVersionDeploymentStatusSchema,
   deploymentStatusTypesSchema,
   securityScanFindingSchema,
+  securityScanResponseSchema,
   securityScanSchema,
   signedUrlSchema,
   uploadClientSchema,
@@ -45,3 +46,4 @@ export type SecurityScanResult = {
 
 export type SecurityScanFindingType = z.infer<typeof securityScanFindingSchema>;
 export type SecurityScanResultType = z.infer<typeof securityScanSchema>;
+export type SecurityScanResponse = z.infer<typeof securityScanResponseSchema>;
