@@ -41,9 +41,36 @@ export const deploymentStatusTypesArray = [
   'building-infra',
   'building-app',
   'deploying-app',
+  'security-scan',
 ] as const;
 
 export const deploymentStatusTypesSchema = z.enum(deploymentStatusTypesArray);
+
+export const securityScanFindingSchema = z.object({
+  tool: z.string(),
+  ruleId: z.string(),
+  severity: z.string(),
+  file: z.string(),
+  line: z.number().nullable(),
+  message: z.string(),
+  shortDescription: z.string(),
+  fullDescription: z.string(),
+  helpUri: z.string(),
+  help: z.string(),
+  precision: z.string(),
+});
+
+export const securityScanSchema = z.object({
+  version: z.string(),
+  timestamp: z.string(),
+  summary: z.object({
+    total: z.number(),
+    error: z.number(),
+    warning: z.number(),
+    note: z.number(),
+  }),
+  findings: z.array(securityScanFindingSchema),
+});
 
 export const appVersionDeploymentStatusSchema = z
   .object({
@@ -61,5 +88,12 @@ export const appVersionDeploymentStatusSchema = z
         message: z.string(),
       })
       .optional(),
+    securityScanResults: securityScanSchema.optional(),
+  })
+  .merge(baseResponseHttpMetaDataSchema);
+
+export const securityScanResponseSchema = z
+  .object({
+    securityScanResults: securityScanSchema.nullable(),
   })
   .merge(baseResponseHttpMetaDataSchema);

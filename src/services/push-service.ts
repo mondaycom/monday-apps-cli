@@ -6,7 +6,12 @@ import chalk from 'chalk';
 import { StatusCodes } from 'http-status-codes';
 import { ListrTaskWrapper } from 'listr2';
 
-import { getAppVersionDeploymentStatusUrl, getDeploymentClientUpload, getDeploymentSignedUrl } from 'consts/urls';
+import {
+  getAppVersionDeploymentStatusUrl,
+  getDeploymentClientUpload,
+  getDeploymentSecurityScanUrl,
+  getDeploymentSignedUrl,
+} from 'consts/urls';
 import { execute } from 'services/api-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import {
@@ -17,7 +22,11 @@ import {
   verifyClientDirectory,
 } from 'services/files-service';
 import { pollPromise } from 'services/polling-service';
-import { appVersionDeploymentStatusSchema, signedUrlSchema } from 'services/schemas/push-service-schemas';
+import {
+  appVersionDeploymentStatusSchema,
+  securityScanResponseSchema,
+  signedUrlSchema,
+} from 'services/schemas/push-service-schemas';
 import { PushCommandTasksContext } from 'types/commands/push';
 import { HttpError } from 'types/errors';
 import { Region } from 'types/general/region';
@@ -26,6 +35,7 @@ import { HttpMethodTypes } from 'types/services/api-service';
 import {
   AppVersionDeploymentStatus,
   DeploymentStatusTypesSchema,
+  SecurityScanResponse,
   SignedUrl,
   uploadClient,
 } from 'types/services/push-service';
@@ -38,12 +48,19 @@ const MAX_FILE_SIZE_MB = 75;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 const MAX_RECURSION_DEPTH = 10;
 
-export const getSignedStorageUrl = async (appVersionId: number, region?: Region): Promise<string> => {
+export const getSignedStorageUrl = async (
+  appVersionId: number,
+  region?: Region,
+  securityScan?: boolean,
+): Promise<string> => {
   const DEBUG_TAG = 'get_signed_storage_url';
   try {
     const baseSignUrl = getDeploymentSignedUrl(appVersionId);
     const url = appsUrlBuilder(baseSignUrl);
-    const query = addRegionToQuery({}, region);
+    let query = addRegionToQuery({}, region);
+    if (securityScan) {
+      query = { ...query, securityScan: true };
+    }
 
     const response = await execute<SignedUrl>(
       {
@@ -104,6 +121,31 @@ export const getAppVersionDeploymentStatus = async (appVersionId: number, region
   }
 };
 
+export const getDeploymentSecurityScan = async (
+  appVersionId: number,
+  region?: Region,
+): Promise<SecurityScanResponse> => {
+  try {
+    const baseUrl = getDeploymentSecurityScanUrl(appVersionId);
+    const url = appsUrlBuilder(baseUrl);
+    const query = addRegionToQuery({}, region);
+
+    const response = await execute<SecurityScanResponse>(
+      {
+        query,
+        url,
+        headers: { Accept: 'application/json' },
+        method: HttpMethodTypes.GET,
+      },
+      securityScanResponseSchema,
+    );
+    return response;
+  } catch (error_: any | HttpError) {
+    const error = error_ instanceof HttpError ? error_ : new Error('Failed to fetch security scan results.');
+    throw error;
+  }
+};
+
 export const pollForDeploymentStatus = async (
   appVersionId: number,
   retryAfter: number,
@@ -123,6 +165,7 @@ export const pollForDeploymentStatus = async (
         DeploymentStatusTypesSchema.building,
         DeploymentStatusTypesSchema['building-infra'],
         DeploymentStatusTypesSchema['building-app'],
+        DeploymentStatusTypesSchema['security-scan'],
         DeploymentStatusTypesSchema['deploying-app'],
       ];
       const response = await getAppVersionDeploymentStatus(appVersionId, region);
@@ -251,7 +294,7 @@ export const buildAssetToDeployTask = async (
 
 export const prepareEnvironmentTask = async (ctx: PushCommandTasksContext) => {
   try {
-    const signedCloudStorageUrl = await getSignedStorageUrl(ctx.appVersionId, ctx.region);
+    const signedCloudStorageUrl = await getSignedStorageUrl(ctx.appVersionId, ctx.region, ctx.securityScan);
     const archiveContent = readFileData(ctx.archivePath!);
     ctx.signedCloudStorageUrl = signedCloudStorageUrl;
     ctx.archiveContent = archiveContent;
@@ -288,6 +331,7 @@ const STATUS_TO_PROGRESS_VALUE: Record<keyof typeof DeploymentStatusTypesSchema,
   [DeploymentStatusTypesSchema.building]: PROGRESS_STEP * 10,
   [DeploymentStatusTypesSchema['building-infra']]: PROGRESS_STEP * 25,
   [DeploymentStatusTypesSchema['building-app']]: PROGRESS_STEP * 50,
+  [DeploymentStatusTypesSchema['security-scan']]: PROGRESS_STEP * 60,
   [DeploymentStatusTypesSchema['deploying-app']]: PROGRESS_STEP * 75,
   [DeploymentStatusTypesSchema.successful]: PROGRESS_STEP * 100,
 };
@@ -304,9 +348,20 @@ const setCustomTip = (tip?: string, color = 'green') => {
   return tip ? `\n ${chalk.italic(chalkColor(tip))}` : '';
 };
 
+const writeSecurityScanResultsToDisk = (securityScanResults: any, appVersionId: number): string => {
+  const timestamp = new Date().toISOString().split('.')[0].replaceAll(':', '-');
+  const fileName = `security-scan-${appVersionId}-${timestamp}.json`;
+  const filePath = path.join(process.cwd(), fileName);
+
+  fs.writeFileSync(filePath, JSON.stringify(securityScanResults, null, 2), 'utf8');
+
+  return filePath;
+};
+
 const finalizeDeployment = (
   deploymentStatus: AppVersionDeploymentStatus,
   task: ListrTaskWrapper<PushCommandTasksContext, any>,
+  ctx: PushCommandTasksContext,
 ) => {
   switch (deploymentStatus.status) {
     case DeploymentStatusTypesSchema.failed: {
@@ -317,7 +372,23 @@ const finalizeDeployment = (
 
     case DeploymentStatusTypesSchema.successful: {
       const deploymentUrl = `Deployment successfully finished, deployment url: ${deploymentStatus.deployment!.url}`;
-      task.title = deploymentUrl;
+
+      if (deploymentStatus.securityScanResults) {
+        const scanResultsPath = writeSecurityScanResultsToDisk(deploymentStatus.securityScanResults, ctx.appVersionId);
+        ctx.securityScanResultsPath = scanResultsPath;
+
+        const summary = deploymentStatus.securityScanResults.summary;
+        const errors = chalk.red(`✖ ${summary.error} errors`);
+        const warnings = chalk.yellow(`▲ ${summary.warning} warnings`);
+        const notes = chalk.cyan(`ℹ ${summary.note} info`);
+        const scanSummary = `Security scan completed with ${summary.total} findings:\n  ${errors}\t${warnings}\t${notes}`;
+        const downloadLink = `Results saved to: ${scanResultsPath}`;
+
+        task.title = `${scanSummary}\n${downloadLink}\n${deploymentUrl}`;
+      } else {
+        task.title = deploymentUrl;
+      }
+
       break;
     }
 
@@ -348,5 +419,5 @@ export const handleDeploymentTask = async (
     },
   });
 
-  finalizeDeployment(deploymentStatus, task);
+  finalizeDeployment(deploymentStatus, task, ctx);
 };
