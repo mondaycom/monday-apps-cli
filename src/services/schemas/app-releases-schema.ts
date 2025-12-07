@@ -12,7 +12,7 @@ export const appReleaseSchema = z.object({
   kind: z.string(),
   category: z.nativeEnum(AppReleaseCategory),
   state: z.string(),
-  region: z.nativeEnum(Region),
+  region: z.nativeEnum(Region).nullable(),
   data: z
     .object({
       url: z.string().optional(),
