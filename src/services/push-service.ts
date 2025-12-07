@@ -371,7 +371,7 @@ const finalizeDeployment = (
     }
 
     case DeploymentStatusTypesSchema.successful: {
-      let deploymentUrl = `Deployment successfully finished, deployment url: ${deploymentStatus.deployment!.url}`;
+      const deploymentUrl = `Deployment successfully finished, deployment url: ${deploymentStatus.deployment!.url}`;
 
       if (deploymentStatus.securityScanResults) {
         const scanResultsPath = writeSecurityScanResultsToDisk(deploymentStatus.securityScanResults, ctx.appVersionId);
@@ -381,13 +381,14 @@ const finalizeDeployment = (
         const errors = chalk.red(`✖ ${summary.error} errors`);
         const warnings = chalk.yellow(`▲ ${summary.warning} warnings`);
         const notes = chalk.cyan(`ℹ ${summary.note} info`);
-        const scanSummary = `\nSecurity scan completed with ${summary.total} findings:\n${errors}\t${warnings}\t${notes}`;
-        const downloadLink = `\nResults saved to: ${scanResultsPath}`;
+        const scanSummary = `Security scan completed with ${summary.total} findings:\n  ${errors}\t${warnings}\t${notes}`;
+        const downloadLink = `Results saved to: ${scanResultsPath}`;
 
-        deploymentUrl += scanSummary + downloadLink;
+        task.title = `${scanSummary}\n${downloadLink}\n${deploymentUrl}`;
+      } else {
+        task.title = deploymentUrl;
       }
 
-      task.title = deploymentUrl;
       break;
     }
 

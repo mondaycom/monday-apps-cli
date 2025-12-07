@@ -79,7 +79,7 @@ export default class Report extends AuthenticatedCommand {
 
       this.preparePrintCommand(this, { appVersionId });
 
-      logger.debug(`Fetching security scan for appVersionId: ${appVersionId}`, DEBUG_TAG);
+      logger.debug(`Fetching security scan results for appVersionId: ${appVersionId}`, DEBUG_TAG);
 
       const response: SecurityScanResponse = await getDeploymentSecurityScan(appVersionId, selectedRegion);
 
@@ -95,7 +95,7 @@ export default class Report extends AuthenticatedCommand {
         const filePath = writeResultsToFile(response.securityScanResults, appVersionId);
         logger.log(`Full report saved to: ${filePath}`);
       } else {
-        logger.log('Use -o flag to save the full report to a JSON file.');
+        logger.log('Use the -o flag to save the full report to a JSON file.');
       }
     } catch (error: unknown) {
       logger.debug({ res: error }, DEBUG_TAG);
