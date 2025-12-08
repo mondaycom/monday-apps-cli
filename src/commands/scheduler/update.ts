@@ -31,10 +31,10 @@ export default class SchedulerUpdate extends AuthenticatedCommand {
 
     if (!appId) appId = await DynamicChoicesService.chooseApp();
     const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
-    if (!name) name = await DynamicChoicesService.chooseSchedulerJob(appId, selectedRegion);
+    const jobs = await SchedulerService.listJobs(appId, selectedRegion);
+    if (!name) name = await DynamicChoicesService.chooseSchedulerJob(appId, selectedRegion, jobs);
 
     // Get the current job details
-    const jobs = await SchedulerService.listJobs(appId, selectedRegion);
     const currentJob = jobs.find(job => job.name === name);
     if (!currentJob) {
       throw new Error(`Job ${name} not found`);
