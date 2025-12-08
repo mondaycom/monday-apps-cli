@@ -30,10 +30,15 @@ const printSecurityScanSummary = (securityScanResults: SecurityScanResultType) =
   logger.log(`${errors}\t${warnings}\t${notes}\n`);
 };
 
-const writeResultsToFile = (securityScanResults: SecurityScanResultType, appVersionId: number): string => {
+const writeResultsToFile = (
+  securityScanResults: SecurityScanResultType,
+  appVersionId: number,
+  outputDir?: string,
+): string => {
   const timestamp = new Date().toISOString().split('.')[0].replaceAll(':', '-');
   const fileName = `security-scan-${appVersionId}-${timestamp}.json`;
-  const filePath = path.join(process.cwd(), fileName);
+  const directory = outputDir || process.cwd();
+  const filePath = path.join(directory, fileName);
 
   fs.writeFileSync(filePath, JSON.stringify(securityScanResults, null, 2), 'utf8');
 
@@ -46,6 +51,7 @@ export default class Report extends AuthenticatedCommand {
   static examples = [
     '<%= config.bin %> <%= command.id %> -i APP_VERSION_ID',
     '<%= config.bin %> <%= command.id %> -i APP_VERSION_ID -o',
+    '<%= config.bin %> <%= command.id %> -i APP_VERSION_ID -o -d /path/to/directory',
   ];
 
   static flags = Report.serializeFlags(
@@ -60,12 +66,17 @@ export default class Report extends AuthenticatedCommand {
         description: 'Save the full report to a JSON file',
         default: false,
       }),
+      outputDir: Flags.string({
+        char: 'd',
+        description: 'Directory to save the report file (requires -o flag)',
+        dependsOn: ['output'],
+      }),
     }),
   );
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(Report);
-    const { region: strRegion, output } = flags;
+    const { region: strRegion, output, outputDir } = flags;
     const region = getRegionFromString(strRegion);
     let appVersionId = flags.appVersionId;
 
@@ -92,7 +103,7 @@ export default class Report extends AuthenticatedCommand {
       printSecurityScanSummary(response.securityScanResults);
 
       if (output) {
-        const filePath = writeResultsToFile(response.securityScanResults, appVersionId);
+        const filePath = writeResultsToFile(response.securityScanResults, appVersionId, outputDir);
         logger.log(`Full report saved to: ${filePath}`);
       } else {
         logger.log('Use the -o flag to save the full report to a JSON file.');
