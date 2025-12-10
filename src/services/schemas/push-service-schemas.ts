@@ -47,17 +47,17 @@ export const deploymentStatusTypesArray = [
 export const deploymentStatusTypesSchema = z.enum(deploymentStatusTypesArray);
 
 export const securityScanFindingSchema = z.object({
-  tool: z.string(),
-  ruleId: z.string(),
-  severity: z.string(),
-  file: z.string(),
+  tool: z.string().nullable(),
+  ruleId: z.string().nullable(),
+  severity: z.string().nullable(),
+  file: z.string().nullable(),
   line: z.number().nullable(),
-  message: z.string(),
-  shortDescription: z.string(),
-  fullDescription: z.string(),
-  helpUri: z.string(),
-  help: z.string(),
-  precision: z.string(),
+  message: z.string().nullable(),
+  shortDescription: z.string().nullable(),
+  fullDescription: z.string().nullable(),
+  helpUri: z.string().nullable(),
+  help: z.string().nullable(),
+  precision: z.string().nullable(),
 });
 
 export const securityScanSchema = z.object({

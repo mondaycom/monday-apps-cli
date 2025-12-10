@@ -19,17 +19,17 @@ export type AppVersionDeploymentStatus = z.infer<typeof appVersionDeploymentStat
 export const DeploymentStatusTypesSchema = deploymentStatusTypesSchema.enum;
 
 export type SecurityScanFinding = {
-  tool: string;
-  ruleId: string;
-  severity: string;
-  file: string;
+  tool: string | null;
+  ruleId: string | null;
+  severity: string | null;
+  file: string | null;
   line: number | null;
-  message: string;
-  shortDescription: string;
-  fullDescription: string;
-  helpUri: string;
-  help: string;
-  precision: string;
+  message: string | null;
+  shortDescription: string | null;
+  fullDescription: string | null;
+  helpUri: string | null;
+  help: string | null;
+  precision: string | null;
 };
 
 export type SecurityScanResult = {
