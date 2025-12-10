@@ -10,13 +10,13 @@ import { APP_VERSION_ID_TO_ENTER, VAR_UNKNOWN } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getDeploymentSecurityScan } from 'services/push-service';
 import { HttpError } from 'types/errors';
-import { SecurityScanResponse, SecurityScanResultType } from 'types/services/push-service';
+import { SecurityScanResponse, SecurityScanResult } from 'types/services/push-service';
 import logger from 'utils/logger';
 import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'utils/region';
 
 const DEBUG_TAG = 'code_report';
 
-const printSecurityScanSummary = (securityScanResults: SecurityScanResultType) => {
+const printSecurityScanSummary = (securityScanResults: SecurityScanResult) => {
   const { summary, timestamp, version } = securityScanResults;
 
   logger.log(`\nSecurity Scan Report (v${version})`);
@@ -31,7 +31,7 @@ const printSecurityScanSummary = (securityScanResults: SecurityScanResultType) =
 };
 
 const writeResultsToFile = (
-  securityScanResults: SecurityScanResultType,
+  securityScanResults: SecurityScanResult,
   appVersionId: number,
   outputDir?: string,
 ): string => {

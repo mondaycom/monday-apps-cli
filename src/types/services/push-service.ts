@@ -18,32 +18,6 @@ export type AppVersionDeploymentStatus = z.infer<typeof appVersionDeploymentStat
 
 export const DeploymentStatusTypesSchema = deploymentStatusTypesSchema.enum;
 
-export type SecurityScanFinding = {
-  tool: string;
-  ruleId: string;
-  severity: string;
-  file: string;
-  line: number | null;
-  message: string;
-  shortDescription: string;
-  fullDescription: string;
-  helpUri: string;
-  help: string;
-  precision: string;
-};
-
-export type SecurityScanResult = {
-  version: string;
-  timestamp: string;
-  summary: {
-    total: number;
-    error: number;
-    warning: number;
-    note: number;
-  };
-  findings: SecurityScanFinding[];
-};
-
-export type SecurityScanFindingType = z.infer<typeof securityScanFindingSchema>;
-export type SecurityScanResultType = z.infer<typeof securityScanSchema>;
+export type SecurityScanFinding = z.infer<typeof securityScanFindingSchema>;
+export type SecurityScanResult = z.infer<typeof securityScanSchema>;
 export type SecurityScanResponse = z.infer<typeof securityScanResponseSchema>;
