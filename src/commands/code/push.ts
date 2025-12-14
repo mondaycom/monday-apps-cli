@@ -1,7 +1,8 @@
 import { Flags } from '@oclif/core';
+import chalk from 'chalk';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
-import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
+import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER, SECURITY_SCAN_FEEDBACK_MESSAGE } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import { validateIfCanBuild } from 'services/files-service';
@@ -98,6 +99,10 @@ export default class Push extends AuthenticatedCommand {
       const tasks = getTasksForServerSide(appVersionId, directoryPath, selectedRegion, securityScan);
 
       await tasks.run();
+
+      if (securityScan) {
+        logger.log(chalk.cyan(`\n${SECURITY_SCAN_FEEDBACK_MESSAGE}`));
+      }
     } catch (error: any) {
       logger.debug(error, this.DEBUG_TAG);
 

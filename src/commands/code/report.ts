@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import { StatusCodes } from 'http-status-codes';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
-import { APP_VERSION_ID_TO_ENTER, VAR_UNKNOWN } from 'consts/messages';
+import { APP_VERSION_ID_TO_ENTER, SECURITY_SCAN_FEEDBACK_MESSAGE, VAR_UNKNOWN } from 'consts/messages';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { getDeploymentSecurityScan } from 'services/push-service';
 import { HttpError } from 'types/errors';
@@ -108,6 +108,8 @@ export default class Report extends AuthenticatedCommand {
       } else {
         logger.log('Use the -o flag to save the full report to a JSON file.');
       }
+
+      logger.log(chalk.cyan(`\n${SECURITY_SCAN_FEEDBACK_MESSAGE}`));
     } catch (error: unknown) {
       logger.debug({ res: error }, DEBUG_TAG);
       if (error instanceof HttpError) {

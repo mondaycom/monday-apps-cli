@@ -14,3 +14,6 @@ export const BUILD_ID_TO_ENTER = 'Please enter the build id of your app:';
 
 export const LIVE_VERSION_ERROR_LOG =
   'Operation failed: The latest app version is live. Create a new draft version or use --force to override';
+
+export const SECURITY_SCAN_FEEDBACK_URL = 'https://wkf.ms/3SXbi6T';
+export const SECURITY_SCAN_FEEDBACK_MESSAGE = `Share feedback on these results to help improve the security scan experience: ${SECURITY_SCAN_FEEDBACK_URL}`;
