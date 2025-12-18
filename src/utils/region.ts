@@ -34,7 +34,7 @@ export function addRegionToFlags<T>(flags: T): T {
 }
 
 const regionsPrompt = async () =>
-  PromptService.promptList('Choose region', [Region.US, Region.EU, Region.AU], Region.US);
+  PromptService.promptList('Choose region', [Region.US, Region.EU, Region.AU, Region.IL], Region.US);
 
 export async function chooseRegionIfNeeded(
   region?: Region,
