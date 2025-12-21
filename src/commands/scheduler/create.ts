@@ -6,7 +6,7 @@ import { PromptService } from 'src/services/prompt-service';
 import { SchedulerService } from 'src/services/scheduler-service';
 import { printJobs, validateCronExpression, validateTargetUrl } from 'src/services/scheduler-service.utils';
 import logger from 'src/utils/logger';
-import { chooseRegionIfNeeded, getRegionFromString } from 'src/utils/region';
+import { chooseSchedulerRegionIfNeeded, getRegionFromString } from 'src/utils/region';
 import { addPrefixIfNotExists } from 'src/utils/urls-builder';
 import { isDefined } from 'src/utils/validations';
 
@@ -29,7 +29,7 @@ export default class SchedulerCreate extends AuthenticatedCommand {
     const parsedRegion = getRegionFromString(region);
 
     if (!appId) appId = await DynamicChoicesService.chooseApp();
-    const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
+    const selectedRegion = await chooseSchedulerRegionIfNeeded(parsedRegion, { appId });
     if (!name) name = await PromptService.promptInput(SchedulerMessages.name, true);
     if (!schedule) schedule = await PromptService.promptInput(SchedulerMessages.schedule, true);
     validateCronExpression(schedule);

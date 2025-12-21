@@ -4,7 +4,7 @@ import { DynamicChoicesService } from 'src/services/dynamic-choices-service';
 import { SchedulerService } from 'src/services/scheduler-service';
 import { printJobs } from 'src/services/scheduler-service.utils';
 import logger from 'src/utils/logger';
-import { chooseRegionIfNeeded, getRegionFromString } from 'src/utils/region';
+import { chooseSchedulerRegionIfNeeded, getRegionFromString, regionFlag } from 'src/utils/region';
 
 export default class SchedulerList extends AuthenticatedCommand {
   static description = 'List all scheduler jobs for an app';
@@ -12,6 +12,7 @@ export default class SchedulerList extends AuthenticatedCommand {
 
   static flags = SchedulerList.serializeFlags({
     appId: SchedulerBaseFlags.appId,
+    ...regionFlag,
   });
 
   DEBUG_TAG = 'scheduler_list';
@@ -23,7 +24,7 @@ export default class SchedulerList extends AuthenticatedCommand {
     const parsedRegion = getRegionFromString(region);
 
     appId = appId ? Number(appId) : await DynamicChoicesService.chooseApp();
-    const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
+    const selectedRegion = await chooseSchedulerRegionIfNeeded(parsedRegion, { appId });
 
     logger.debug(`Listing scheduler jobs for appId: ${appId}`, this.DEBUG_TAG);
     this.preparePrintCommand(this, { appId, region: selectedRegion });
