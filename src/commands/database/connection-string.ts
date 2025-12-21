@@ -6,7 +6,7 @@ import { VAR_UNKNOWN } from 'consts/messages';
 import { getDatabaseConnectionString } from 'services/database-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
 import { defaultVersionByAppId } from 'src/services/app-versions-service';
-import { chooseRegionIfNeeded, getRegionFromString } from 'src/utils/region';
+import { addRegionToFlags, chooseRegionIfNeeded, getRegionFromString } from 'src/utils/region';
 import { HttpError } from 'types/errors';
 import logger from 'utils/logger';
 
@@ -15,12 +15,14 @@ export default class ConnectionString extends AuthenticatedCommand {
 
   static examples = ['<%= config.bin %> <%= command.id %> -a APP_ID'];
 
-  static flags = ConnectionString.serializeFlags({
-    appId: Flags.integer({
-      char: 'a',
-      description: 'Select the app that you wish to retrieve the connection string for',
+  static flags = ConnectionString.serializeFlags(
+    addRegionToFlags({
+      appId: Flags.integer({
+        char: 'a',
+        description: 'Select the app that you wish to retrieve the connection string for',
+      }),
     }),
-  });
+  );
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(ConnectionString);
