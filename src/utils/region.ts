@@ -34,7 +34,7 @@ export function addRegionToFlags<T>(flags: T): T {
 }
 
 const regionsPrompt = async () =>
-  PromptService.promptList('Choose region', [Region.US, Region.EU, Region.AU], Region.US);
+  PromptService.promptList('Choose region', [Region.US, Region.EU, Region.AU, Region.IL], Region.US);
 
 export async function chooseRegionIfNeeded(
   region?: Region,
@@ -71,4 +71,17 @@ export async function chooseRegionIfNeeded(
 
   const returnedRegion = await regionsPrompt();
   return getRegionFromString(returnedRegion);
+}
+
+export async function chooseSchedulerRegionIfNeeded(
+  region?: Region,
+  options?: { appId?: number; appVersionId?: number },
+): Promise<Region | undefined> {
+  if (region === Region.IL) {
+    throw new Error(
+      'Cloud Scheduler is not available in the IL region. Please use a different region (US, EU, or AU) for scheduler operations.',
+    );
+  }
+
+  return chooseRegionIfNeeded(region, options);
 }

@@ -7,7 +7,7 @@ import { SchedulerService } from 'src/services/scheduler-service';
 import { printJobs, validateCronExpression, validateTargetUrl } from 'src/services/scheduler-service.utils';
 import { UpdateJobRequest } from 'src/types/services/scheduler-service';
 import logger from 'src/utils/logger';
-import { chooseRegionIfNeeded, getRegionFromString } from 'src/utils/region';
+import { chooseSchedulerRegionIfNeeded, getRegionFromString } from 'src/utils/region';
 import { addPrefixIfNotExists } from 'src/utils/urls-builder';
 import { isDefined, isDefinedAndNotEmpty } from 'src/utils/validations';
 
@@ -30,7 +30,7 @@ export default class SchedulerUpdate extends AuthenticatedCommand {
     const parsedRegion = getRegionFromString(region);
 
     if (!appId) appId = await DynamicChoicesService.chooseApp();
-    const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
+    const selectedRegion = await chooseSchedulerRegionIfNeeded(parsedRegion, { appId });
     const jobs = await SchedulerService.listJobs(appId, selectedRegion);
     if (!name) name = await DynamicChoicesService.chooseSchedulerJob(appId, selectedRegion, jobs);
 

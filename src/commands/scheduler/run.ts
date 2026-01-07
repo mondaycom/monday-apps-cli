@@ -3,7 +3,7 @@ import { SchedulerBaseFlags } from 'src/consts/scheduler/flags';
 import { DynamicChoicesService } from 'src/services/dynamic-choices-service';
 import { SchedulerService } from 'src/services/scheduler-service';
 import logger from 'src/utils/logger';
-import { chooseRegionIfNeeded, getRegionFromString } from 'src/utils/region';
+import { chooseSchedulerRegionIfNeeded, getRegionFromString } from 'src/utils/region';
 
 export default class SchedulerRun extends AuthenticatedCommand {
   static description = 'Manually trigger a scheduled job to run for an app';
@@ -20,7 +20,7 @@ export default class SchedulerRun extends AuthenticatedCommand {
     const parsedRegion = getRegionFromString(region);
 
     if (!appId) appId = await DynamicChoicesService.chooseApp();
-    const selectedRegion = await chooseRegionIfNeeded(parsedRegion, { appId });
+    const selectedRegion = await chooseSchedulerRegionIfNeeded(parsedRegion, { appId });
     if (!name) name = await DynamicChoicesService.chooseSchedulerJob(appId, selectedRegion);
 
     logger.debug(`Running scheduler job ${name} for appId: ${appId}`, this.DEBUG_TAG);
