@@ -12,8 +12,13 @@ describe('mondaycodercSchema Validation', () => {
   });
 
   it('should validate a correct Java runtime and version', () => {
-    const data = { RUNTIME: 'Java', RUNTIME_VERSION: '17' };
+    const data = { RUNTIME: 'Java', RUNTIME_VERSION: '17.0.1' };
     expect(() => mondaycodercSchema.parse(data)).not.toThrow();
+  });
+
+  it('should invalidate a Java version that is just a number', () => {
+    const data = { RUNTIME: 'Java', RUNTIME_VERSION: '17' };
+    expect(() => mondaycodercSchema.parse(data)).toThrow('Invalid RUNTIME_VERSION');
   });
 
   it('should validate a missing runtime version when runtime is specified', () => {

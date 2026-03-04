@@ -28,8 +28,10 @@ export const mondaycodercSchema = z
 
       if (data.RUNTIME === 'Java') {
         // 8, 11, 17, 21 are the only LTS versions, see https://www.oracle.com/eg/java/technologies/java-se-support-roadmap.html
-        if (!['8', '11', '17', '21'].includes(data.RUNTIME_VERSION || '')) {
-          throw new Error('Invalid RUNTIME_VERSION for Java in .mondaycoderc. Allowed versions are 8, 11, 17, 21');
+        if (!/^(8|11|17|21)\.\d+\.\d+$/.test(data.RUNTIME_VERSION || '')) {
+          throw new Error(
+            'Invalid RUNTIME_VERSION for Java in .mondaycoderc. Allowed versions are 8.x.x, 11.x.x, 17.x.x, 21.x.x',
+          );
         }
 
         return true;
