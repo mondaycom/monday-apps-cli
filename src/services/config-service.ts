@@ -36,10 +36,12 @@ const generateConfigKeyInProcessEnv = (configKey: keyof ConfigData) => {
   return configKeyInProcessEnv;
 };
 
-const setConfigDataInProcessEnv = (data: ConfigData) => {
+const setConfigDataInProcessEnv = (data: ConfigData, force = false) => {
   for (const [key, value] of Object.entries(data)) {
     const configKeyInProcessEnv = generateConfigKeyInProcessEnv(key as keyof ConfigData);
-    process.env[configKeyInProcessEnv] = value;
+    if (force || !process.env[configKeyInProcessEnv]) {
+      process.env[configKeyInProcessEnv] = value;
+    }
   }
 };
 
@@ -107,7 +109,7 @@ export const ConfigService = {
         writeConfig(mergedData, directoryPath, fileName);
       }
 
-      if (options.setInProcessEnv) setConfigDataInProcessEnv(data);
+      if (options.setInProcessEnv) setConfigDataInProcessEnv(data, true);
 
       return data;
     } catch (error) {
