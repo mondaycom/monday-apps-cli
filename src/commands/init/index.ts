@@ -6,7 +6,6 @@ import { CONFIG_NAME, ConfigService } from 'services/config-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import { createGitignoreAndAppendConfigFileIfNeeded } from 'services/files-service';
 import { PromptService } from 'services/prompt-service';
-import { InitCommandArguments } from 'types/commands/init';
 import logger from 'utils/logger';
 
 const accessTokenPrompt = async () =>
@@ -40,7 +39,13 @@ export default class Init extends BaseCommand {
   public async run(): Promise<void> {
     const { flags } = await this.parse(Init);
 
-    const args: InitCommandArguments = {
+    if (!flags.token) {
+      logger.warn(
+        'This stores your token as plaintext. For secrets manager integration, use "mapps profile:add" instead.',
+      );
+    }
+
+    const args = {
       [CONFIG_KEYS.ACCESS_TOKEN]: flags.token || (await accessTokenPrompt()),
     };
 

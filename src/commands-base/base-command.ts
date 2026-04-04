@@ -51,6 +51,17 @@ export abstract class BaseCommand extends Command {
       default: false,
       helpGroup: 'global',
     }),
+
+    profile: Flags.string({
+      description: 'Use a specific profile for authentication (optional).',
+      helpGroup: 'global',
+    }),
+
+    'ignore-profiles': Flags.boolean({
+      description: 'Skip profile resolution and use the static access token (optional).',
+      default: false,
+      helpGroup: 'global',
+    }),
   };
 
   protected catch(err: Error & { exitCode?: number }): any {
