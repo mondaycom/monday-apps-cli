@@ -6,7 +6,7 @@ import { CONFIG_NAME, ConfigService } from 'services/config-service';
 import { getCurrentWorkingDirectory } from 'services/env-service';
 import { createGitignoreAndAppendConfigFileIfNeeded } from 'services/files-service';
 import { PromptService } from 'services/prompt-service';
-import { InitCommandArguments } from 'types/commands/init';
+import { ConfigData } from 'types/services/config-service';
 import logger from 'utils/logger';
 
 const accessTokenPrompt = async () =>
@@ -32,6 +32,12 @@ export default class Init extends BaseCommand {
       default: false,
       required: false,
     }),
+    'token-command': Flags.string({
+      description: 'Shell command to fetch access token (stdout). Use {{name}} as placeholder for named credentials.',
+    }),
+    'default-token-name': Flags.string({
+      description: 'Default name to substitute into {{name}} in tokenCommand.',
+    }),
   });
 
   static args = {};
@@ -40,9 +46,16 @@ export default class Init extends BaseCommand {
   public async run(): Promise<void> {
     const { flags } = await this.parse(Init);
 
-    const args: InitCommandArguments = {
-      [CONFIG_KEYS.ACCESS_TOKEN]: flags.token || (await accessTokenPrompt()),
-    };
+    const configData: ConfigData = {};
+
+    if (flags['token-command']) {
+      configData.tokenCommand = flags['token-command'];
+      if (flags['default-token-name']) {
+        configData.defaultTokenName = flags['default-token-name'];
+      }
+    } else {
+      configData[CONFIG_KEYS.ACCESS_TOKEN] = flags.token || (await accessTokenPrompt());
+    }
 
     try {
       if (flags.local) {
@@ -50,7 +63,7 @@ export default class Init extends BaseCommand {
         createGitignoreAndAppendConfigFileIfNeeded(this.config.configDir);
       }
 
-      ConfigService.init(args, this.config.configDir, { override: true, setInProcessEnv: true });
+      ConfigService.init(configData, this.config.configDir, { override: true, setInProcessEnv: true });
       logger.info(`'${CONFIG_NAME}' created inside '${this.config.configDir}'`);
     } catch (error) {
       logger.debug(error, this.DEBUG_TAG);

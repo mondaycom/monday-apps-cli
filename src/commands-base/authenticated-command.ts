@@ -18,6 +18,12 @@ const validateAccessToken = async (config: Config): Promise<void> => {
 export abstract class AuthenticatedCommand extends BaseCommand {
   public async init(): Promise<void> {
     await super.init();
+    const { flags } = await this.parse(this.constructor as typeof AuthenticatedCommand);
+    const tokenName = flags['token-name'] as string | undefined;
+    if (tokenName) {
+      ConfigService.resolveAndSetToken(tokenName);
+    }
+
     await validateAccessToken(this.config);
   }
 

@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -43,6 +44,40 @@ const setConfigDataInProcessEnv = (data: ConfigData) => {
   }
 };
 
+const resolveTokenCommand = (data: ConfigData, tokenName?: string): ConfigData => {
+  if (!data.tokenCommand) return data;
+
+  let command = data.tokenCommand;
+  const name = tokenName || data.defaultTokenName;
+  const hasPlaceholder = command.includes('{{name}}');
+
+  if (hasPlaceholder && !name) {
+    logger.error(
+      'tokenCommand contains {{name}} but no token name was provided. ' +
+        'Use --token-name or set defaultTokenName in .mappsrc.',
+    );
+    return process.exit(1);
+  }
+
+  if (name) {
+    command = command.replaceAll('{{name}}', name);
+  }
+
+  try {
+    const token = execSync(command, { encoding: 'utf8', timeout: 10_000 }).trim();
+    if (token) {
+      return { ...data, accessToken: token };
+    }
+
+    logger.error('tokenCommand returned an empty token.');
+    return process.exit(1);
+  } catch (error) {
+    logger.error(`tokenCommand failed: ${(error as Error).message}`);
+    logger.error('Use --ignore-token-command to bypass, or fix your tokenCommand configuration.');
+    return process.exit(1);
+  }
+};
+
 const readConfig = (directoryPath: string, fileName = CONFIG_NAME) => {
   if (!checkConfigExists(directoryPath, fileName)) {
     throw new BadConfigError(`the file: ${fileName} is not found in ${directoryPath}`);
@@ -73,11 +108,27 @@ export const ConfigService = {
     return process.env[configKeyInProcessEnv] as string;
   },
 
-  loadConfigToProcessEnv(directoryPath: string, fileName = CONFIG_NAME) {
-    const data = readConfig(directoryPath, fileName);
+  loadConfigToProcessEnv(directoryPath: string, fileName = CONFIG_NAME, tokenName?: string, ignoreTokenCommand = false) {
+    let data = readConfig(directoryPath, fileName);
+    if (!ignoreTokenCommand) {
+      data = resolveTokenCommand(data, tokenName);
+    }
+
     setConfigDataInProcessEnv(data);
 
     return data;
+  },
+
+  resolveAndSetToken(tokenName?: string) {
+    const tokenCommand = process.env[generateConfigKeyInProcessEnv('tokenCommand' as keyof ConfigData)];
+    const defaultTokenName = process.env[generateConfigKeyInProcessEnv('defaultTokenName' as keyof ConfigData)];
+    if (!tokenCommand) return;
+
+    const data = resolveTokenCommand({ tokenCommand, defaultTokenName }, tokenName);
+    if (data.accessToken) {
+      const key = generateConfigKeyInProcessEnv('accessToken' as keyof ConfigData);
+      process.env[key] = data.accessToken;
+    }
   },
 
   removeConfig(directoryPath: string, fileName = CONFIG_NAME) {

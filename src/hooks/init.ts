@@ -12,7 +12,8 @@ export default function init(opts: Command) {
     opts.config.configDir = getCurrentWorkingDirectory();
   }
 
-  ConfigService.loadConfigToProcessEnv(opts.config.configDir);
+  const ignoreTokenCommand = opts.argv.includes('--ignore-token-command');
+  ConfigService.loadConfigToProcessEnv(opts.config.configDir, undefined, undefined, ignoreTokenCommand);
   if (opts.argv.includes('--verbose')) {
     enableDebugMode();
     logger.debug(`* Domain: ${getAppsDomain()} *`);

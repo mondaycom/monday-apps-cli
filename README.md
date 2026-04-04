@@ -26,6 +26,70 @@ USAGE
 
 <!-- usagestop -->
 
+# Authentication
+
+## Basic setup
+
+```sh-session
+$ mapps init -t YOUR_ACCESS_TOKEN
+```
+
+## Secrets manager integration
+
+Instead of storing a plaintext token in `.mappsrc`, you can configure a shell command that fetches the token from any secrets manager at runtime. The command must print the token to stdout.
+
+```sh-session
+# Configure with a single account
+$ mapps init --token-command 'op read op://vault/monday-dev/token'
+
+# Configure with named credentials for switching between accounts
+$ mapps init --token-command 'op read op://vault/{{name}}/token' --default-token-name monday-dev
+```
+
+Then use `--token-name` (`-n`) on any command to override the default:
+
+```sh-session
+# Uses defaultTokenName ("monday-dev")
+$ mapps code:status
+
+# Override with a different account
+$ mapps code:status -n monday-prod
+```
+
+### Supported secrets managers
+
+Any CLI that outputs a token to stdout works. Examples:
+
+| Provider | tokenCommand |
+|----------|-------------|
+| 1Password | `op read op://vault/{{name}}/token` |
+| Bitwarden | `bw get password {{name}}` |
+| LastPass | `lpass show --password {{name}}` |
+| HashiCorp Vault | `vault kv get -field=token secret/monday/{{name}}` |
+| AWS Secrets Manager | `aws secretsmanager get-secret-value --secret-id {{name}} --query SecretString --output text` |
+| macOS Keychain | `security find-generic-password -s {{name}} -w` |
+| Linux libsecret | `secret-tool lookup service monday account {{name}}` |
+| pass (GPG) | `pass monday/{{name}}` |
+
+### Error handling
+
+If `tokenCommand` is configured and fails (command error, empty output, or missing `{{name}}`), the CLI will exit with an error instead of silently falling back. This ensures you know immediately if your secrets manager is misconfigured or unavailable.
+
+To bypass `tokenCommand` and fall back to the `accessToken` in `.mappsrc`:
+
+```sh-session
+$ mapps code:status --ignore-token-command
+```
+
+### Precedence
+
+Token resolution follows this order (highest to lowest):
+
+1. `--token-name` flag (resolves via `tokenCommand` template)
+2. `tokenCommand` in `.mappsrc` (with optional `defaultTokenName` substitution)
+3. `accessToken` in `.mappsrc` (plaintext fallback)
+4. Interactive prompt via `mapps init`
+
 # Commands
 
 <!-- commands -->
