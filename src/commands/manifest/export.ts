@@ -36,6 +36,11 @@ export default class ManifestExport extends AuthenticatedCommand {
       aliases: ['v'],
       description: MESSAGES.appVersionId,
     }),
+    force: Flags.boolean({
+      char: 'f',
+      description: 'Overwrite existing files without prompting',
+      default: false,
+    }),
   });
 
   DEBUG_TAG = 'manifest_export';
@@ -54,7 +59,7 @@ export default class ManifestExport extends AuthenticatedCommand {
   public async run(): Promise<void> {
     try {
       const { flags } = await this.parse(ManifestExport);
-      const { manifestPath, appId: appIdAsString, appVersionId: appVersionIdAsString } = flags;
+      const { manifestPath, appId: appIdAsString, appVersionId: appVersionIdAsString, force } = flags;
 
       let appId = appIdAsString ? Number(appIdAsString) : undefined;
       let appVersionId = appVersionIdAsString ? Number(appVersionIdAsString) : undefined;
@@ -76,7 +81,7 @@ export default class ManifestExport extends AuthenticatedCommand {
           { title: 'Validate app before exporting manifest', task: exportService.validateManifestTask },
           { title: 'Export app manifest', task: exportService.downloadManifestTask },
         ],
-        { ctx: { appVersionId, appId: appId!, manifestPath } },
+        { ctx: { appVersionId, appId: appId!, manifestPath, force } },
       );
 
       await tasks.run();
