@@ -4,4 +4,5 @@ export type ExportCommandTasksContext = {
   appId: AppId;
   appVersionId?: AppVersionId;
   manifestPath?: string;
+  force?: boolean;
 };
