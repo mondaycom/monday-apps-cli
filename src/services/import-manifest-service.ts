@@ -17,18 +17,27 @@ export const uploadManifestTsk = async (
   ctx: ImportCommandTasksContext,
   task: ListrTaskWrapper<ImportCommandTasksContext, any>,
 ) => {
+  let zipFilePath: string | undefined;
   try {
     const processedManifest = await processManifestTemplate(ctx.manifestFilePath, ctx.allowMissingVariables);
     ctx.manifestFilePath = `${ctx.manifestFilePath}.processed`;
     await saveToFile(ctx.manifestFilePath, JSON.stringify(processedManifest));
 
     task.output = `Zipping your manifest file`;
-    const zipFilePath = await compressFilesToZip([{ path: ctx.manifestFilePath, replaceName: 'manifest.json' }]);
+    zipFilePath = await compressFilesToZip([{ path: ctx.manifestFilePath, replaceName: 'manifest.json' }]);
     const buffer = readZipFileAsBuffer(zipFilePath);
     task.output = `Uploading your app manifest`;
     await uploadZippedManifest(buffer, { appId: ctx.appId, appVersionId: ctx.appVersionId });
     task.output = `your app manifest has been uploaded successfully`;
   } finally {
+    if (zipFilePath) {
+      try {
+        await unlink(zipFilePath);
+      } catch {
+        // best-effort cleanup of temp zip
+      }
+    }
+
     await unlink(ctx.manifestFilePath);
   }
 };
