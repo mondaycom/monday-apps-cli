@@ -73,7 +73,7 @@ export const cloneAppTemplateAndLoadManifest = async (
   };
 
   await cloneFolderFromGitRepo(ctx.githubUrl, ctx.folder, ctx.branch, ctx.targetPath, output);
-  const manifestData = readManifestFile(ctx.targetPath);
+  const manifestData = await readManifestFile(ctx.targetPath);
   ctx.appName = ctx.appName || manifestData.app.name;
   ctx.features = manifestData.app.features;
 };

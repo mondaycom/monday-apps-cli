@@ -1,9 +1,11 @@
 import { APP_TEMPLATES_CONFIG } from 'consts/app-templates-config';
 import { APP_VERSION_STATUS } from 'consts/app-versions';
 import { listAppBuilds } from 'services/app-builds-service';
+import { getValidAppFeatureTypes } from 'services/app-feature-types-service';
 import { listAppFeaturesByAppVersionId } from 'services/app-features-service';
 import { defaultVersionByAppId, listAppVersionsByAppId } from 'services/app-versions-service';
 import { listApps } from 'services/apps-service';
+import { pbbSchemaManager } from 'services/pbb-schema-manager';
 import { PromptService } from 'services/prompt-service';
 import { LIVE_VERSION_ERROR_LOG } from 'src/consts/messages';
 import { AppId } from 'src/types/general';
@@ -77,11 +79,13 @@ export const DynamicChoicesService = {
     return { appId: chosenAppId, appVersionId };
   },
 
-  async chooseAppFeatureType(excludeTypes?: AppFeatureType[]) {
-    const featureTypes = Object.values(AppFeatureType);
-    const featureTypeChoicesMap: Record<string, AppFeatureType> = {};
+  async chooseAppFeatureType(excludeTypes?: Array<AppFeatureType | string>) {
+    await pbbSchemaManager.initialize();
+    const featureTypes = getValidAppFeatureTypes();
+    const excluded = new Set<string>(excludeTypes);
+    const featureTypeChoicesMap: Record<string, string> = {};
     for (const featureType of featureTypes) {
-      if (excludeTypes?.includes(featureType)) continue;
+      if (excluded.has(featureType)) continue;
       featureTypeChoicesMap[featureType] = featureType;
     }
 

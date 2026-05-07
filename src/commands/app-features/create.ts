@@ -2,8 +2,10 @@ import { Flags } from '@oclif/core';
 
 import { AuthenticatedCommand } from 'commands-base/authenticated-command';
 import { APP_ID_TO_ENTER, APP_VERSION_ID_TO_ENTER } from 'consts/messages';
+import { getValidAppFeatureTypes } from 'services/app-feature-types-service';
 import { createAppFeature } from 'services/app-features-service';
 import { DynamicChoicesService } from 'services/dynamic-choices-service';
+import { pbbSchemaManager } from 'services/pbb-schema-manager';
 import { PromptService } from 'services/prompt-service';
 import { AppFeatureType } from 'types/services/app-features-service';
 import logger from 'utils/logger';
@@ -67,8 +69,9 @@ export default class Create extends AuthenticatedCommand {
         appFeatureName = await PromptService.promptInput('Please enter feature name');
       }
 
+      await pbbSchemaManager.initialize();
       if (
-        !(Object.values(AppFeatureType) as string[]).includes(appFeatureType) ||
+        !getValidAppFeatureTypes().includes(appFeatureType) ||
         appFeatureType === (AppFeatureType.AppFeatureOauth as string)
       ) {
         logger.error(`Invalid feature type`);

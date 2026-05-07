@@ -64,7 +64,7 @@ export default class AppDeploy extends AuthenticatedCommand {
       let { appId, appVersionId } = flags;
       const region = getRegionFromString(flags?.region);
       const manifestFileDir = directoryPath || getCurrentWorkingDirectory();
-      const manifestFileData = readManifestFile(manifestFileDir);
+      const manifestFileData = await readManifestFile(manifestFileDir);
       appId = appId || manifestFileData.app.id;
 
       appVersionId = await this.getAppVersionId(appVersionId, appId, force);
