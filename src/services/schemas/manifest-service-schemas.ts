@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-import { AppFeatureType, BUILD_TYPES_MANIFEST_FORMAT } from 'types/services/app-features-service';
+import { getValidAppFeatureTypes } from 'services/app-feature-types-service';
+import { BUILD_TYPES_MANIFEST_FORMAT } from 'types/services/app-features-service';
 import { ManifestHostingType } from 'types/services/manifest-service';
 
 const ManifestHostingSchema = z
@@ -11,7 +12,12 @@ const ManifestHostingSchema = z
   .strict();
 
 export const ManifestFeatureSchema = z.object({
-  type: z.nativeEnum(AppFeatureType),
+  type: z.string().refine(
+    val => getValidAppFeatureTypes().includes(val),
+    val => ({
+      message: `Unknown app feature type: ${val}`,
+    }),
+  ),
   name: z.string().optional(),
   build: z
     .object({

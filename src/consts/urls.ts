@@ -146,3 +146,7 @@ export const makeAppManifestExportableUrl = (appId: AppId): string => {
 export const getDeploymentSecurityScanUrl = (appVersionId: number): string => {
   return `${appVersionIdBaseUrl(appVersionId)}/deployments/security-scan`;
 };
+
+export const platformBuildingBlocksSchemasUrl = (): string => {
+  return `/apps_ms/public/platform-building-blocks-schemas`;
+};
