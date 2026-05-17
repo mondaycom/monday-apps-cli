@@ -8221,10 +8221,10 @@ pure-rand@^6.0.0:
   resolved "https://registry.npmjs.org/pure-rand/-/pure-rand-6.0.4.tgz"
   integrity sha512-LA0Y9kxMYv47GIPJy6MI84fqTd2HmYZI83W/kM/SkKfDlajnZYfmXFTxkbY+xSBPkLJxltMa9hIkmdc29eguMA==
 
-pusher-js@^8.0.1:
-  version "8.3.0"
-  resolved "https://registry.npmjs.org/pusher-js/-/pusher-js-8.3.0.tgz"
-  integrity sha512-6GohP06WlVeomAQQe9qWh1IDzd3+InluWt+ZUOcecVK1SEQkg6a8uYVsvxSJm7cbccfmHhE0jDkmhKIhue8vmA==
+pusher-js@~8.4.3:
+  version "8.4.3"
+  resolved "https://registry.yarnpkg.com/pusher-js/-/pusher-js-8.4.3.tgz#2271cada42375b146840278976e1c50926991da6"
+  integrity sha512-MYnVYhKxq2Oeg3HmTQxnKDj1oAZjqJCkEcYj8hYbH1Rw5pT0g8KtgOYVUKDRnyrPtwRvA9QR4wunwJW5xIbq0Q==
   dependencies:
     tweetnacl "^1.0.3"
 
