@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -42,7 +43,7 @@ export const decompressZipBufferToFiles = async (buffer: Buffer, outputDir: stri
 };
 
 export const compressFilesToZip = async (files: { path: string; replaceName?: string }[]): Promise<string> => {
-  const tempZipPath = 'temp.zip';
+  const tempZipPath = path.join(os.tmpdir(), `mapps-compress-${randomUUID()}.zip`);
   const output = fs.createWriteStream(tempZipPath);
   const archive = archiver('zip', { zlib: { level: 9 } });
 
