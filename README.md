@@ -641,7 +641,7 @@ Create a new scheduler job for an app
 ```
 USAGE
   $ mapps scheduler:create [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au] [-d <value>] [-s
-    <value>] [-u <value>] [-r <value>] [-b <value>] [-t <value>]
+    <value>] [-e <value>] [-r <value>] [-b <value>] [-t <value>]
 
 FLAGS
   -a, --appId=<value>               Please enter app id:
@@ -757,7 +757,7 @@ Update a scheduler job for an app
 ```
 USAGE
   $ mapps scheduler:update [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au] [-d <value>] [-s
-    <value>] [-u <value>] [-r <value>] [-b <value>] [-t <value>]
+    <value>] [-e <value>] [-r <value>] [-b <value>] [-t <value>]
 
 FLAGS
   -a, --appId=<value>               Please enter app id:
