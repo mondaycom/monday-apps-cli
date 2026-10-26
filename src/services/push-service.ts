@@ -7,6 +7,7 @@ import { StatusCodes } from 'http-status-codes';
 import { ListrTaskWrapper } from 'listr2';
 
 import {
+  appDeploymentsUrl,
   getAppVersionDeploymentStatusUrl,
   getDeploymentClientUpload,
   getDeploymentSecurityScanUrl,
@@ -29,6 +30,7 @@ import {
 } from 'services/schemas/push-service-schemas';
 import { PushCommandTasksContext } from 'types/commands/push';
 import { HttpError } from 'types/errors';
+import { AppId } from 'types/general';
 import { Region } from 'types/general/region';
 import { TimeInMs } from 'types/general/time';
 import { HttpMethodTypes } from 'types/services/api-service';
@@ -119,6 +121,15 @@ export const getAppVersionDeploymentStatus = async (appVersionId: number, region
     const error = error_ instanceof HttpError ? error_ : new Error('Failed to check app version deployment status.');
     throw error;
   }
+};
+
+export const deleteAppDeployments = async (appId: AppId) => {
+  const url = appsUrlBuilder(appDeploymentsUrl(appId));
+  await execute({
+    url,
+    headers: { Accept: 'application/json' },
+    method: HttpMethodTypes.DELETE,
+  });
 };
 
 export const getDeploymentSecurityScan = async (

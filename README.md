@@ -43,6 +43,7 @@ USAGE
 * [`mapps app:promote`](#mapps-apppromote)
 
 - [`mapps autocomplete [SHELL]`](#mapps-autocomplete-shell)
+- [`mapps code:delete`](#mapps-codedelete)
 - [`mapps code:env`](#mapps-codeenv)
 - [`mapps code:logs`](#mapps-codelogs)
 - [`mapps code:push`](#mapps-codepush)
@@ -354,6 +355,33 @@ EXAMPLES
 ```
 
 _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.0.5/src/commands/autocomplete/index.ts)_
+
+## `mapps code:delete`
+
+Delete the monday-code deployments of an app in all regions, without deleting the app.
+
+```
+USAGE
+  $ mapps code:delete [--verbose] [--print-command] [-i <value>] [-f]
+
+FLAGS
+  -f, --force          Skip the confirmation prompt
+  -i, --appId=<value>  The id of the app to delete the monday-code deployments for
+
+GLOBAL FLAGS
+  --print-command  Print the command that was executed (optional).
+  --verbose        Print advanced logs (optional).
+
+DESCRIPTION
+  Delete the monday-code deployments of an app in all regions, without deleting the app.
+
+EXAMPLES
+  $ mapps code:delete -i APP_ID
+
+  $ mapps code:delete -i APP_ID -f
+```
+
+_See code: [src/commands/code/delete.ts](https://github.com/mondaycom/monday-apps-cli/blob/v4.7.2/src/commands/code/delete.ts)_
 
 ## `mapps code:env`
 

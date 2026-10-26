@@ -79,6 +79,10 @@ export const getAppVersionsByAppIdUrl = (appVersionId: AppVersionId): string => 
   return `${BASE_VERSIONS_URL}/${appVersionId}`;
 };
 
+export const appDeploymentsUrl = (appId: AppId): string => {
+  return `${BASE_MONDAY_CODE_URL}/apps/${appId}/deployments`;
+};
+
 export const appEnvironmentUrl = (appId: AppId, key: string): string => {
   return `${BASE_MONDAY_CODE_URL}/${appId}/env/${key}`;
 };
