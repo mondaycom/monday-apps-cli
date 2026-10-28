@@ -12,7 +12,8 @@ import logger from 'utils/logger';
 const DEBUG_TAG = 'code_delete';
 
 export default class Delete extends AuthenticatedCommand {
-  static description = 'Delete the monday-code deployments of an app in all regions, without deleting the app.';
+  static description =
+    'Permanently delete the monday-code deployments of an app in all regions, without deleting the app. This cannot be undone.';
 
   static examples = [
     '<%= config.bin %> <%= command.id %> -i APP_ID',
@@ -45,7 +46,9 @@ export default class Delete extends AuthenticatedCommand {
 
       const confirmed =
         force ||
-        (await PromptService.promptConfirm(`Delete the monday-code deployments of app ${appId} in all regions?`));
+        (await PromptService.promptConfirm(
+          `Permanently delete the monday-code deployments of app ${appId} in all regions? This cannot be undone.`,
+        ));
       if (!confirmed) {
         logger.info('Deletion cancelled');
         return;

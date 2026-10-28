@@ -358,7 +358,7 @@ _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomp
 
 ## `mapps code:delete`
 
-Delete the monday-code deployments of an app in all regions, without deleting the app.
+Permanently delete the monday-code deployments of an app in all regions, without deleting the app. This cannot be undone.
 
 ```
 USAGE
@@ -373,7 +373,7 @@ GLOBAL FLAGS
   --verbose        Print advanced logs (optional).
 
 DESCRIPTION
-  Delete the monday-code deployments of an app in all regions, without deleting the app.
+  Permanently delete the monday-code deployments of an app in all regions, without deleting the app. This cannot be undone.
 
 EXAMPLES
   $ mapps code:delete -i APP_ID
