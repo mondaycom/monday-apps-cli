@@ -10,7 +10,10 @@
   "homepage": "https://github.com/mondaycom/monday-apps-cli",
   "license": "MIT",
   "main": "dist/index.js",
-  "repository": "mondaycom/monday-apps-cli",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mondaycom/monday-apps-cli.git"
+  },
   "files": [
     "/bin",
     "/dist",
