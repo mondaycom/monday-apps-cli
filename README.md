@@ -253,7 +253,7 @@ Deploy an app using manifest file.
 
 ```
 USAGE
-  $ mapps app:deploy [--verbose] [--print-command] [-d <value>] [-a <value>] [-v <value>] [-f] [-z us|eu|au]
+  $ mapps app:deploy [--verbose] [--print-command] [-d <value>] [-a <value>] [-v <value>] [-f] [-z us|eu|au|il]
 
 FLAGS
   -a, --appId=<value>          App id (will use the latest draft version)
@@ -262,7 +262,7 @@ FLAGS
   -f, --force                  Force push to latest version (draft or live)
   -v, --appVersionId=<value>   App version id
   -z, --region=<option>        Region to use
-                               <options: us|eu|au>
+                               <options: us|eu|au|il>
 
 GLOBAL FLAGS
   --print-command  Print the command that was executed (optional).
@@ -390,7 +390,7 @@ Manage environment variables for your app hosted on monday-code.
 ```
 USAGE
   $ mapps code:env [--verbose] [--print-command] [-i <value>] [-m list-keys|set|delete] [-k <value>] [-v
-    <value>] [-z us|eu|au]
+    <value>] [-z us|eu|au|il]
 
 FLAGS
   -i, --appId=<value>    The id of the app to manage environment variables for
@@ -399,7 +399,7 @@ FLAGS
                          <options: list-keys|set|delete>
   -v, --value=<value>    variable value [required for set]
   -z, --region=<option>  Region to use
-                         <options: us|eu|au>
+                         <options: us|eu|au|il>
 
 GLOBAL FLAGS
   --print-command  Print the command that was executed (optional).
@@ -421,7 +421,7 @@ Stream logs
 ```
 USAGE
   $ mapps code:logs [--verbose] [--print-command] [-i <value>] [-t <value>] [-s <value>] [-f <value>] [-e
-    <value>] [-r <value>] [-z us|eu|au]
+    <value>] [-r <value>] [-z us|eu|au|il]
 
 FLAGS
   -e, --logsEndDate=<value>        End date (MM/DD/YYYY HH:mm) e.g. "03/25/1983 16:45" [supported only if
@@ -434,7 +434,7 @@ FLAGS
   -s, --eventSource=<value>        Source: "live" for live events, "History" for fetching events from the past
   -t, --logsType=<value>           Logs type: "http" for http events, "console" for stdout
   -z, --region=<option>            Region to use
-                                   <options: us|eu|au>
+                                   <options: us|eu|au|il>
 
 GLOBAL FLAGS
   --print-command  Print the command that was executed (optional).
@@ -455,7 +455,7 @@ Push your project to get hosted on monday-code.
 
 ```
 USAGE
-  $ mapps code:push [--verbose] [--print-command] [-d <value>] [-a <value>] [-i <value>] [-f] [-c] [-z us|eu|au]
+  $ mapps code:push [--verbose] [--print-command] [-d <value>] [-a <value>] [-i <value>] [-f] [-c] [-z us|eu|au|il]
 
 FLAGS
   -a, --appId=<value>          Please enter app id:
@@ -465,7 +465,7 @@ FLAGS
   -f, --force                  Force push to live version
   -i, --appVersionId=<value>   Please enter the app version id of your app:
   -z, --region=<option>        Region to use
-                               <options: us|eu|au>
+                               <options: us|eu|au|il>
 
 GLOBAL FLAGS
   --print-command  Print the command that was executed (optional).
@@ -491,7 +491,7 @@ Manage secret variables for your app hosted on monday-code.
 ```
 USAGE
   $ mapps code:secret [--verbose] [--print-command] [-i <value>] [-m list-keys|set|delete] [-k <value>] [-v
-    <value>] [-z us|eu|au]
+    <value>] [-z us|eu|au|il]
 
 FLAGS
   -i, --appId=<value>    The id of the app to manage secret variables for
@@ -500,7 +500,7 @@ FLAGS
                          <options: list-keys|set|delete>
   -v, --value=<value>    variable value [required for set]
   -z, --region=<option>  Region to use
-                         <options: us|eu|au>
+                         <options: us|eu|au|il>
 
 GLOBAL FLAGS
   --print-command  Print the command that was executed (optional).
@@ -521,12 +521,12 @@ Status of a specific project hosted on monday-code.
 
 ```
 USAGE
-  $ mapps code:status [--verbose] [--print-command] [-i <value>] [-z us|eu|au]
+  $ mapps code:status [--verbose] [--print-command] [-i <value>] [-z us|eu|au|il]
 
 FLAGS
   -i, --appVersionId=<value>  Please enter the app version id of your app:
   -z, --region=<option>       Region to use
-                              <options: us|eu|au>
+                              <options: us|eu|au|il>
 
 GLOBAL FLAGS
   --print-command  Print the command that was executed (optional).
@@ -668,7 +668,7 @@ Create a new scheduler job for an app
 
 ```
 USAGE
-  $ mapps scheduler:create [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au] [-d <value>] [-s
+  $ mapps scheduler:create [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au|il] [-d <value>] [-s
     <value>] [-e <value>] [-r <value>] [-b <value>] [-t <value>]
 
 FLAGS
@@ -681,7 +681,7 @@ FLAGS
   -t, --timeout=<value>             Job execution timeout in seconds (optional)
   -e, --targetUrl=<value>           Target URL path for the job (must start with /, will be relative to /mndy-cronjob)
   -z, --region=<option>             Region to use
-                                    <options: us|eu|au>
+                                    <options: us|eu|au|il>
 
 GLOBAL FLAGS
   --print-command  Print the command that was executed (optional).
@@ -706,13 +706,13 @@ Delete a scheduler job for an app
 
 ```
 USAGE
-  $ mapps scheduler:delete [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au]
+  $ mapps scheduler:delete [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au|il]
 
 FLAGS
   -a, --appId=<value>    Please enter app id:
   -n, --name=<value>     Scheduled job name
   -z, --region=<option>  Region to use
-                         <options: us|eu|au>
+                         <options: us|eu|au|il>
 
 GLOBAL FLAGS
   --print-command  Print the command that was executed (optional).
@@ -757,13 +757,13 @@ Manually trigger a scheduled job to run for an app
 
 ```
 USAGE
-  $ mapps scheduler:run [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au]
+  $ mapps scheduler:run [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au|il]
 
 FLAGS
   -a, --appId=<value>    Please enter app id:
   -n, --name=<value>     Scheduled job name
   -z, --region=<option>  Region to use
-                         <options: us|eu|au>
+                         <options: us|eu|au|il>
 
 GLOBAL FLAGS
   --print-command  Print the command that was executed (optional).
@@ -784,7 +784,7 @@ Update a scheduler job for an app
 
 ```
 USAGE
-  $ mapps scheduler:update [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au] [-d <value>] [-s
+  $ mapps scheduler:update [--verbose] [--print-command] [-a <value>] [-n <value>] [-z us|eu|au|il] [-d <value>] [-s
     <value>] [-e <value>] [-r <value>] [-b <value>] [-t <value>]
 
 FLAGS
@@ -797,7 +797,7 @@ FLAGS
   -t, --timeout=<value>             Job execution timeout in seconds (optional)
   -e, --targetUrl=<value>           Target URL path for the job (must start with /, will be relative to /mndy-cronjob)
   -z, --region=<option>             Region to use
-                                    <options: us|eu|au>
+                                    <options: us|eu|au|il>
 
 GLOBAL FLAGS
   --print-command  Print the command that was executed (optional).
