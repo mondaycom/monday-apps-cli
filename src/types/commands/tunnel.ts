@@ -1,4 +1,4 @@
-import * as ngrok from '@ngrok/ngrok';
+import type { Listener } from '@ngrok/ngrok';
 
 import { AppId } from 'types/general';
 
@@ -8,5 +8,5 @@ export type TunnelCommandTasksContext = {
   authToken?: string;
   tunnelDomain?: string;
   forwardingAddress?: string;
-  tunnel?: ngrok.Listener;
+  tunnel?: Listener;
 };
